@@ -1,5 +1,6 @@
 ﻿using EntityFrameworkCore.Mapping;
 using Microsoft.EntityFrameworkCore;
+using EntityFrameworkCore.Models;
 
 namespace EntityFrameworkCore.Models
 {
@@ -48,5 +49,6 @@ namespace EntityFrameworkCore.Models
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<OrderStatus> OrderStatuses { get; set; }
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<EntityFrameworkCore.Models.Translator> Translator { get; set; } = default!;
     }
 }
