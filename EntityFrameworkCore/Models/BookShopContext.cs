@@ -36,17 +36,17 @@ namespace EntityFrameworkCore.Models
             modelBuilder.ApplyConfiguration(new Book_TranslatorMap());
 
         }
-        DbSet<Book> Books { get; set; }
-        DbSet<Category> Categories { get; set; }
-        DbSet<Order> Orders { get; set; }
-        DbSet<Author> Authors { get; set; }
-        DbSet<City> Citys { get; set; }
-        DbSet<Provice> Provices { get; set; }
-        DbSet<Author_Book> Author_Books { get; set; }
-        DbSet<Order_Book> Order_Books { get; set; }
-        DbSet<Language> Languages { get; set; }
-        DbSet<Discount> Discounts { get; set; }
-        DbSet<OrderStatus> OrderStatuses { get; set; }
-        DbSet<Customer> Customers { get; set; }
+        public DbSet<Book> Books { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Author> Authors { get; set; }
+        public DbSet<City> Citys { get; set; }
+        public DbSet<Provice> Provices { get; set; }
+        public DbSet<Author_Book> Author_Books { get; set; }
+        public DbSet<Order_Book> Order_Books { get; set; }
+        public DbSet<Language> Languages { get; set; }
+        public DbSet<Discount> Discounts { get; set; }
+        public DbSet<OrderStatus> OrderStatuses { get; set; }
+        public DbSet<Customer> Customers { get; set; }
     }
 }

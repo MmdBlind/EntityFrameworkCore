@@ -57,6 +57,7 @@ namespace EntityFrameworkCore.Models
     }
     public class Language
     {
+        [Key]
         public int LanguageID { get; set; }
         public string LanguageName { get; set; }
         public List<Book> Books { get; set; }
