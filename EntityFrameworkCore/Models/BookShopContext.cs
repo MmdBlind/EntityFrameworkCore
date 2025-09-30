@@ -50,5 +50,6 @@ namespace EntityFrameworkCore.Models
         public DbSet<OrderStatus> OrderStatuses { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<EntityFrameworkCore.Models.Translator> Translator { get; set; } = default!;
+        public DbSet<EntityFrameworkCore.Models.Publisher> Publisher { get; set; } = default!;
     }
 }

@@ -43,6 +43,72 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 return View(ViewModel );
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                var Translator = await _context.Translator.FirstOrDefaultAsync(m => m.TranslatorID == id);
+                if (Translator == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return View(Translator);
+                }
+            }
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Translator translator)
+        {
+            try
+            {
+                _context.Update(translator);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View(translator);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                var Translator = await _context.Translator.FirstOrDefaultAsync(m => m.TranslatorID == id);
+                if (Translator == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return View(Translator);
+                }
+            }
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Deleted(int TranslatorID)
+        {
+            var Translator = await _context.Translator.FirstAsync(m => m.TranslatorID == TranslatorID);
+            _context.Translator.Remove(Translator);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
 
     }
 }
