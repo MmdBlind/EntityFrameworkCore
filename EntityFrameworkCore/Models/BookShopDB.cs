@@ -17,18 +17,30 @@ namespace EntityFrameworkCore.Models
         public int NumOfPages { get; set; }
         public short Wheight { get; set; }
         public string ISBN { get; set; }
+        public bool IsPublish { get; set; }
+        public DateTime? PublishDate { get; set; }
+        public int PublishYear { get; set; }
+        public bool IsDelete { get; set; }
+
 
         public Publisher Publisher { get; set; }
         public int SCategoryID { get; set; }
 
-        [ForeignKey("CategoryID")]
-        public Category Category { get; set; }
+        
         public Language Language { get; set; }
         public Discount Discount { get; set; }
         public List<Author_Book> Author_Book { get; set; }
         public List<Order_Book> Order_Book { get; set; }
         public List<Translator_Book> Translator_Books { get; set; }
+        public List<Book_Category> book_Categories { get; set; }
+    }
+    public class Book_Category
+    {
+        public int BookID { get; set; }
+        public int CategoryID { get; set; }
 
+        public  Book Book { get; set; }
+        public Category Category { get; set; }
     }
     public class Author
     {
@@ -70,6 +82,8 @@ namespace EntityFrameworkCore.Models
         public int? ParentCategoryID { get; set; }
         public Category category { get; set; }
         public List<Category> categories { get; set; }
+        public List<Book_Category> book_Categories { get; set; }
+
     }
     public class Customer
     {

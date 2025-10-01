@@ -35,6 +35,8 @@ namespace EntityFrameworkCore.Models
             modelBuilder.ApplyConfiguration(new CategoryMap());
 
             modelBuilder.ApplyConfiguration(new Book_TranslatorMap());
+            
+            modelBuilder.ApplyConfiguration(new Book_CategoryMap());
 
         }
         public DbSet<Book> Books { get; set; }

@@ -66,9 +66,6 @@ namespace EntityFrameworkCore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookID"));
 
-                    b.Property<int>("CategoryID")
-                        .HasColumnType("int");
-
                     b.Property<string>("File")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -81,6 +78,12 @@ namespace EntityFrameworkCore.Migrations
                         .IsRequired()
                         .HasColumnType("image");
 
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPublish")
+                        .HasColumnType("bit");
+
                     b.Property<int>("LanguageID")
                         .HasColumnType("int");
 
@@ -88,6 +91,12 @@ namespace EntityFrameworkCore.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Price")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("PublishDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PublishYear")
                         .HasColumnType("int");
 
                     b.Property<int>("PublisherID")
@@ -112,13 +121,26 @@ namespace EntityFrameworkCore.Migrations
 
                     b.HasKey("BookID");
 
-                    b.HasIndex("CategoryID");
-
                     b.HasIndex("LanguageID");
 
                     b.HasIndex("PublisherID");
 
                     b.ToTable("BookInfo", (string)null);
+                });
+
+            modelBuilder.Entity("EntityFrameworkCore.Models.Book_Category", b =>
+                {
+                    b.Property<int>("BookID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryID")
+                        .HasColumnType("int");
+
+                    b.HasKey("BookID", "CategoryID");
+
+                    b.HasIndex("CategoryID");
+
+                    b.ToTable("Book_Category");
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Category", b =>
@@ -430,12 +452,6 @@ namespace EntityFrameworkCore.Migrations
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Book", b =>
                 {
-                    b.HasOne("EntityFrameworkCore.Models.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("EntityFrameworkCore.Models.Language", "Language")
                         .WithMany("Books")
                         .HasForeignKey("LanguageID")
@@ -448,11 +464,28 @@ namespace EntityFrameworkCore.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Category");
-
                     b.Navigation("Language");
 
                     b.Navigation("Publisher");
+                });
+
+            modelBuilder.Entity("EntityFrameworkCore.Models.Book_Category", b =>
+                {
+                    b.HasOne("EntityFrameworkCore.Models.Book", "Book")
+                        .WithMany("book_Categories")
+                        .HasForeignKey("BookID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EntityFrameworkCore.Models.Category", "Category")
+                        .WithMany("book_Categories")
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Category", b =>
@@ -578,10 +611,14 @@ namespace EntityFrameworkCore.Migrations
                     b.Navigation("Order_Book");
 
                     b.Navigation("Translator_Books");
+
+                    b.Navigation("book_Categories");
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Category", b =>
                 {
+                    b.Navigation("book_Categories");
+
                     b.Navigation("categories");
                 });
 
