@@ -2,6 +2,11 @@
 {
     public class BooksCreateViewModel
     {
+        public BooksCreateViewModel(IEnumerable<TreeViewCategory> viewCategories)
+        {
+                Categories = viewCategories;
+        }
+        public IEnumerable<TreeViewCategory> Categories { get; set; }
         public int BookID { get; set; }
         public string Title { get; set; }
         public string Summery { get; set; }

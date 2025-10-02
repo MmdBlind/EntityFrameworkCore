@@ -1,0 +1,14 @@
+﻿@using System.Collections
+@model IEnumerable<EntityFrameworkCore.Models.ViewModels.TreeViewCategory>
+
+<ul>
+    @foreach (var item in Model)
+    {
+        <li>
+            <input type="checkbox" value="@item.CategoryID" /> @item.CategoryName
+            @await Html.PartialAsync("_SubCategories",item.SubCategory)
+        </li>
+    }
+
+   
+</ul>
