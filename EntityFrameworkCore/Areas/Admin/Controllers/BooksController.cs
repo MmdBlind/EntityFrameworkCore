@@ -1,5 +1,7 @@
 ﻿using EntityFrameworkCore.Models;
+using EntityFrameworkCore.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EntityFrameworkCore.Areas.Admin.Controllers
 {
@@ -17,6 +19,11 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         }
         public IActionResult Create()
         {
+            ViewBag.LanguageID = new SelectList(_context.Languages, "LanguageID", "LanguageName");
+            ViewBag.PublisherID = new SelectList(_context.Publisher, "PublisherID", "PublisherName");
+            ViewBag.AuthorID = new SelectList(_context.Authors.Select(t => new AuthorList { AuthorID = t.AuthorID, NameFamily = t.FirstName + " " + t.LastName }), "AuthorID","NameFamily");
+
+
             return View();
         }
     }
