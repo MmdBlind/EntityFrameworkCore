@@ -27,4 +27,9 @@
         public int AuthorID { get; set; }
         public string NameFamily { get; set; }
     }
+    public class TranslatorList
+    {
+        public int TranslatorID { get; set; }
+        public string NameFamily { get; set; }
+    }
 }

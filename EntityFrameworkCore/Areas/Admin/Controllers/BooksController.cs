@@ -21,8 +21,8 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         {
             ViewBag.LanguageID = new SelectList(_context.Languages, "LanguageID", "LanguageName");
             ViewBag.PublisherID = new SelectList(_context.Publisher, "PublisherID", "PublisherName");
-            ViewBag.AuthorID = new SelectList(_context.Authors.Select(t => new AuthorList { AuthorID = t.AuthorID, NameFamily = t.FirstName + " " + t.LastName }), "AuthorID","NameFamily");
-
+            ViewBag.AuthorID = new SelectList(_context.Authors.Select(t => new AuthorList { AuthorID = t.AuthorID, NameFamily = t.FirstName + " " + t.LastName }), "AuthorID", "NameFamily");
+            ViewBag.TranslatorID = new SelectList(_context.Translator.Select(t => new TranslatorList { TranslatorID = t.TranslatorID, NameFamily = t.FirstName + " " + t.LastName }), "TranslatorID", "NameFamily");
 
             return View();
         }

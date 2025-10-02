@@ -51,7 +51,9 @@ namespace EntityFrameworkCore.Models
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<OrderStatus> OrderStatuses { get; set; }
         public DbSet<Customer> Customers { get; set; }
-        public DbSet<EntityFrameworkCore.Models.Translator> Translator { get; set; } = default!;
-        public DbSet<EntityFrameworkCore.Models.Publisher> Publisher { get; set; } = default!;
+        public DbSet<Translator> Translator { get; set; } 
+        public DbSet<Publisher> Publisher { get; set; } 
+        public DbSet<Book_Category> Book_Categories { get; set; }
+
     }
 }
