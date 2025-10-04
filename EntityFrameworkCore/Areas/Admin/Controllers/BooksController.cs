@@ -22,20 +22,99 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         }
         public IActionResult Create()
         {
-            var Categories = (from c in _context.Categories
-                              where (c.ParentCategoryID == null)
-                              select new TreeViewCategory { CategoryID = c.CategoryID, CategoryName = c.CategoryName }).ToList();
-            foreach (var item in Categories)
-            {
-                _repository.BindSubCategories(item);
-            }
             ViewBag.LanguageID = new SelectList(_context.Languages, "LanguageID", "LanguageName");
             ViewBag.PublisherID = new SelectList(_context.Publisher, "PublisherID", "PublisherName");
             ViewBag.AuthorID = new SelectList(_context.Authors.Select(t => new AuthorList { AuthorID = t.AuthorID, NameFamily = t.FirstName + " " + t.LastName }), "AuthorID", "NameFamily");
             ViewBag.TranslatorID = new SelectList(_context.Translator.Select(t => new TranslatorList { TranslatorID = t.TranslatorID, NameFamily = t.FirstName + " " + t.LastName }), "TranslatorID", "NameFamily");
-
-            BooksCreateViewModel viewModel = new BooksCreateViewModel(Categories);
+            BooksCreateViewModel viewModel = new BooksCreateViewModel(_repository.GetAllCategories());
             return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(BooksCreateViewModel viewModel)
+        {
+            try
+            {
+                List<Author_Book> authors = new List<Author_Book>();
+                List<Translator_Book> translators = new List<Translator_Book>();
+                List<Book_Category> categories = new List<Book_Category>();
+                DateTime? PublishDate = null;
+                if (viewModel.IsPublish == true)
+                {
+                    PublishDate = DateTime.Now;
+                }
+                Book book = new Book()
+                {
+                    IsDelete = false,
+                    ISBN = viewModel.ISBN,
+                    IsPublish = viewModel.IsPublish,
+                    NumOfPages = viewModel.NumOfPages,
+                    Stock = viewModel.Stock,
+                    Price = viewModel.Price,
+                    LanguageID = viewModel.LanguageID,
+                    Summery = viewModel.Summary,
+                    Title = viewModel.Title,
+                    PublishYear = viewModel.PublishYear,
+                    PublishDate = PublishDate,
+                    Wheight = viewModel.Weight,
+                    PublisherID = viewModel.PublisherID,
+                };
+                await _context.Books.AddAsync(book);
+                if (viewModel.AuthorID != null)
+                {
+                    for (int i = 0; i < viewModel.AuthorID.Length; i++)
+                    {
+                        Author_Book author = new Author_Book()
+                        {
+                            BookID = book.BookID,
+                            AuthorID = viewModel.AuthorID[i],
+                        };
+                        authors.Add(author);
+                        //await _context.AddAsync(author);
+                    }
+                    await _context.Author_Books.AddRangeAsync(authors);
+                }
+                if (viewModel.TranslatorID != null)
+                {
+                    for (int i = 0; i < viewModel.TranslatorID.Length; i++)
+                    {
+                        Translator_Book translator = new Translator_Book()
+                        {
+                            BookID = book.BookID,
+                            TranslatorID = viewModel.TranslatorID[i],
+                        };
+                        translators.Add(translator);
+                        //await _context.AddAsync(author);
+                    }
+                    await _context.Translator_Books.AddRangeAsync(translators);
+                }
+                if (viewModel.CategoryID != null)
+                {
+                    for (int i = 0; i < viewModel.CategoryID.Length; i++)
+                    {
+                        Book_Category category = new Book_Category()
+                        {
+                            BookID = book.BookID,
+                            CategoryID = viewModel.CategoryID[i],
+                        };
+                        categories.Add(category);
+                        //await _context.AddAsync(author);
+                    }
+                    await _context.Book_Categories.AddRangeAsync(categories);
+                }
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                ViewBag.LanguageID = new SelectList(_context.Languages, "LanguageID", "LanguageName");
+                ViewBag.PublisherID = new SelectList(_context.Publisher, "PublisherID", "PublisherName");
+                ViewBag.AuthorID = new SelectList(_context.Authors.Select(t => new AuthorList { AuthorID = t.AuthorID, NameFamily = t.FirstName + " " + t.LastName }), "AuthorID", "NameFamily");
+                ViewBag.TranslatorID = new SelectList(_context.Translator.Select(t => new TranslatorList { TranslatorID = t.TranslatorID, NameFamily = t.FirstName + " " + t.LastName }), "TranslatorID", "NameFamily");
+                viewModel.Categories=_repository.GetAllCategories();
+                return View(viewModel);
+            }
         }
     }
 }

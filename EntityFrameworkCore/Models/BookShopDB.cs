@@ -21,6 +21,7 @@ namespace EntityFrameworkCore.Models
         public DateTime? PublishDate { get; set; }
         public int PublishYear { get; set; }
         public bool IsDelete { get; set; }
+        public int PublisherID {  get; set; }
 
 
         public Publisher Publisher { get; set; }

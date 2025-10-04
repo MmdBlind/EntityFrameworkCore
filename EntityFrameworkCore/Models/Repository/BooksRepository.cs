@@ -1,4 +1,5 @@
 ﻿using EntityFrameworkCore.Models.ViewModels;
+using NuGet.Protocol.Core.Types;
 
 namespace EntityFrameworkCore.Models.Repository
 {
@@ -9,6 +10,19 @@ namespace EntityFrameworkCore.Models.Repository
         {
             _context = context;
         }
+
+        public List<TreeViewCategory> GetAllCategories()
+        {
+            var Categories = (from c in _context.Categories
+                              where (c.ParentCategoryID == null)
+                              select new TreeViewCategory { CategoryID = c.CategoryID, CategoryName = c.CategoryName }).ToList();
+            foreach (var item in Categories)
+            {
+                 BindSubCategories(item);
+            }
+            return Categories;
+        }
+
         public void BindSubCategories(TreeViewCategory category)
         {
             var SubCategories = (from c in _context.Categories

@@ -12,7 +12,7 @@ namespace EntityFrameworkCore.Models
 
         //}
         public BookShopContext(DbContextOptions<BookShopContext> options)
-            : base (options)
+            : base(options)
         {
 
         }
@@ -35,7 +35,7 @@ namespace EntityFrameworkCore.Models
             modelBuilder.ApplyConfiguration(new CategoryMap());
 
             modelBuilder.ApplyConfiguration(new Book_TranslatorMap());
-            
+
             modelBuilder.ApplyConfiguration(new Book_CategoryMap());
 
         }
@@ -51,9 +51,10 @@ namespace EntityFrameworkCore.Models
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<OrderStatus> OrderStatuses { get; set; }
         public DbSet<Customer> Customers { get; set; }
-        public DbSet<Translator> Translator { get; set; } 
-        public DbSet<Publisher> Publisher { get; set; } 
+        public DbSet<Translator> Translator { get; set; }
+        public DbSet<Publisher> Publisher { get; set; }
         public DbSet<Book_Category> Book_Categories { get; set; }
+        public DbSet<Translator_Book> Translator_Books { get; set; }
 
     }
 }
