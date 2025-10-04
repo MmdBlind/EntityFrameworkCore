@@ -18,7 +18,7 @@ namespace EntityFrameworkCore.Models
         public short Wheight { get; set; }
         public string ISBN { get; set; }
         public bool IsPublish { get; set; }
-        public DateTime? PublishDate { get; set; }
+        public DateTime? PublishDate { get; set; } = null;
         public int PublishYear { get; set; }
         public bool IsDelete { get; set; }
         public int PublisherID {  get; set; }

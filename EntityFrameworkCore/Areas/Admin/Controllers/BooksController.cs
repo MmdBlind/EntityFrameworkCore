@@ -18,7 +18,54 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            return View();
+            List<BooksIndexViewModel> ViewModel = new List<BooksIndexViewModel>();
+            string AuthorsName = "";
+            var Books = (from b in _context.Books
+                         join p in _context.Publisher on b.PublisherID equals p.PublisherID
+                         join u in _context.Author_Books on b.BookID equals u.BookID
+                         join a in _context.Authors on u.AuthorID equals a.AuthorID
+                         where (b.IsDelete == false)
+                         select new BooksIndexViewModel
+                         {
+                             BookID = b.BookID,
+                             ISBN = b.ISBN,
+                             IsPublish = b.IsPublish,
+                             Price = b.Price,
+                             PublishDate = b.PublishDate,
+                             Stock = b.Stock,
+                             Title = b.Title,
+                             PublisherName = p.PublisherName,
+                             Author = a.FirstName + " " + a.LastName
+                         }).AsEnumerable().GroupBy(b => b.BookID).Select(g => new { BookID = g.Key, BookGroups = g }).ToList();
+            foreach (var item in Books)
+            {
+                AuthorsName = null;
+                foreach (var group in item.BookGroups)
+                {
+                    if (AuthorsName == null)
+                    {
+                        AuthorsName = group.Author;
+                    }
+                    else 
+                    {
+                        AuthorsName = AuthorsName + " - " + group.Author; 
+                    }
+                }
+                BooksIndexViewModel VM = new BooksIndexViewModel()
+                {
+                    Author = AuthorsName,
+                    BookID = item.BookID,
+                    ISBN = item.BookGroups.First().ISBN,
+                    IsPublish = item.BookGroups.First().IsPublish,
+                    Price = item.BookGroups.First().Price,
+                    Title = item.BookGroups.First().Title,
+                    PublishDate = item.BookGroups.First().PublishDate,
+                    Stock = item.BookGroups.First().Stock,
+                    PublisherName = item.BookGroups.First().PublisherName,
+                };
+                ViewModel.Add(VM);
+            }
+            return View(ViewModel);
         }
         public IActionResult Create()
         {
@@ -113,7 +160,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 ViewBag.PublisherID = new SelectList(_context.Publisher, "PublisherID", "PublisherName");
                 ViewBag.AuthorID = new SelectList(_context.Authors.Select(t => new AuthorList { AuthorID = t.AuthorID, NameFamily = t.FirstName + " " + t.LastName }), "AuthorID", "NameFamily");
                 ViewBag.TranslatorID = new SelectList(_context.Translator.Select(t => new TranslatorList { TranslatorID = t.TranslatorID, NameFamily = t.FirstName + " " + t.LastName }), "TranslatorID", "NameFamily");
-                viewModel.Categories=_repository.GetAllCategories();
+                viewModel.Categories = _repository.GetAllCategories();
                 throw ex;
                 return View(viewModel);
             }
