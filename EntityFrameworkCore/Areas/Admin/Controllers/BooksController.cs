@@ -61,6 +61,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                     PublisherID = viewModel.PublisherID,
                 };
                 await _context.Books.AddAsync(book);
+                await _context.SaveChangesAsync();
                 if (viewModel.AuthorID != null)
                 {
                     for (int i = 0; i < viewModel.AuthorID.Length; i++)
@@ -106,13 +107,14 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            catch
+            catch (Exception ex)
             {
                 ViewBag.LanguageID = new SelectList(_context.Languages, "LanguageID", "LanguageName");
                 ViewBag.PublisherID = new SelectList(_context.Publisher, "PublisherID", "PublisherName");
                 ViewBag.AuthorID = new SelectList(_context.Authors.Select(t => new AuthorList { AuthorID = t.AuthorID, NameFamily = t.FirstName + " " + t.LastName }), "AuthorID", "NameFamily");
                 ViewBag.TranslatorID = new SelectList(_context.Translator.Select(t => new TranslatorList { TranslatorID = t.TranslatorID, NameFamily = t.FirstName + " " + t.LastName }), "TranslatorID", "NameFamily");
                 viewModel.Categories=_repository.GetAllCategories();
+                throw ex;
                 return View(viewModel);
             }
         }

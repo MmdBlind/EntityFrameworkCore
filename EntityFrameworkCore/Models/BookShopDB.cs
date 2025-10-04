@@ -11,8 +11,8 @@ namespace EntityFrameworkCore.Models
         public string Summery { get; set; }
         public int Price { get; set; }
         public int Stock { get; set; }
-        public string File { get; set; }
-        public byte[] Image { get; set; }
+        public string? File { get; set; } = null;
+        public byte[]? Image { get; set; }= null;
         public int LanguageID { get; set; }
         public int NumOfPages { get; set; }
         public short Wheight { get; set; }
@@ -160,7 +160,6 @@ namespace EntityFrameworkCore.Models
         public Book Book { get; set; }
 
     }
-
     public class Publisher
     {
         public int PublisherID { get; set; }

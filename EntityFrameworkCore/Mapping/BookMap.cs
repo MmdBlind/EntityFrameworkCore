@@ -18,7 +18,6 @@ namespace EntityFrameworkCore.Mapping
 
             builder.Property(p => p.Image)
                    .HasColumnType("image");
-
             builder.HasOne(p => p.Discount)
                    .WithOne(p => p.Book)
                    .HasForeignKey<Discount>(p => p.BookID);
