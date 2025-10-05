@@ -3,6 +3,7 @@ using EntityFrameworkCore.Models.Repository;
 using EntityFrameworkCore.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkCore.Areas.Admin.Controllers
 {
@@ -20,23 +21,48 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         {
             List<BooksIndexViewModel> ViewModel = new List<BooksIndexViewModel>();
             string AuthorsName = "";
-            var Books = (from b in _context.Books
-                         join p in _context.Publisher on b.PublisherID equals p.PublisherID
-                         join u in _context.Author_Books on b.BookID equals u.BookID
-                         join a in _context.Authors on u.AuthorID equals a.AuthorID
-                         where (b.IsDelete == false)
+            //روش زیر روش (join table)می باشد که جدول هارو به هم متصل میکنیم و بعد به دیتا ها دسترسی داریم
+
+            //var Books = (from b in _context.Books
+            //             join p in _context.Publisher on b.PublisherID equals p.PublisherID
+            //             join u in _context.Author_Books on b.BookID equals u.BookID
+            //             join a in _context.Authors on u.AuthorID equals a.AuthorID
+            //             where (b.IsDelete == false)
+            //             select new BooksIndexViewModel
+            //             {
+            //                 BookID = b.BookID,
+            //                 ISBN = b.ISBN,
+            //                 IsPublish = b.IsPublish,
+            //                 Price = b.Price,
+            //                 PublishDate = b.PublishDate,
+            //                 Stock = b.Stock,
+            //                 Title = b.Title,
+            //                 PublisherName = p.PublisherName,
+            //                 Author = a.FirstName + " " + a.LastName
+            //             }).AsEnumerable().GroupBy(b => b.BookID).Select(g => new { BookID = g.Key, BookGroups = g }).ToList();
+
+            //روش زیر روش(eagerlodaing)می باشد و میتوان به جای روش بالا استفاده کرد  
+            var Books = (from u in _context.Author_Books
+                         .Include(b => b.Book)
+                         .ThenInclude(c => c.Publisher)
+                         .Include(a => a.Author)
+                         where (u.Book.IsDelete == false)
                          select new BooksIndexViewModel
                          {
-                             BookID = b.BookID,
-                             ISBN = b.ISBN,
-                             IsPublish = b.IsPublish,
-                             Price = b.Price,
-                             PublishDate = b.PublishDate,
-                             Stock = b.Stock,
-                             Title = b.Title,
-                             PublisherName = p.PublisherName,
-                             Author = a.FirstName + " " + a.LastName
-                         }).AsEnumerable().GroupBy(b => b.BookID).Select(g => new { BookID = g.Key, BookGroups = g }).ToList();
+                             Author = u.Author.FirstName + " " + u.Author.LastName,
+                             BookID = u.Book.BookID,
+                             ISBN = u.Book.ISBN,
+                             IsPublish = u.Book.IsPublish,
+                             Price = u.Book.Price,
+                             PublishDate = u.Book.PublishDate,
+                             PublisherName = u.Book.Publisher.PublisherName,
+                             Stock = u.Book.Stock,
+                             Title = u.Book.Title
+                         })
+                         .AsEnumerable()
+                         .GroupBy(b => b.BookID)
+                         .Select(g => new { BookID = g.Key, BookGroups = g })
+                         .ToList();
             foreach (var item in Books)
             {
                 AuthorsName = null;
@@ -46,9 +72,9 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                     {
                         AuthorsName = group.Author;
                     }
-                    else 
+                    else
                     {
-                        AuthorsName = AuthorsName + " - " + group.Author; 
+                        AuthorsName = AuthorsName + " - " + group.Author;
                     }
                 }
                 BooksIndexViewModel VM = new BooksIndexViewModel()
