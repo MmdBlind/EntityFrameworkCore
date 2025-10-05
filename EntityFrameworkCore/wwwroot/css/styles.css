@@ -1,32 +1,32 @@
 :root {
-    --blue:#42a5f5;
-    --indigo:#3f51b5;
-    --purple:#9c27b0;
-    --pink:#e91e63;
-    --red:#ef5350;
-    --orange:#fdb244;
-    --yellow:#ffca28;
-    --green:#9ccc65;
-    --teal:#009688;
-    --cyan:#26c6da;
-    --white:#fff;
-    --gray:#999;
-    --gray-dark:#4d4d4d;
-    --primary:#42a5f5;
-    --secondary:#aaa;
-    --success:#9ccc65;
-    --info:#26c6da;
-    --warning:#ffca28;
-    --danger:#ef5350;
-    --light:#f8f9fa;
-    --dark:#444;
-    --breakpoint-xs:0;
-    --breakpoint-sm:576px;
-    --breakpoint-md:768px;
-    --breakpoint-lg:992px;
-    --breakpoint-xl:1200px;
-    --font-family-sans-serif:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-    --font-family-monospace:SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    --blue: #42a5f5;
+    --indigo: #3f51b5;
+    --purple: #9c27b0;
+    --pink: #e91e63;
+    --red: #ef5350;
+    --orange: #fdb244;
+    --yellow: #ffca28;
+    --green: #9ccc65;
+    --teal: #009688;
+    --cyan: #26c6da;
+    --white: #fff;
+    --gray: #999;
+    --gray-dark: #4d4d4d;
+    --primary: #42a5f5;
+    --secondary: #aaa;
+    --success: #9ccc65;
+    --info: #26c6da;
+    --warning: #ffca28;
+    --danger: #ef5350;
+    --light: #f8f9fa;
+    --dark: #444;
+    --breakpoint-xs: 0;
+    --breakpoint-sm: 576px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 992px;
+    --breakpoint-xl: 1200px;
+    --font-family-sans-serif: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    --font-family-monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 }
 
 @font-face {
@@ -137,7 +137,7 @@ body {
     color: #444;
     text-align: right;
     background-color: #efefef;
-    direction:rtl;
+    direction: rtl;
 }
 
 [tabindex="-1"]:focus {
@@ -8947,7 +8947,7 @@ a.text-dark:focus, a.text-dark:hover {
     .sidebar .nav {
         width: 100%;
         list-style: none;
-        padding:0px !important;
+        padding: 0px !important;
     }
 
     .sidebar .nav-item {
@@ -9317,7 +9317,7 @@ a.text-dark:focus, a.text-dark:hover {
     }
 
     .navbar .navbar-brand {
-        width:auto !important;
+        width: auto !important;
     }
 }
 
@@ -9503,22 +9503,26 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 16px;
 }
 
-.btn-icon{
+.btn-icon {
     padding: 3px 7px !important;
 }
 
-.padding-0px{
-    padding:0px !important;
+.padding-0px {
+    padding: 0px !important;
 }
 
 /*********** Select2 ************/
 .select2-container--default.select2-container--focus .select2-selection--multiple, .select2-container--default .select2-selection--multiple {
     border: 1px solid #ced4da !important;
 }
+
 .select2 {
     width: 100% !important;
 }
-.select2-container--default .select2-selection--multiple{border-radius:0px !important;}
+
+.select2-container--default .select2-selection--multiple {
+    border-radius: 0px !important;
+}
 
 .select2-container .select2-selection--single {
     height: 35px !important;
@@ -9585,12 +9589,13 @@ h1, h2, h3, h4, h5, h6 {
     list-style: none !important;
 }
 
-#treeview input {
-    margin: 5px !important;
-}
+    #treeview input {
+        margin: 5px !important;
+    }
 
-#treeview .fa {
-   font-size: 12px;
-}
+    #treeview .fa {
+        font-size: 12px;
+    }
+
 
 

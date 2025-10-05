@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<EntityFrameworkCore.Models.ViewModels.BooksIndexViewModel>
+@inject EntityFrameworkCore.Classes.ConvertDate ConvertDate
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/_Admin.cshtml";
@@ -123,7 +124,16 @@
                                     <td>@item.Stock</td>
                                     <td>@item.PublisherName</td>
                                     <td class="text-center">@item.Price</td>
-                                    <td class="text-center">@item.PublishDate</td>
+                                    <td class="text-center">
+                                        @if (item.PublishDate!=null)
+                                        {
+                                            @ConvertDate.ConvertMiladiToShamsi((DateTime)item.PublishDate)
+                                        }
+                                        else
+                                        {
+                                            <span>-</span>    
+                                        }
+                                    </td>
                                     <td class="text-center">
                                         @if (item.IsPublish == true)
                                         {

@@ -1,3 +1,4 @@
+using EntityFrameworkCore.Classes;
 using EntityFrameworkCore.Models;
 using EntityFrameworkCore.Models.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<BookShopContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddTransient<BooksRepository>(); 
+builder.Services.AddTransient<BooksRepository>();
+builder.Services.AddTransient<ConvertDate>();
 
 var app = builder.Build();
 
