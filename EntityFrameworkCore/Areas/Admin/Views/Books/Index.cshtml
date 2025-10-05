@@ -1,5 +1,8 @@
-﻿@model IEnumerable<EntityFrameworkCore.Models.ViewModels.BooksIndexViewModel>
+﻿@model ReflectionIT.Mvc.Paging.IPagingList<EntityFrameworkCore.Models.ViewModels.BooksIndexViewModel >
 @inject EntityFrameworkCore.Classes.ConvertDate ConvertDate
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *, ReflectionIT.Mvc.Paging
+
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/_Admin.cshtml";
@@ -125,13 +128,13 @@
                                     <td>@item.PublisherName</td>
                                     <td class="text-center">@item.Price</td>
                                     <td class="text-center">
-                                        @if (item.PublishDate!=null)
+                                        @if (item.PublishDate.HasValue)
                                         {
-                                            @ConvertDate.ConvertMiladiToShamsi((DateTime)item.PublishDate)
+                                            @ConvertDate.ConvertMiladiToShamsi((DateTime)item.PublishDate, "yyyy/MM/dd")
                                         }
                                         else
                                         {
-                                            <span>-</span>    
+                                            <span>-</span>
                                         }
                                     </td>
                                     <td class="text-center">
@@ -155,6 +158,9 @@
                             }
                         </tbody>
                     </table>
+                    <nav>
+                        @await this.Component.InvokeAsync("Pager", new { IPagingList = this.Model })
+                    </nav>
                     <nav class="text-center">
                         <ul class="pagination">
                             <li class="page-item disabled">

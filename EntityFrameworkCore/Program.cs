@@ -2,6 +2,7 @@ using EntityFrameworkCore.Classes;
 using EntityFrameworkCore.Models;
 using EntityFrameworkCore.Models.Repository;
 using Microsoft.EntityFrameworkCore;
+using ReflectionIT.Mvc.Paging;
 
 var builder = WebApplication.CreateBuilder(args);
 

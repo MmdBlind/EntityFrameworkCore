@@ -9,10 +9,10 @@ namespace EntityFrameworkCore.Classes
             PersianDateTime PersianDateTime = PersianDateTime.Parse(Date);
             return PersianDateTime.ToDateTime();
         }
-        public String ConvertMiladiToShamsi(DateTime Date)
+        public String ConvertMiladiToShamsi(DateTime Date , string Format)
         {
             PersianDateTime persianDateTime = new PersianDateTime(Date);
-            return persianDateTime.ToString("dddd d MMMM yyyy ساعت hh:mm:ss tt");
+            return persianDateTime.ToString(Format);
         }
     }
 }
