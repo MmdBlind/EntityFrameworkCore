@@ -12,6 +12,12 @@ builder.Services.AddDbContext<BookShopContext>(Options => Options.UseSqlServer(b
 builder.Services.AddTransient<BooksRepository>();
 builder.Services.AddTransient<ConvertDate>();
 
+
+builder.Services.AddPaging(options => {
+    options.ViewName = "Bootstrap4";
+    options.HtmlIndicatorDown = " <span>&darr;</span>";
+    options.HtmlIndicatorUp = " <span>&uarr;</span>";
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

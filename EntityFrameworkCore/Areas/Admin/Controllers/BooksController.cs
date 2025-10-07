@@ -18,7 +18,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             _context = context;
             _repository = repository;
         }
-        public IActionResult Index(int page = 1)
+        public IActionResult Index(int pageindex  = 1)
         {
             List<BooksIndexViewModel> ViewModel = new List<BooksIndexViewModel>();
             string AuthorsName = "";
@@ -74,7 +74,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 ViewModel.Add(VM);
             }
 
-            var PagingModel = PagingList.Create(ViewModel, 5, page);
+            var PagingModel = PagingList.Create(ViewModel, 3, pageindex);
 
             return View(PagingModel);
         }

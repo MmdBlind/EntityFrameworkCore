@@ -1,4 +1,4 @@
-﻿@model ReflectionIT.Mvc.Paging.IPagingList<EntityFrameworkCore.Models.ViewModels.BooksIndexViewModel >
+﻿@model ReflectionIT.Mvc.Paging.PagingList<EntityFrameworkCore.Models.ViewModels.BooksIndexViewModel>
 @inject EntityFrameworkCore.Classes.ConvertDate ConvertDate
 @using ReflectionIT.Mvc.Paging
 @addTagHelper *, ReflectionIT.Mvc.Paging
@@ -117,7 +117,7 @@
                             @{
                                 int i = 1;
                             }
-                            @foreach (var item in Model)
+                            @foreach (var item in Model as List<EntityFrameworkCore.Models.ViewModels.BooksIndexViewModel>)
                             {
                                 <tr>
                                     <td class="text-center">@i</td>
@@ -159,7 +159,7 @@
                         </tbody>
                     </table>
                     <nav>
-                        @await this.Component.InvokeAsync("Pager", new { IPagingList = this.Model })
+                        @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
                     </nav>
                     <nav class="text-center">
                         <ul class="pagination">
