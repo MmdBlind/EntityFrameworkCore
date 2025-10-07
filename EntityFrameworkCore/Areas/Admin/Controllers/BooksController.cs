@@ -18,7 +18,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             _context = context;
             _repository = repository;
         }
-        public IActionResult Index(int pageindex  = 1)
+        public IActionResult Index(int pageindex = 1)
         {
             List<BooksIndexViewModel> ViewModel = new List<BooksIndexViewModel>();
             string AuthorsName = "";
