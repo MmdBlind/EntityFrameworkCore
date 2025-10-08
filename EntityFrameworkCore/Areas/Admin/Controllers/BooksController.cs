@@ -4,6 +4,7 @@ using EntityFrameworkCore.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ReflectionIT.Mvc.Paging;
 
 namespace EntityFrameworkCore.Areas.Admin.Controllers
@@ -18,11 +19,16 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             _context = context;
             _repository = repository;
         }
-        public IActionResult Index(int pageindex = 1)
+        public IActionResult Index(int pageindex = 1,int row=5)
         {
             List<BooksIndexViewModel> ViewModel = new List<BooksIndexViewModel>();
+            List<int> Rows = new List<int>
+            {
+                5,10,15,20,50,100
+            };
+            ViewBag.RowID = new SelectList(Rows,row);
+            ViewBag.NumOfPage=(pageindex-1)*row+1;
             string AuthorsName = "";
-
             //روش زیر روش(eagerlodaing)می باشد و میتوان به جای روش بالا استفاده کرد  
             var Books = (from u in _context.Author_Books
                          .Include(b => b.Book)
@@ -74,8 +80,11 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 ViewModel.Add(VM);
             }
 
-            var PagingModel = PagingList.Create(ViewModel, 3, pageindex);
-
+            var PagingModel = PagingList.Create(ViewModel, row, pageindex);
+            PagingModel.RouteValue = new RouteValueDictionary
+            {
+                {"row",row }
+            };
             return View(PagingModel);
         }
         public IActionResult Create()

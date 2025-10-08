@@ -2,6 +2,8 @@
 @inject EntityFrameworkCore.Classes.ConvertDate ConvertDate
 @using ReflectionIT.Mvc.Paging
 @addTagHelper *, ReflectionIT.Mvc.Paging
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
 
 @{
     ViewData["Title"] = "Index";
@@ -15,12 +17,27 @@
                 لیست کتاب ها
             </div>
             <div class="card-body">
-                <div class="col-md-4 mb-3 padding-0px">
-                    <div class="input-group">
-                        <span class="input-group-btn">
-                            <button type="button" class="btn btn-primary"><i class="fa fa-search"></i> جستجو</button>
-                        </span>
-                        <input id="input-group-1" name="input1-group2" class="form-control" placeholder="عنوان کتاب را واردکنید ..." type="text">
+                <div class="row">
+                    <div class="col-md-4 mb-3 padding-0px">
+                        <div class="input-group">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-primary"><i class="fa fa-search"></i> جستجو</button>
+                            </span>
+                            <input id="input-group-1" name="input1-group2" class="form-control" placeholder="عنوان کتاب را واردکنید ..." type="text">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <form class="px-3">
+                            <div class="row form-group">
+                                <label class="ml-2">تعداد ردیف</label>
+                                <div class="col-md-4 form-group padding-0px">
+                                    <select class="select2" name="row" asp-items="@ViewBag.RowID"></select>
+                                </div>
+                                <div class="col-md-3 padding-0px">
+                                    <input type="submit" value="نمایش بده" class="btn btn-primary float-left"></input>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 <p>
@@ -114,9 +131,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @{
-                                int i = 1;
-                            }
+                            @{int i = ViewBag.NumOfPage;}
                             @foreach (var item in Model as List<EntityFrameworkCore.Models.ViewModels.BooksIndexViewModel>)
                             {
                                 <tr>
@@ -158,25 +173,13 @@
                             }
                         </tbody>
                     </table>
-                    <nav>
+                    <nav >
                         @await this.Component.InvokeAsync("Pager", new { PagingList = this.Model })
                     </nav>
-                    <nav class="text-center">
-                        <ul class="pagination">
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1">قبلی</a>
-                            </li>
-                            <li class="page-item"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item active">
-                                <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
-                            </li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">بعدی</a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
+                    @* <nav >
+                        <vc:vc:pager paging-list="Model" />
+                    </nav> *@
+                 </div>
             </div>
         </div>
     </div>

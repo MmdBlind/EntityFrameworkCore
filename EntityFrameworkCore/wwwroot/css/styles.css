@@ -4596,7 +4596,7 @@ tbody.collapse.show {
     margin-left: 0;
 }
 
-.page-item.active .page-link {
+.page-item.active .page-link , .pagination .active a {
     z-index: 1;
     color: #fff;
     background-color: #42a5f5;
@@ -9596,6 +9596,10 @@ h1, h2, h3, h4, h5, h6 {
     #treeview .fa {
         font-size: 12px;
     }
+ /********* pagination *********/
+ul.pagination {
+    justify-content: center;
+}   
 
 
 
