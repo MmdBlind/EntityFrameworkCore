@@ -17,29 +17,37 @@
                 لیست کتاب ها
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4 mb-3 padding-0px">
-                        <div class="input-group">
-                            <span class="input-group-btn">
-                                <button type="button" class="btn btn-primary"><i class="fa fa-search"></i> جستجو</button>
-                            </span>
-                            <input id="input-group-1" name="input1-group2" class="form-control" placeholder="عنوان کتاب را واردکنید ..." type="text">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <form class="px-3">
-                            <div class="row form-group">
-                                <label class="ml-2">تعداد ردیف</label>
-                                <div class="col-md-4 form-group padding-0px">
-                                    <select class="select2" name="row" asp-items="@ViewBag.RowID"></select>
-                                </div>
-                                <div class="col-md-3 padding-0px">
-                                    <input type="submit" value="نمایش بده" class="btn btn-primary float-left"></input>
-                                </div>
+                <form>
+                    <div class="row">
+                        <div class="col-md-4 mb-3 padding-0px">
+                            <div class="input-group">
+                                <span class="input-group-btn">
+                                    <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> جستجو</button>
+                                </span>
+                                <input id="input-group-1" name="title" class="form-control" placeholder="عنوان کتاب را واردکنید ..." type="text">
                             </div>
-                        </form>
+                        </div>
+                        <div class="col-md-4">
+                                <div class="row form-group">
+                                    <label class="ml-2">تعداد ردیف</label>
+                                    <div class="col-md-4 padding-0px">
+                                        <select class="select2" name="row" asp-items="@ViewBag.RowID"></select>
+                                    </div>
+                                    <div class="col-md-3 padding-0px">
+                                        <input type="submit" value="نمایش بده" class="btn btn-primary float-left"></input>
+                                    </div>
+                                </div>
+                        </div>
+                        @if (ViewBag.Search != "")
+                        {
+                            <div class="col-md-4">
+                                <a href="/Admin/Books/Index" class="float-left"><i class="fa fa-arrow-alt-circle-left"></i>بازگشت به لیست کتاب ها</a>
+                            </div>
+                        }
+                       
+                        
                     </div>
-                </div>
+                </form>
                 <p>
                     <a class="btn btn-primary btn-block" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
                         جستجوی پیشرفته کتاب
@@ -119,19 +127,19 @@
                         <thead>
                             <tr>
                                 <th>ردیف</th>
-                                <th>عنوان</th>
-                                <th>نویسندگان</th>
-                                <th>شابک</th>
-                                <th>موجودی</th>
-                                <th>ناشر</th>
-                                <th class="text-center">قیمت (ریال)</th>
-                                <th class="text-center">تاریخ انتشار در سایت</th>
-                                <th style="width:25px;">وضعیت</th>
+                                <th>@Html.SortableHeaderFor(Model=>Model.Title,"Title")</th>
+                                <th>@Html.SortableHeaderFor(Model => Model.Author, "Author")</th>
+                                <th>@Html.SortableHeaderFor(Model => Model.ISBN, "ISBN")</th>
+                                <th>@Html.SortableHeaderFor(Model => Model.Stock, "Stock")</th>
+                                <th>@Html.SortableHeaderFor(Model => Model.PublisherName, "PublisherName")</th>
+                                <th class="text-center">@Html.SortableHeaderFor(Model => Model.Price, "Price")</th>
+                                <th class="text-center">@Html.SortableHeaderFor(Model => Model.PublishDate, "PublishDate")</th>
+                                <th style="width:25px;">@Html.SortableHeaderFor(Model => Model.IsPublish, "IsPublish")</th>
                                 <th>عملیات</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @{int i = ViewBag.NumOfPage;}
+                            @{int i = ViewBag.NumOfRow;}
                             @foreach (var item in Model as List<EntityFrameworkCore.Models.ViewModels.BooksIndexViewModel>)
                             {
                                 <tr>

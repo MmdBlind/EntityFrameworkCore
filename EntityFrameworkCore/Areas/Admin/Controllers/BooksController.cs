@@ -19,33 +19,35 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             _context = context;
             _repository = repository;
         }
-        public IActionResult Index(int pageindex = 1,int row=5)
+        public IActionResult Index(int pageindex = 1, int row = 5, string sortExpression = "Title", string title = "")
         {
             List<BooksIndexViewModel> ViewModel = new List<BooksIndexViewModel>();
             List<int> Rows = new List<int>
             {
                 5,10,15,20,50,100
             };
-            ViewBag.RowID = new SelectList(Rows,row);
-            ViewBag.NumOfPage=(pageindex-1)*row+1;
+            ViewBag.RowID = new SelectList(Rows, row);
+            ViewBag.NumOfRow = (pageindex - 1) * row + 1;
+            ViewBag.Search = title;
             string AuthorsName = "";
+            title = string.IsNullOrEmpty(title) ? "" : title;
             //روش زیر روش(eagerlodaing)می باشد و میتوان به جای روش بالا استفاده کرد  
             var Books = (from u in _context.Author_Books
                          .Include(b => b.Book)
                          .ThenInclude(c => c.Publisher)
                          .Include(a => a.Author)
-                         where (u.Book.IsDelete == false)
-                         select new BooksIndexViewModel
+                         where (u.Book.IsDelete == false && u.Book.Title.Contains(title.TrimStart().TrimEnd()))
+                         select new
                          {
                              Author = u.Author.FirstName + " " + u.Author.LastName,
-                             BookID = u.Book.BookID,
-                             ISBN = u.Book.ISBN,
-                             IsPublish = u.Book.IsPublish,
-                             Price = u.Book.Price,
-                             PublishDate = u.Book.PublishDate,
-                             PublisherName = u.Book.Publisher.PublisherName,
-                             Stock = u.Book.Stock,
-                             Title = u.Book.Title
+                             u.Book.BookID,
+                             u.Book.ISBN,
+                             u.Book.IsPublish,
+                             u.Book.Price,
+                             u.Book.PublishDate,
+                             u.Book.Publisher.PublisherName,
+                             u.Book.Stock,
+                             u.Book.Title
                          })
                          .AsEnumerable()
                          .GroupBy(b => b.BookID)
@@ -80,10 +82,11 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 ViewModel.Add(VM);
             }
 
-            var PagingModel = PagingList.Create(ViewModel, row, pageindex);
+            var PagingModel = PagingList.Create(ViewModel, row, pageindex, sortExpression, "Title");
             PagingModel.RouteValue = new RouteValueDictionary
             {
-                {"row",row }
+                {"row",row },
+                {"title",title }
             };
             return View(PagingModel);
         }
