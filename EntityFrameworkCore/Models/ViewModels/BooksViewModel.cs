@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using NuGet.Protocol.Core.Types;
+using System.ComponentModel.DataAnnotations;
 
 namespace EntityFrameworkCore.Models.ViewModels
 {
@@ -99,6 +100,23 @@ namespace EntityFrameworkCore.Models.ViewModels
 
         [Display(Name = "نویسندگان")]
         public string Author { get; set; }
+
+    }
+    public class BooksAdvancedSearch
+    {
+        public string Title { get; set; }
+
+        public string ISBN { get; set; }
+
+        public string Author { get; set; }
+
+        public string Publisher { get; set; }
+
+        public string Translator { get; set; }
+
+        public string Language { get; set; }
+
+        public string Category { get; set; }
 
     }
 }
