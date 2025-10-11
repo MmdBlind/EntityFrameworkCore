@@ -1,4 +1,4 @@
-﻿ using EntityFrameworkCore.Models;
+﻿using EntityFrameworkCore.Models;
 using EntityFrameworkCore.Models.Repository;
 using EntityFrameworkCore.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +31,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             string AuthorsName = "";
             title = string.IsNullOrEmpty(title) ? "" : title;
 
-            var PagingModel = PagingList.Create(_repository.GetAllBooks(title), row, pageindex, sortExpression, "Title");
+            var PagingModel = PagingList.Create(_repository.GetAllBooks(title,"","","","","",""), row, pageindex, sortExpression, "Title");
             PagingModel.RouteValue = new RouteValueDictionary
             {
                 {"row",row },
@@ -41,12 +41,19 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             ViewBag.PublisherID = new SelectList(_context.Publisher, "PublisherName", "PublisherName");
             ViewBag.AuthorID = new SelectList(_context.Authors.Select(t => new AuthorList { AuthorID = t.AuthorID, NameFamily = t.FirstName + " " + t.LastName }), "NameFamily", "NameFamily");
             ViewBag.TranslatorID = new SelectList(_context.Translator.Select(t => new TranslatorList { TranslatorID = t.TranslatorID, NameFamily = t.FirstName + " " + t.LastName }), "NameFamily", "NameFamily");
-            ViewBag.Categories=_repository.GetAllCategories();
+            ViewBag.Categories = _repository.GetAllCategories();
             return View(PagingModel);
         }
         public IActionResult AdvancedSearch(BooksAdvancedSearch ViewModel)
         {
-            var Books = _repository.GetAllBooks(ViewModel.Title);
+            ViewModel.Title = string.IsNullOrEmpty(ViewModel.Title) ? "":ViewModel.Title;
+            ViewModel.ISBN = string.IsNullOrEmpty(ViewModel.ISBN) ? "" : ViewModel.ISBN;
+            ViewModel.Language = string.IsNullOrEmpty(ViewModel.Language) ? "" : ViewModel.Language;
+            ViewModel.Publisher = string.IsNullOrEmpty(ViewModel.Publisher) ? "" : ViewModel.Language;
+            ViewModel.Author = string.IsNullOrEmpty(ViewModel.Author) ? "" : ViewModel.Author;
+            ViewModel.Translator = string.IsNullOrEmpty(ViewModel.Translator) ? "" : ViewModel.Translator;
+            ViewModel.Category = string.IsNullOrEmpty(ViewModel.Category) ? "" : ViewModel.Category;
+            var Books = _repository.GetAllBooks(ViewModel.Title, ViewModel.ISBN, ViewModel.Language, ViewModel.Publisher, ViewModel.Author, ViewModel.Translator, ViewModel.Category);
             return View(Books);
         }
         public IActionResult Create()

@@ -19,7 +19,7 @@ namespace EntityFrameworkCore.Models.Repository
                               select new TreeViewCategory { id = c.CategoryID, title = c.CategoryName }).ToList();
             foreach (var item in Categories)
             {
-                 BindSubCategories(item);
+                BindSubCategories(item);
             }
             return Categories;
         }
@@ -36,15 +36,22 @@ namespace EntityFrameworkCore.Models.Repository
             }
 
         }
-        public List<BooksIndexViewModel> GetAllBooks(string title)
+        public List<BooksIndexViewModel> GetAllBooks(string title, string ISBN, string Language, string Publisher, string Author, string Translator, string Category)
         {
+
+
             string AuthorsName = "";
             List<BooksIndexViewModel> ViewModel = new List<BooksIndexViewModel>();
             var Books = (from u in _context.Author_Books
                          .Include(b => b.Book)
                          .ThenInclude(c => c.Publisher)
                          .Include(a => a.Author)
-                         where (u.Book.IsDelete == false && u.Book.Title.Contains(title.TrimStart().TrimEnd()))
+                         //join a in _context.Author_Books on u.Book.aut equals a.AuthorID
+                         where (u.Book.IsDelete == false && u.Book.Title.Contains(title.Trim()) &&
+                                u.Book.ISBN.Contains(ISBN.Trim()) && 
+                                u.Book.Language.LanguageName.Contains(Language.Trim()) &&
+                                u.Book.Publisher.PublisherName.Contains(Publisher.Trim())
+                                )
                          select new
                          {
                              Author = u.Author.FirstName + " " + u.Author.LastName,
@@ -63,7 +70,7 @@ namespace EntityFrameworkCore.Models.Repository
                          .ToList();
             foreach (var item in Books)
             {
-                AuthorsName = null;
+                AuthorsName = "";
                 foreach (var group in item.BookGroups)
                 {
                     if (AuthorsName == null)
