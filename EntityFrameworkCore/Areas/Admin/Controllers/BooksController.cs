@@ -31,7 +31,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             string AuthorsName = "";
             title = string.IsNullOrEmpty(title) ? "" : title;
 
-            var PagingModel = PagingList.Create(_repository.get, row, pageindex, sortExpression, "Title");
+            var PagingModel = PagingList.Create(_repository.GetAllBooks(title), row, pageindex, sortExpression, "Title");
             PagingModel.RouteValue = new RouteValueDictionary
             {
                 {"row",row },
@@ -45,8 +45,9 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             return View(PagingModel);
         }
         public IActionResult AdvancedSearch(BooksAdvancedSearch ViewModel)
-        { 
-            return View();
+        {
+            var Books = _repository.GetAllBooks(ViewModel.Title);
+            return View(Books);
         }
         public IActionResult Create()
         {
