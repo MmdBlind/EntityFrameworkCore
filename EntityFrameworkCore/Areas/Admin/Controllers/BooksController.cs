@@ -31,7 +31,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             string AuthorsName = "";
             title = string.IsNullOrEmpty(title) ? "" : title;
 
-            var PagingModel = PagingList.Create(_repository.GetAllBooks(title,"","","","","",""), row, pageindex, sortExpression, "Title");
+            var PagingModel = PagingList.Create(_repository.GetAllBooks(title, "", "", "", "", "", ""), row, pageindex, sortExpression, "Title");
             PagingModel.RouteValue = new RouteValueDictionary
             {
                 {"row",row },
@@ -46,7 +46,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         }
         public IActionResult AdvancedSearch(BooksAdvancedSearch ViewModel)
         {
-            ViewModel.Title = string.IsNullOrEmpty(ViewModel.Title) ? "":ViewModel.Title;
+            ViewModel.Title = string.IsNullOrEmpty(ViewModel.Title) ? "" : ViewModel.Title;
             ViewModel.ISBN = string.IsNullOrEmpty(ViewModel.ISBN) ? "" : ViewModel.ISBN;
             ViewModel.Language = string.IsNullOrEmpty(ViewModel.Language) ? "" : ViewModel.Language;
             ViewModel.Publisher = string.IsNullOrEmpty(ViewModel.Publisher) ? "" : ViewModel.Publisher;
@@ -155,5 +155,14 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             }
         }
 
+        public IActionResult Details(int id)
+        {
+            var BookInfo = _context.Books.FromSql($"select * from dbo.BookInfo where BookID={id}")
+                .Include(l=>l.Language)
+                .Include(p=>p.Publisher)
+                .Include(a=>a.Author_Book).ThenInclude(a=>a.Author)
+                ;
+            return View(BookInfo);
+        }
     }
 }

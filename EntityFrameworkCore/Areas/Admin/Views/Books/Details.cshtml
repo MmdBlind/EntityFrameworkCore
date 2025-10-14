@@ -1,0 +1,67 @@
+﻿@model EntityFrameworkCore.Models.Book
+@inject EntityFrameworkCore.Classes.ConvertDate ConvertDate
+@{
+	ViewData["Title"] = "Details";
+	Layout = "~/Views/_Admin.cshtml";
+}
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header bg-light">
+				<span>اطلاعات کتاب</span>
+				<a href="/Admin/Books/Index" style="font-size:13px;" class="float-left"><i class="fa fa-arrow-circle-left"></i> بازگشت به لیست کتاب ها</a>
+			</div>
+			<div class="card-body">
+				<div class="row">
+					<div class="col-md-2">
+					</div>
+					<div class="col-md-6">
+						<p>
+							عنوان کتاب : @Model.Title
+						</p>
+						<p>
+							شابک : @Model.ISBN
+						</p>
+						<p>
+							سال انتشار : @Model.PublishYear
+						</p>
+						<p>
+							قیمت : @Model.Price
+						</p>
+						<p>
+							موجودی : @Model.Stock
+						</p>
+						<p>
+							تعداد صفحات : @Model.NumOfPages
+						</p>
+						<p>
+							زبان کتاب : @Model.Language.LanguageName
+						</p>
+						<p>
+							ناشر :  @Model.Publisher.PublisherName
+						</p>
+						<p>
+							تاریخ انتشار : @ConvertDate.ConvertMiladiToShamsi((DateTime)Model.PublishDate, "yyyy/MM/dd")
+						</p>
+						<p>
+							وضعیت :
+							@if (Model.IsPublish == true)
+							{
+								<span>منتشر شده</span>
+							}
+							else
+							{
+								<span>پیش نویس</span>
+							}
+						</p>
+						<p>
+							خلاصه کتاب : @Model.Summery
+						</p>
+					</div>
+					</divc>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
