@@ -8,7 +8,10 @@
 	<div class="col-md-12">
 		<div class="card">
 			<div class="card-header bg-light">
-				نتایج جستجوی پیشرفته
+				<span>
+					نتایج جستجوی پیشرفته
+				</span>
+				<a href="/Admin/Books/Index" style="font-size:13px;" class="float-left"><i class="fa fa-arrow-circle-left"></i> بازگشت به لیست کتاب ها</a>
 			</div>
 			<div class="card-body">
 				<div class="table-responsive">
@@ -18,6 +21,9 @@
 								<th>ردیف</th>
 								<th>عنوان</th>
 								<th>نویسندگان</th>
+								<th>مترجمین</th>
+								<th>دسته بندی</th>
+								<th>زبان</th>
 								<th>شابک</th>
 								<th>تعداد</th>
 								<th>ناشر</th>
@@ -31,12 +37,15 @@
 							@{
 								int i = 1;
 							}
-							@foreach (var item in Model as List<EntityFrameworkCore.Models.ViewModels.BooksIndexViewModel>)
+							@foreach (var item in Model )
 							{
 								<tr>
 									<td class="text-center">@i</td>
 									<td class="text-nowrap">@item.Title</td>
 									<td class="text-nowrap">@item.Author</td>
+									<td class="text-nowrap">@item.Translator</td>
+									<td class="text-nowrap">@item.Category</td>
+									<td class="text-nowrap">@item.Language</td>
 									<td>@item.ISBN</td>
 									<td>@item.Stock</td>
 									<td>@item.PublisherName</td>

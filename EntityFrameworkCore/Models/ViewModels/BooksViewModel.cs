@@ -101,6 +101,15 @@ namespace EntityFrameworkCore.Models.ViewModels
         [Display(Name = "نویسندگان")]
         public string Author { get; set; }
 
+        [Display(Name ="مترجمین")]
+        public string Translator { get; set; }
+
+        [Display(Name = "دسته بندی")]
+        public string Category { get; set; }
+
+        [Display(Name = "زبان")]
+        public string Language { get; set; }
+
     }
     public class BooksAdvancedSearch
     {
