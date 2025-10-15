@@ -158,9 +158,18 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         public IActionResult Details(int id)
         {
             var BookInfo = _context.Books.FromSql($"select * from dbo.BookInfo where BookID={id}")
-                .Include(l=>l.Language)
-                .Include(p=>p.Publisher).First();
-             ViewBag.Authors=_context.Authors.
+                .Include(l => l.Language)
+                .Include(p => p.Publisher).First();
+            ViewBag.Authors = _context.Authors.FromSql($"EXEC dbo.GetAuthorsByBookID {id}").ToList();
+            ViewBag.Translators = (from e in _context.Translator_Books
+                                   join t in _context.Translator on e.TranslatorID equals t.TranslatorID
+                                   where (e.BookID == id)
+                                   select new Translator { FirstName = t.FirstName, LastName = t.LastName }).ToArray().ToList();
+            ViewBag.Categories = (from o in _context.Book_Categories
+                                  join c in _context.Categories on o.CategoryID equals c.CategoryID
+                                  where (o.BookID == id)
+                                  select new Category { CategoryName = c.CategoryName }).ToList();
+
             return View(BookInfo);
         }
     }
