@@ -13,8 +13,12 @@
 			</div>
 			<div class="card-body">
 				<div class="row">
-					<div class="col-md-2">
+					<div class="col-md-3 d-flex justify-content-center ">
+						<img src="https://www.talab.org/wp-content/uploads/2024/01/979929446-talab-org.jpg"
+							 height="250"
+							 alt="image" />
 					</div>
+
 					<div class="col-md-6">
 						<p>
 							عنوان کتاب : @Model.Title
@@ -41,7 +45,15 @@
 							ناشر :  @Model.Publisher.PublisherName
 						</p>
 						<p>
-							تاریخ انتشار : @ConvertDate.ConvertMiladiToShamsi((DateTime)Model.PublishDate, "yyyy/MM/dd")
+							تاریخ انتشار :
+							@if (Model.PublishDate != null)
+							{
+								<span>@ConvertDate.ConvertMiladiToShamsi((DateTime)Model.PublishDate,"yyyy/MM/dd")</span>
+							}
+							else
+							{
+								<span>-</span>
+							}
 						</p>
 						<p>
 							وضعیت :

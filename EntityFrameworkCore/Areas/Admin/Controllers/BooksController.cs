@@ -159,9 +159,8 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         {
             var BookInfo = _context.Books.FromSql($"select * from dbo.BookInfo where BookID={id}")
                 .Include(l=>l.Language)
-                .Include(p=>p.Publisher)
-                .Include(a=>a.Author_Book).ThenInclude(a=>a.Author)
-                ;
+                .Include(p=>p.Publisher).First();
+             ViewBag.Authors=_context.Authors.
             return View(BookInfo);
         }
     }
