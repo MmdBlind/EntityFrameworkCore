@@ -1,79 +1,166 @@
 ﻿@model EntityFrameworkCore.Models.Book
 @inject EntityFrameworkCore.Classes.ConvertDate ConvertDate
 @{
-	ViewData["Title"] = "Details";
-	Layout = "~/Views/_Admin.cshtml";
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/_Admin.cshtml";
 }
 <div class="row">
-	<div class="col-md-12">
-		<div class="card">
-			<div class="card-header bg-light">
-				<span>اطلاعات کتاب</span>
-				<a href="/Admin/Books/Index" style="font-size:13px;" class="float-left"><i class="fa fa-arrow-circle-left"></i> بازگشت به لیست کتاب ها</a>
-			</div>
-			<div class="card-body">
-				<div class="row">
-					<div class="col-md-3 d-flex justify-content-center ">
-						<img src="https://www.talab.org/wp-content/uploads/2024/01/979929446-talab-org.jpg"
-							 height="250"
-							 alt="image" />
-					</div>
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-light">
+                <span>اطلاعات کتاب</span>
+                <a href="/Admin/Books/Index" style="font-size:13px;" class="float-left"><i class="fa fa-arrow-circle-left"></i> بازگشت به لیست کتاب ها</a>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 d-flex justify-content-center ">
+                        <img src="https://www.talab.org/wp-content/uploads/2024/01/979929446-talab-org.jpg"
+                             height="250"
+                             alt="image" />
+                    </div>
 
-					<div class="col-md-6">
-						<p>
-							عنوان کتاب : @Model.Title
-						</p>
-						<p>
-							شابک : @Model.ISBN
-						</p>
-						<p>
-							سال انتشار : @Model.PublishYear
-						</p>
-						<p>
-							قیمت : @Model.Price
-						</p>
-						<p>
-							موجودی : @Model.Stock
-						</p>
-						<p>
-							تعداد صفحات : @Model.NumOfPages
-						</p>
-						<p>
-							زبان کتاب : @Model.Language.LanguageName
-						</p>
-						<p>
-							ناشر :  @Model.Publisher.PublisherName
-						</p>
-						<p>
-							تاریخ انتشار :
-							@if (Model.PublishDate != null)
-							{
-								<span>@ConvertDate.ConvertMiladiToShamsi((DateTime)Model.PublishDate,"yyyy/MM/dd")</span>
-							}
-							else
-							{
-								<span>-</span>
-							}
-						</p>
-						<p>
-							وضعیت :
-							@if (Model.IsPublish == true)
-							{
-								<span>منتشر شده</span>
-							}
-							else
-							{
-								<span>پیش نویس</span>
-							}
-						</p>
-						<p>
-							خلاصه کتاب : @Model.Summery
-						</p>
-					</div>
-					</divc>
-				</div>
-			</div>
-		</div>
-	</div>
+                </div>
+                <div class="col-md-9">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>
+                                عنوان کتاب : @Model.Title
+                            </p>
+                            <p>
+                                شابک : @Model.ISBN
+                            </p>
+                            <p>
+                                سال انتشار : @Model.PublishYear
+                            </p>
+                            <p>
+                                قیمت : @Model.Price
+                            </p>
+                            <p>
+                                موجودی : @Model.Stock
+                            </p>
+                            <p>
+                                تعداد صفحات : @Model.NumOfPages
+                            </p>
+                            <p>
+                                زبان کتاب : @Model.Language.LanguageName
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+
+                            <p>
+                                ناشر :  @Model.Publisher.PublisherName
+                            </p>
+                            <p>
+                                نویسندگان :
+                                @{
+                                    string Authors = null;
+                                    var AuthorsList = ViewBag.Authors as List<EntityFrameworkCore.Models.Author>;
+                                    if (AuthorsList.Count != 0)
+                                    {
+                                        foreach (var item in ViewBag.Authors as List<EntityFrameworkCore.Models.Author>)
+                                        {
+                                            if (Authors != null)
+                                            {
+                                                Authors = Authors + " - " + item.FirstName + " " + item.LastName;
+                                            }
+                                            else
+                                            {
+                                                Authors = item.FirstName + " " + item.LastName;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Authors = "-";
+                                    }
+                                }
+                                @Authors
+                            </p>
+                            <p>
+                                مترجمین :
+                                @{
+                                    string Translators = null;
+                                    var TranslatorList = ViewBag.Translators as List<EntityFrameworkCore.Models.Translator>;
+                                    if (TranslatorList.Count != 0)
+                                    {
+                                        foreach (var item in ViewBag.Translators as List<EntityFrameworkCore.Models.Translator>)
+                                        {
+                                            if (Translators != null)
+                                            {
+                                                Translators = Translators + " - " + item.FirstName + " " + item.LastName;
+                                            }
+                                            else
+                                            {
+                                                Translators = item.FirstName + " " + item.LastName;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Translators = "-";
+                                    }
+
+
+                                }
+                                @Translators
+                            </p>
+                            <p>
+                                دسته بندی ها :
+                                @{
+                                    string Categories = null;
+                                    var CategoryList = ViewBag.Categories as List<EntityFrameworkCore.Models.Category>;
+                                    if (CategoryList.Count != 0)
+                                    {
+                                        foreach (var item in ViewBag.Categories as List<EntityFrameworkCore.Models.Category>)
+                                        {
+                                            if (Categories != null)
+                                            {
+                                                Categories = Categories + " - " + item.CategoryName;
+                                            }
+                                            else
+                                            {
+                                                Categories = item.CategoryName;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Categories = "-";
+                                    }
+                                }
+                                @Categories
+                            </p>
+                            <p>
+                                تاریخ انتشار :
+                                @if (Model.PublishDate != null)
+                                {
+                                    <span>@ConvertDate.ConvertMiladiToShamsi((DateTime)Model.PublishDate, "yyyy/MM/dd")</span>
+                                }
+                                else
+                                {
+                                    <span>-</span>
+                                }
+                            </p>
+                            <p>
+                                وضعیت :
+                                @if (Model.IsPublish == true)
+                                {
+                                    <span>منتشر شده</span>
+                                }
+                                else
+                                {
+                                    <span>پیش نویس</span>
+                                }
+                            </p>
+                            <p>
+                                خلاصه کتاب : @Model.Summery
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
