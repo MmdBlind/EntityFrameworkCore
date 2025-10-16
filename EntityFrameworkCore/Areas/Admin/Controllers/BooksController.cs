@@ -157,10 +157,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
 
         public IActionResult Details(int id)
         {
-            var BookInfo = _context.Books.FromSql($"select * from dbo.BookInfo where BookID={id}")
-                .Include(l=>l.Language)
-                .Include(p=>p.Publisher).First();
-            ViewBag.Authors = _context.Authors.FromSql($"EXEC dbo.GetAuthorsByBookID {id}");
+            var BookInfo = _context.Books.FromSql($"select * from dbo.BookInfo where BookID={id}");
             return View(BookInfo);
         }
     }
