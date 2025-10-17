@@ -1,7 +1,7 @@
 ﻿using EntityFrameworkCore.Mapping;
 using Microsoft.EntityFrameworkCore;
 using EntityFrameworkCore.Models;
-
+using EntityFrameworkCore.Models.ViewModels;
 namespace EntityFrameworkCore.Models
 {
     public class BookShopContext : DbContext
@@ -37,7 +37,10 @@ namespace EntityFrameworkCore.Models
             modelBuilder.ApplyConfiguration(new Book_TranslatorMap());
 
             modelBuilder.ApplyConfiguration(new Book_CategoryMap());
-
+            modelBuilder
+            .Entity<ReadAllBook>()
+            .HasNoKey()
+            .ToView("ReadAllBooks");
         }
         public DbSet<Book> Books { get; set; }
         public DbSet<Category> Categories { get; set; }
@@ -55,6 +58,7 @@ namespace EntityFrameworkCore.Models
         public DbSet<Publisher> Publisher { get; set; }
         public DbSet<Book_Category> Book_Categories { get; set; }
         public DbSet<Translator_Book> Translator_Books { get; set; }
+        public DbSet<ReadAllBook> ReadAllBooks { get; set; }
 
     }
 }

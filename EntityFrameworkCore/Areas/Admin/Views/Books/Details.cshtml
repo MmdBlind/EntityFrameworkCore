@@ -1,4 +1,4 @@
-﻿@model EntityFrameworkCore.Models.Book
+﻿@model EntityFrameworkCore.Models.ViewModels.ReadAllBook
 @inject EntityFrameworkCore.Classes.ConvertDate ConvertDate
 @{
     ViewData["Title"] = "Details";
@@ -42,93 +42,22 @@
                                 تعداد صفحات : @Model.NumOfPages
                             </p>
                             <p>
-                                زبان کتاب : @Model.Language.LanguageName
+                                زبان کتاب : @Model.LanguageName
                             </p>
                         </div>
                         <div class="col-md-6">
 
                             <p>
-                                ناشر :  @Model.Publisher.PublisherName
+                                ناشر :  @Model.PublisherName
                             </p>
                             <p>
-                                نویسندگان :
-                                @{
-                                    string Authors = null;
-                                    var AuthorsList = ViewBag.Authors as List<EntityFrameworkCore.Models.Author>;
-                                    if (AuthorsList.Count != 0)
-                                    {
-                                        foreach (var item in ViewBag.Authors as List<EntityFrameworkCore.Models.Author>)
-                                        {
-                                            if (Authors != null)
-                                            {
-                                                Authors = Authors + " - " + item.FirstName + " " + item.LastName;
-                                            }
-                                            else
-                                            {
-                                                Authors = item.FirstName + " " + item.LastName;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Authors = "-";
-                                    }
-                                }
-                                @Authors
+                                نویسندگان :  @Model.Authors
                             </p>
                             <p>
-                                مترجمین :
-                                @{
-                                    string Translators = null;
-                                    var TranslatorList = ViewBag.Translators as List<EntityFrameworkCore.Models.Translator>;
-                                    if (TranslatorList.Count != 0)
-                                    {
-                                        foreach (var item in ViewBag.Translators as List<EntityFrameworkCore.Models.Translator>)
-                                        {
-                                            if (Translators != null)
-                                            {
-                                                Translators = Translators + " - " + item.FirstName + " " + item.LastName;
-                                            }
-                                            else
-                                            {
-                                                Translators = item.FirstName + " " + item.LastName;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Translators = "-";
-                                    }
-
-
-                                }
-                                @Translators
+                                مترجمین : @Model.Translator
                             </p>
                             <p>
-                                دسته بندی ها :
-                                @{
-                                    string Categories = null;
-                                    var CategoryList = ViewBag.Categories as List<EntityFrameworkCore.Models.Category>;
-                                    if (CategoryList.Count != 0)
-                                    {
-                                        foreach (var item in ViewBag.Categories as List<EntityFrameworkCore.Models.Category>)
-                                        {
-                                            if (Categories != null)
-                                            {
-                                                Categories = Categories + " - " + item.CategoryName;
-                                            }
-                                            else
-                                            {
-                                                Categories = item.CategoryName;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Categories = "-";
-                                    }
-                                }
-                                @Categories
+                                دسته بندی ها : @Model.Categories
                             </p>
                             <p>
                                 تاریخ انتشار :
@@ -152,6 +81,11 @@
                                     <span>پیش نویس</span>
                                 }
                             </p>
+                            <p>
+                                وزن : @Model.Wheight
+                            </p>
+                        </div>
+                        <div class=" col-md-12">
                             <p>
                                 خلاصه کتاب : @Model.Summery
                             </p>

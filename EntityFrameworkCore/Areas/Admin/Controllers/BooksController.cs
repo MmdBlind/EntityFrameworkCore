@@ -157,6 +157,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
 
         public IActionResult Details(int id)
         {
+            // روش پایین روش SqlRaw است
             //var BookInfo = _context.Books.FromSql($"select * from dbo.BookInfo where BookID={id}")
             //    .Include(l => l.Language)
             //    .Include(p => p.Publisher).First();
@@ -170,8 +171,8 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             //                      where (o.BookID == id)
             //                      select new Category { CategoryName = c.CategoryName }).ToList();
             //return View(BookInfo);
-
-            return View();
+            var BookInfo=_context.ReadAllBooks.Where(b=>b.BookID==id).First();
+            return View(BookInfo);
         }
     }
 }
