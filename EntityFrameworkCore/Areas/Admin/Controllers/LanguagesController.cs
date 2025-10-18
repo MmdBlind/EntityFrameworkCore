@@ -143,13 +143,14 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var language = await _context.Languages.FindAsync(id);
-            if (language != null)
-            {
-                _context.Languages.Remove(language);
-            }
-
-            await _context.SaveChangesAsync();
+            //var language = await _context.Languages.FindAsync(id);
+            //if (language != null)
+            //{
+            //    _context.Languages.Remove(language);
+            //}
+            //await _context.SaveChangesAsync();
+            var Language=_context.Languages.Find(id);
+            
             return RedirectToAction(nameof(Index));
         }
 

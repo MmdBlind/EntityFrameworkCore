@@ -65,7 +65,6 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             BooksCreateViewModel viewModel = new BooksCreateViewModel(_repository.GetAllCategories());
             return View(viewModel);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(BooksCreateViewModel viewModel)
@@ -154,7 +153,6 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 return View(viewModel);
             }
         }
-
         public IActionResult Details(int id)
         {
             // روش پایین روش SqlRaw است
@@ -173,6 +171,13 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             //return View(BookInfo);
             var BookInfo=_context.ReadAllBooks.Where(b=>b.BookID==id).First();
             return View(BookInfo);
+        }
+        public async Task<IActionResult> Delete(int id)
+        {
+            var book = _context.Books.Find(id);
+            book.IsDelete = true;
+            await _context.SaveChangesAsync();
+            return RedirectToAction("index");
         }
     }
 }
