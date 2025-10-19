@@ -169,15 +169,22 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             //                      where (o.BookID == id)
             //                      select new Category { CategoryName = c.CategoryName }).ToList();
             //return View(BookInfo);
-            var BookInfo=_context.ReadAllBooks.Where(b=>b.BookID==id).First();
+            var BookInfo = _context.ReadAllBooks.Where(b => b.BookID == id).First();
             return View(BookInfo);
         }
         public async Task<IActionResult> Delete(int id)
         {
             var book = _context.Books.Find(id);
-            book.IsDelete = true;
-            await _context.SaveChangesAsync();
-            return RedirectToAction("index");
+            if (book != null )
+            {
+                book.IsDelete = true;
+                await _context.SaveChangesAsync();
+                return RedirectToAction("index");
+            }
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }

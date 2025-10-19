@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EntityFrameworkCore.Models;
+using Microsoft.Data.SqlClient;
 
 namespace EntityFrameworkCore.Areas.Admin.Controllers
 {
@@ -149,8 +150,8 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             //    _context.Languages.Remove(language);
             //}
             //await _context.SaveChangesAsync();
-            var Language=_context.Languages.Find(id);
-            
+            object[] Parameters = { new SqlParameter("@id", id) };
+            await _context.Database.ExecuteSqlRawAsync("Delete From dbo.Languages Where(LanguageID=@id)", Parameters);
             return RedirectToAction(nameof(Index));
         }
 

@@ -41,6 +41,9 @@ namespace EntityFrameworkCore.Models
             .Entity<ReadAllBook>()
             .HasNoKey()
             .ToView("ReadAllBooks");
+
+            //Global query filter Example 
+            modelBuilder.Entity<Book>().HasQueryFilter(f => f.IsDelete == false);
         }
         public DbSet<Book> Books { get; set; }
         public DbSet<Category> Categories { get; set; }

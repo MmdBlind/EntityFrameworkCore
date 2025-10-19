@@ -57,7 +57,7 @@ namespace EntityFrameworkCore.Models.Repository
                          from bct in bc.DefaultIfEmpty()
                          join c in _context.Categories on bct.CategoryID equals c.CategoryID into cg
                          from cog in cg.DefaultIfEmpty()
-                         where (u.Book.IsDelete == false && u.Book.Title.Contains(title.Trim()) &&
+                         where ( u.Book.Title.Contains(title.Trim()) &&
                                 u.Book.ISBN.Contains(ISBN.Trim()) &&
                                 u.Book.Language.LanguageName.Contains(Language.Trim()) &&
                                 u.Book.Publisher.PublisherName.Contains(Publisher.Trim()))
