@@ -77,9 +77,16 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             {
                 try
                 {
-                    List<Author_Book> authors = new List<Author_Book>();
                     List<Translator_Book> translators = new List<Translator_Book>();
                     List<Book_Category> categories = new List<Book_Category>();
+                    if (viewModel.TranslatorID != null)
+                    { 
+                        translators=viewModel.TranslatorID.Select(a=>new Translator_Book {TranslatorID=a }).ToList();
+                    }
+                    if (viewModel.CategoryID != null)
+                    {
+                        categories = viewModel.CategoryID.Select(a => new Book_Category { CategoryID = a }).ToList();
+                    }
                     var transaction = _context.Database.BeginTransaction();
                     DateTime? PublishDate = null;
                     if (viewModel.IsPublish == true)
@@ -101,51 +108,12 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                         PublishDate = PublishDate,
                         Wheight = viewModel.Weight,
                         PublisherID = viewModel.PublisherID,
+                        Author_Book=viewModel.AuthorID.Select(a=>new Author_Book {AuthorID=a}).ToList(),
+                        Translator_Books=translators,
+                        book_Categories=categories
                     };
                     await _context.Books.AddAsync(book);
-                    await _context.SaveChangesAsync();
-                    if (viewModel.AuthorID != null)
-                    {
-                        for (int i = 0; i < viewModel.AuthorID.Length; i++)
-                        {
-                            Author_Book author = new Author_Book()
-                            {
-                                BookID = book.BookID,
-                                AuthorID = viewModel.AuthorID[i],
-                            };
-                            authors.Add(author);
-                            //await _context.AddAsync(author);
-                        }
-                        await _context.Author_Books.AddRangeAsync(authors);
-                    }
-                    (viewModel.TranslatorID != null)
-                    {
-                        for (int i = 0; i < viewModel.TranslatorID.Length; i++)
-                        {
-                            Translator_Book translator = new Translator_Book()
-                            {
-                                BookID = book.BookID,
-                                TranslatorID = viewModel.TranslatorID[i],
-                            };
-                            translators.Add(translator);
-                            //await _context.AddAsync(author);
-                        }
-                        await _context.Translator_Books.AddRangeAsync(translators);
-                    }
-                    if (viewModel.CategoryID != null)
-                    {
-                        for (int i = 0; i < viewModel.CategoryID.Length; i++)
-                        {
-                            Book_Category category = new Book_Category()
-                            {
-                                BookID = book.BookID,
-                                CategoryID = viewModel.CategoryID[i],
-                            };
-                            categories.Add(category);
-                            //await _context.AddAsync(author);
-                        }
-                        await _context.Book_Categories.AddRangeAsync(categories);
-                    }
+
                     await _context.SaveChangesAsync();
                     transaction.Commit();
                     return RedirectToAction("Index");
