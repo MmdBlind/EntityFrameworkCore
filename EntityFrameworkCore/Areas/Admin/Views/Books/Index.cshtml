@@ -115,6 +115,12 @@
 					</div>
 				</div>
 				<div class="table-responsive">
+					@if (ViewBag.Msg != null)
+					{
+						<div class="alert alert-danger alert-aismissable">
+							@ViewBag.Msg
+						</div>
+					}
 					<table class="table table-bordered">
 						<thead>
 							<tr>

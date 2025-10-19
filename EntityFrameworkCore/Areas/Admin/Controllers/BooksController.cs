@@ -19,8 +19,12 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             _context = context;
             _repository = repository;
         }
-        public IActionResult Index(int pageindex = 1, int row = 5, string sortExpression = "Title", string title = "")
+        public IActionResult Index(string Msg,int pageindex = 1, int row = 5, string sortExpression = "Title", string title = "")
         {
+            if (Msg != null)
+            {
+                ViewBag.Msg = "در ثبت اطلاعات خطایی رخ داده است لطفا مجددا تلاش کنید!!!";
+            }
             List<int> Rows = new List<int>
             {
                 5,10,15,20,50,100
@@ -71,76 +75,85 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         {
             try
             {
-                List<Author_Book> authors = new List<Author_Book>();
-                List<Translator_Book> translators = new List<Translator_Book>();
-                List<Book_Category> categories = new List<Book_Category>();
-                DateTime? PublishDate = null;
-                if (viewModel.IsPublish == true)
+                try
                 {
-                    PublishDate = DateTime.Now;
-                }
-                Book book = new Book()
-                {
-                    IsDelete = false,
-                    ISBN = viewModel.ISBN,
-                    IsPublish = viewModel.IsPublish,
-                    NumOfPages = viewModel.NumOfPages,
-                    Stock = viewModel.Stock,
-                    Price = viewModel.Price,
-                    LanguageID = viewModel.LanguageID,
-                    Summery = viewModel.Summary,
-                    Title = viewModel.Title,
-                    PublishYear = viewModel.PublishYear,
-                    PublishDate = PublishDate,
-                    Wheight = viewModel.Weight,
-                    PublisherID = viewModel.PublisherID,
-                };
-                await _context.Books.AddAsync(book);
-                await _context.SaveChangesAsync();
-                if (viewModel.AuthorID != null)
-                {
-                    for (int i = 0; i < viewModel.AuthorID.Length; i++)
+                    List<Author_Book> authors = new List<Author_Book>();
+                    List<Translator_Book> translators = new List<Translator_Book>();
+                    List<Book_Category> categories = new List<Book_Category>();
+                    var transaction = _context.Database.BeginTransaction();
+                    DateTime? PublishDate = null;
+                    if (viewModel.IsPublish == true)
                     {
-                        Author_Book author = new Author_Book()
-                        {
-                            BookID = book.BookID,
-                            AuthorID = viewModel.AuthorID[i],
-                        };
-                        authors.Add(author);
-                        //await _context.AddAsync(author);
+                        PublishDate = DateTime.Now;
                     }
-                    await _context.Author_Books.AddRangeAsync(authors);
-                }
-                if (viewModel.TranslatorID != null)
-                {
-                    for (int i = 0; i < viewModel.TranslatorID.Length; i++)
+                    Book book = new Book()
                     {
-                        Translator_Book translator = new Translator_Book()
-                        {
-                            BookID = book.BookID,
-                            TranslatorID = viewModel.TranslatorID[i],
-                        };
-                        translators.Add(translator);
-                        //await _context.AddAsync(author);
-                    }
-                    await _context.Translator_Books.AddRangeAsync(translators);
-                }
-                if (viewModel.CategoryID != null)
-                {
-                    for (int i = 0; i < viewModel.CategoryID.Length; i++)
+                        IsDelete = false,
+                        ISBN = viewModel.ISBN,
+                        IsPublish = viewModel.IsPublish,
+                        NumOfPages = viewModel.NumOfPages,
+                        Stock = viewModel.Stock,
+                        Price = viewModel.Price,
+                        LanguageID = viewModel.LanguageID,
+                        Summery = viewModel.Summary,
+                        Title = viewModel.Title,
+                        PublishYear = viewModel.PublishYear,
+                        PublishDate = PublishDate,
+                        Wheight = viewModel.Weight,
+                        PublisherID = viewModel.PublisherID,
+                    };
+                    await _context.Books.AddAsync(book);
+                    await _context.SaveChangesAsync();
+                    if (viewModel.AuthorID != null)
                     {
-                        Book_Category category = new Book_Category()
+                        for (int i = 0; i < viewModel.AuthorID.Length; i++)
                         {
-                            BookID = book.BookID,
-                            CategoryID = viewModel.CategoryID[i],
-                        };
-                        categories.Add(category);
-                        //await _context.AddAsync(author);
+                            Author_Book author = new Author_Book()
+                            {
+                                BookID = book.BookID,
+                                AuthorID = viewModel.AuthorID[i],
+                            };
+                            authors.Add(author);
+                            //await _context.AddAsync(author);
+                        }
+                        await _context.Author_Books.AddRangeAsync(authors);
                     }
-                    await _context.Book_Categories.AddRangeAsync(categories);
+                    (viewModel.TranslatorID != null)
+                    {
+                        for (int i = 0; i < viewModel.TranslatorID.Length; i++)
+                        {
+                            Translator_Book translator = new Translator_Book()
+                            {
+                                BookID = book.BookID,
+                                TranslatorID = viewModel.TranslatorID[i],
+                            };
+                            translators.Add(translator);
+                            //await _context.AddAsync(author);
+                        }
+                        await _context.Translator_Books.AddRangeAsync(translators);
+                    }
+                    if (viewModel.CategoryID != null)
+                    {
+                        for (int i = 0; i < viewModel.CategoryID.Length; i++)
+                        {
+                            Book_Category category = new Book_Category()
+                            {
+                                BookID = book.BookID,
+                                CategoryID = viewModel.CategoryID[i],
+                            };
+                            categories.Add(category);
+                            //await _context.AddAsync(author);
+                        }
+                        await _context.Book_Categories.AddRangeAsync(categories);
+                    }
+                    await _context.SaveChangesAsync();
+                    transaction.Commit();
+                    return RedirectToAction("Index");
                 }
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
+                catch
+                {
+                    return RedirectToAction("index", new { Msg = "Faild" });
+                }
             }
             catch (Exception ex)
             {
@@ -175,7 +188,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var book = _context.Books.Find(id);
-            if (book != null )
+            if (book != null)
             {
                 book.IsDelete = true;
                 await _context.SaveChangesAsync();
