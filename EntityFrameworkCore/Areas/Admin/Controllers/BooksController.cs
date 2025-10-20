@@ -80,29 +80,25 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                     List<Translator_Book> translators = new List<Translator_Book>();
                     List<Book_Category> categories = new List<Book_Category>();
                     if (viewModel.TranslatorID != null)
-                    { 
                         translators=viewModel.TranslatorID.Select(a=>new Translator_Book {TranslatorID=a }).ToList();
-                    }
+
                     if (viewModel.CategoryID != null)
-                    {
                         categories = viewModel.CategoryID.Select(a => new Book_Category { CategoryID = a }).ToList();
-                    }
+
                     var transaction = _context.Database.BeginTransaction();
                     DateTime? PublishDate = null;
                     if (viewModel.IsPublish == true)
-                    {
                         PublishDate = DateTime.Now;
-                    }
+
                     Book book = new Book()
                     {
-                        IsDelete = false,
                         ISBN = viewModel.ISBN,
                         IsPublish = viewModel.IsPublish,
                         NumOfPages = viewModel.NumOfPages,
                         Stock = viewModel.Stock,
                         Price = viewModel.Price,
                         LanguageID = viewModel.LanguageID,
-                        Summery = viewModel.Summary,
+                        Summery = viewModel.Summary, 
                         Title = viewModel.Title,
                         PublishYear = viewModel.PublishYear,
                         PublishDate = PublishDate,

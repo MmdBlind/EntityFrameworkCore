@@ -46,6 +46,7 @@ namespace EntityFrameworkCore.Models
             modelBuilder.Entity<Book>().HasQueryFilter(f => f.IsDelete == false);
         }
         public DbSet<Book> Books { get; set; }
+
         public DbSet<Category> Categories { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Author> Authors { get; set; }
