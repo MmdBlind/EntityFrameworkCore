@@ -62,7 +62,7 @@ namespace EntityFrameworkCore.Models
         public DbSet<Publisher> Publisher { get; set; }
         public DbSet<Book_Category> Book_Categories { get; set; }
         public DbSet<Translator_Book> Translator_Books { get; set; }
-        public DbSet<ReadAllBook> ReadAllBooks { get; set; }
+        public DbSet<ReadAllBook> ReadAllBooks { get; set; } }
         
     }
 }
