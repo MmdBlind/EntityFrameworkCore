@@ -19,7 +19,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             _context = context;
             _repository = repository;
         }
-        public IActionResult Index(string Msg,int pageindex = 1, int row = 5, string sortExpression = "Title", string title = "")
+        public IActionResult Index(string Msg, int pageindex = 1, int row = 5, string sortExpression = "Title", string title = "")
         {
             if (Msg != null)
             {
@@ -66,12 +66,12 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             ViewBag.PublisherID = new SelectList(_context.Publisher, "PublisherID", "PublisherName");
             ViewBag.AuthorID = new SelectList(_context.Authors.Select(t => new AuthorList { AuthorID = t.AuthorID, NameFamily = t.FirstName + " " + t.LastName }), "AuthorID", "NameFamily");
             ViewBag.TranslatorID = new SelectList(_context.Translator.Select(t => new TranslatorList { TranslatorID = t.TranslatorID, NameFamily = t.FirstName + " " + t.LastName }), "TranslatorID", "NameFamily");
-            BooksCreateViewModel viewModel = new BooksCreateViewModel(_repository.GetAllCategories());
+            BooksCreateEditViewModel viewModel = new BooksCreateEditViewModel(_repository.GetAllCategories());
             return View(viewModel);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(BooksCreateViewModel viewModel)
+        public async Task<IActionResult> Create(BooksCreateEditViewModel viewModel)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                     List<Translator_Book> translators = new List<Translator_Book>();
                     List<Book_Category> categories = new List<Book_Category>();
                     if (viewModel.TranslatorID != null)
-                        translators=viewModel.TranslatorID.Select(a=>new Translator_Book {TranslatorID=a }).ToList();
+                        translators = viewModel.TranslatorID.Select(a => new Translator_Book { TranslatorID = a }).ToList();
 
                     if (viewModel.CategoryID != null)
                         categories = viewModel.CategoryID.Select(a => new Book_Category { CategoryID = a }).ToList();
@@ -98,15 +98,15 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                         Stock = viewModel.Stock,
                         Price = viewModel.Price,
                         LanguageID = viewModel.LanguageID,
-                        Summery = viewModel.Summary, 
+                        Summery = viewModel.Summary,
                         Title = viewModel.Title,
                         PublishYear = viewModel.PublishYear,
                         PublishDate = PublishDate,
                         Wheight = viewModel.Weight,
                         PublisherID = viewModel.PublisherID,
-                        Author_Book=viewModel.AuthorID.Select(a=>new Author_Book {AuthorID=a}).ToList(),
-                        Translator_Books=translators,
-                        book_Categories=categories
+                        Author_Book = viewModel.AuthorID.Select(a => new Author_Book { AuthorID = a }).ToList(),
+                        Translator_Books = translators,
+                        book_Categories = categories
                     };
                     await _context.Books.AddAsync(book);
 
@@ -163,5 +163,59 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 return NotFound();
             }
         }
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                var book = _context.Books.FindAsync(id);
+                if (book == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    var ViewModel = (from b in _context.Books
+                                     .Include(l => l.Language)
+                                     .Include(p => p.Publisher)
+                                     where (b.BookID == id)
+                                     select new BooksCreateEditViewModel
+                                     {
+                                         BookID = b.BookID,
+                                         Title = b.Title,
+                                         ISBN = b.ISBN,
+                                         NumOfPages = b.NumOfPages,
+                                         Price = b.Price,
+                                         Stock = b.Stock,
+                                         IsPublish = b.IsPublish,
+                                         LanguageID = b.LanguageID,
+                                         PublisherID = b.PublisherID,
+                                         PublishYear = b.PublishYear,
+                                         Summary = b.Summery,
+                                         Weight = b.Wheight,
+                                     }).FirstAsync();
+                    int[] AuthorsArray = await (from a in _context.Author_Books
+                                                where (a.BookID == id)
+                                                select a.AuthorID)
+                                              .ToArrayAsync();
+                    int[] TranslatorArray = await (from t in _context.Translator_Books
+                                                   where (t.BookID == id)
+                                                   select t.TranslatorID)
+                                                   .ToArrayAsync();
+                    int[] CategoriesArray = await (from c in _context.Book_Categories
+                                                   where (c.BookID == id)
+                                                   select c.CategoryID)
+                                                   .ToArrayAsync();
+                    ViewModel.Result.AuthorID = AuthorsArray;
+                    ViewModel.Result.TranslatorID = TranslatorArray;
+                    ViewModel.Result.CategoryID = CategoriesArray;
+                    return View();
+                }
+            }
+        }
     }
+}
 }

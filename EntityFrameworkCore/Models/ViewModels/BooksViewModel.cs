@@ -1,18 +1,22 @@
 ﻿using NuGet.Protocol.Core.Types;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection.Metadata.Ecma335;
 
 namespace EntityFrameworkCore.Models.ViewModels
 {
-    public class BooksCreateViewModel
+    public class BooksCreateEditViewModel
     {
-        public BooksCreateViewModel(IEnumerable<TreeViewCategory> viewCategories)
+        public BooksCreateEditViewModel(IEnumerable<TreeViewCategory> viewCategories)
         {
             Categories = viewCategories;
         }
-        public BooksCreateViewModel()
+        public BooksCreateEditViewModel()
         {
         }
         public IEnumerable<TreeViewCategory> Categories { get; set; }
+
+        public int BookID { get; set; }
+
         [Required(ErrorMessage = "وارد نمودن {0} الزامی است.")]
         [Display(Name = "عنوان ")]
         public string Title { get; set; }
