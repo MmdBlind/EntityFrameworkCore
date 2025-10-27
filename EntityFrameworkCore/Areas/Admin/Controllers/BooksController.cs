@@ -171,14 +171,14 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             }
             else
             {
-                var book = _context.Books.FindAsync(id);
+                var book = await _context.Books.FindAsync(id);
                 if (book == null)
                 {
                     return NotFound();
                 }
                 else
                 {
-                    var ViewModel = (from b in _context.Books
+                    var ViewModel = await (from b in _context.Books
                                      .Include(l => l.Language)
                                      .Include(p => p.Publisher)
                                      where (b.BookID == id)
@@ -209,13 +209,17 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                                                    where (c.BookID == id)
                                                    select c.CategoryID)
                                                    .ToArrayAsync();
-                    ViewModel.Result.AuthorID = AuthorsArray;
-                    ViewModel.Result.TranslatorID = TranslatorArray;
-                    ViewModel.Result.CategoryID = CategoriesArray;
-                    return View();
+                    ViewModel.AuthorID = AuthorsArray;
+                    ViewModel.TranslatorID = TranslatorArray;
+                    ViewModel.CategoryID = CategoriesArray;
+                    ViewBag.LanguageID = new SelectList(_context.Languages, "LanguageID", "LanguageName");
+                    ViewBag.PublisherID = new SelectList(_context.Publisher, "PublisherID", "PublisherName");
+                    ViewBag.AuthorID = new SelectList(_context.Authors.Select(t => new AuthorList { AuthorID = t.AuthorID, NameFamily = t.FirstName + " " + t.LastName }), "AuthorID", "NameFamily");
+                    ViewBag.TranslatorID = new SelectList(_context.Translator.Select(t => new TranslatorList { TranslatorID = t.TranslatorID, NameFamily = t.FirstName + " " + t.LastName }), "TranslatorID", "NameFamily");
+                    ViewModel.SubCategoriesVM = new BooksSubCategoriesViewModel(_repository.GetAllCategories(), CategoriesArray);
+                    return View(ViewModel);
                 }
             }
         }
     }
-}
 }

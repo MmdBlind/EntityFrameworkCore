@@ -4,6 +4,7 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace EntityFrameworkCore.Models.ViewModels
 {
+    
     public class BooksCreateEditViewModel
     {
         public BooksCreateEditViewModel(IEnumerable<TreeViewCategory> viewCategories)
@@ -13,6 +14,7 @@ namespace EntityFrameworkCore.Models.ViewModels
         public BooksCreateEditViewModel()
         {
         }
+        public BooksSubCategoriesViewModel SubCategoriesVM { get; set; }
         public IEnumerable<TreeViewCategory> Categories { get; set; }
 
         public int BookID { get; set; }
@@ -66,6 +68,16 @@ namespace EntityFrameworkCore.Models.ViewModels
 
         public int[] CategoryID { get; set; }
 
+    }
+    public class BooksSubCategoriesViewModel
+    {
+        public BooksSubCategoriesViewModel(List<TreeViewCategory> _categories, int[] _categoryID)
+        {
+            Categories = _categories;
+            CategoryID = _categoryID;
+        }
+        public List<TreeViewCategory> Categories { get; set; }
+        public int[] CategoryID { get; set; }
     }
     public class AuthorList
     {

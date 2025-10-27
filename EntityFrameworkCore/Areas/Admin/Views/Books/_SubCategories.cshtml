@@ -1,14 +1,28 @@
 ﻿@using System.Collections
-@model IEnumerable<EntityFrameworkCore.Models.ViewModels.TreeViewCategory>
+@model EntityFrameworkCore.Models.ViewModels.BooksSubCategoriesViewModel
 
 <ul>
-    @foreach (var item in Model)
+    @foreach (var item in Model.Categories)
     {
         <li>
-            <input type="checkbox" name="CategoryID" value="@item.id" /> @item.title
-            @await Html.PartialAsync("_SubCategories",item.subs)
+            @if (Model.CategoryID.Contains(item.id))
+        {
+            <input type="checkbox" name="CategoryID" value="@item.id" checked />
+            @item.title
+        }
+        else
+        {
+            <input type="checkbox" name="CategoryID" value="@item.id" />
+            @item.title
+        }
+            @Model.Categories = item.subs;
+
+            @await Html.PartialAsync("_SubCategories", Model)
         </li>
+        
+        
+            
     }
 
-   
+
 </ul>
