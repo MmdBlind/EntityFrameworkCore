@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ReflectionIT.Mvc.Paging;
+using System.Net.WebSockets;
 
 namespace EntityFrameworkCore.Areas.Admin.Controllers
 {
@@ -163,7 +164,8 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 return NotFound();
             }
         }
-        public async Task<IActionResult> Edit(int? id)
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
         {
             if (id == null)
             {
@@ -178,48 +180,46 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 }
                 else
                 {
-                    var ViewModel = await (from b in _context.Books
-                                     .Include(l => l.Language)
-                                     .Include(p => p.Publisher)
-                                     where (b.BookID == id)
-                                     select new BooksCreateEditViewModel
-                                     {
-                                         BookID = b.BookID,
-                                         Title = b.Title,
-                                         ISBN = b.ISBN,
-                                         NumOfPages = b.NumOfPages,
-                                         Price = b.Price,
-                                         Stock = b.Stock,
-                                         IsPublish = b.IsPublish,
-                                         LanguageID = b.LanguageID,
-                                         PublisherID = b.PublisherID,
-                                         PublishYear = b.PublishYear,
-                                         Summary = b.Summery,
-                                         Weight = b.Wheight,
-                                     }).FirstAsync();
-                    int[] AuthorsArray = await (from a in _context.Author_Books
-                                                where (a.BookID == id)
-                                                select a.AuthorID)
-                                              .ToArrayAsync();
-                    int[] TranslatorArray = await (from t in _context.Translator_Books
-                                                   where (t.BookID == id)
-                                                   select t.TranslatorID)
-                                                   .ToArrayAsync();
-                    int[] CategoriesArray = await (from c in _context.Book_Categories
-                                                   where (c.BookID == id)
-                                                   select c.CategoryID)
-                                                   .ToArrayAsync();
-                    ViewModel.AuthorID = AuthorsArray;
-                    ViewModel.TranslatorID = TranslatorArray;
-                    ViewModel.CategoryID = CategoriesArray;
+                    var editViewModel = await _context.Books
+                                                .Where(b => b.BookID == id)
+                                                .Select(b => new BooksCreateEditViewModel
+                                                {
+                                                    Title = b.Title,
+                                                    Summary = b.Summery,
+                                                    Price = b.Price,
+                                                    Stock = b.Stock,
+                                                    File = b.File,
+                                                    NumOfPages = b.NumOfPages,
+                                                    Weight = b.Wheight,
+                                                    ISBN = b.ISBN,
+                                                    IsPublish = b.IsPublish,
+                                                    PublishYear = b.PublishYear,
+                                                    LanguageID = b.LanguageID,
+                                                    PublisherID = b.PublisherID,
+                                                    AuthorID = b.Author_Book
+                                                                 .Where(c => c.BookID == b.BookID)
+                                                                 .Select(a => a.AuthorID)
+                                                                 .ToArray(),
+                                                    TranslatorID = b.Translator_Books
+                                                                    .Where(t => t.BookID == b.BookID)
+                                                                    .Select(t => t.TranslatorID).ToArray(),
+                                                    CategoryID = b.book_Categories
+                                                                    .Where(c => c.BookID == b.BookID)
+                                                                    .Select(c => c.CategoryID)
+                                                                    .ToArray()
+                                                })
+                                                .FirstAsync();
                     ViewBag.LanguageID = new SelectList(_context.Languages, "LanguageID", "LanguageName");
                     ViewBag.PublisherID = new SelectList(_context.Publisher, "PublisherID", "PublisherName");
                     ViewBag.AuthorID = new SelectList(_context.Authors.Select(t => new AuthorList { AuthorID = t.AuthorID, NameFamily = t.FirstName + " " + t.LastName }), "AuthorID", "NameFamily");
                     ViewBag.TranslatorID = new SelectList(_context.Translator.Select(t => new TranslatorList { TranslatorID = t.TranslatorID, NameFamily = t.FirstName + " " + t.LastName }), "TranslatorID", "NameFamily");
-                    ViewModel.SubCategoriesVM = new BooksSubCategoriesViewModel(_repository.GetAllCategories(), CategoriesArray);
-                    return View(ViewModel);
+                    editViewModel.Categories = _repository.GetAllCategories();
+
+                    return View(editViewModel);
                 }
             }
+
+
         }
     }
 }

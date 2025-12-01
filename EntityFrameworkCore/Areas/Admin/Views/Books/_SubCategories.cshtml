@@ -1,28 +1,27 @@
-﻿@using System.Collections
+﻿@using System.Linq
+@using EntityFrameworkCore.Models.ViewModels
 @model EntityFrameworkCore.Models.ViewModels.BooksSubCategoriesViewModel
 
 <ul>
     @foreach (var item in Model.Categories)
     {
         <li>
-            @if (Model.CategoryID.Contains(item.id))
-        {
-            <input type="checkbox" name="CategoryID" value="@item.id" checked />
-            @item.title
-        }
-        else
-        {
-            <input type="checkbox" name="CategoryID" value="@item.id" />
-            @item.title
-        }
-            @Model.Categories = item.subs;
+            @if (Model.CategoryID != null && Model.CategoryID.Contains(item.id))
+            {
+                <input type="checkbox" name="CategoryID" value="@item.id" checked /> 
+                @item.title
+            }
+            else
+            {
+                <input type="checkbox" name="CategoryID" value="@item.id" /> 
+                @item.title
+            }
 
-            @await Html.PartialAsync("_SubCategories", Model)
+            @if (item.subs != null && item.subs.Any())
+            {
+                var subModel = new BooksSubCategoriesViewModel(item.subs, Model.CategoryID);
+                @await Html.PartialAsync("_SubCategories", subModel)
+            }
         </li>
-        
-        
-            
     }
-
-
 </ul>
