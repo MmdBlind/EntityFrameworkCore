@@ -1,12 +1,11 @@
 ﻿@model EntityFrameworkCore.Models.ViewModels.BooksCreateEditViewModel
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Edit";
     Layout = "~/Views/_Admin.cshtml";
 }
 
 <div class="container-fluid">
-    <form asp-action="Create" method="post">
+    <form asp-action="Edit" method="post">
         <div class="row">
             <div class="col-md-4">
                 <div class="row">
@@ -44,10 +43,17 @@
                             </div>
                             <div class="card-body">
                                 <ul id="category" class="demo1">
+                                    @{
+                                        ViewData["SelectedCategories"] = Model.CategoryID;
+                                    }
+
                                     @foreach (var item in Model.Categories)
                                     {
                                         <li>
-                                            <input type="checkbox" name="CategoryID" value="@item.id" /> @item.title
+                                            <input type="checkbox" name="CategoryID" value="@item.id"
+                                                   @(Model.CategoryID != null && Model.CategoryID.Contains(item.id) ? "checked" : "") />
+                                            @item.title
+
                                             @await Html.PartialAsync("_SubCategories", item.subs)
                                         </li>
                                     }
@@ -216,4 +222,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-}
+} 

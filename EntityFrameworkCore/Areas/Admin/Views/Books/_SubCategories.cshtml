@@ -1,28 +1,36 @@
-﻿@using System.Collections
-@model EntityFrameworkCore.Models.ViewModels.BooksSubCategoriesViewModel
+﻿@using EntityFrameworkCore.Models.ViewModels
+@model IEnumerable<TreeViewCategory>
 
-<ul>
-    @foreach (var item in Model.Categories)
-    {
-        <li>
-            @if (Model.CategoryID.Contains(item.id))
+@* نکته مهم: لیست آی‌دی‌های انتخاب شده رو از ViewData می‌خونیم *@
+@{
+    var selectedIds = ViewData["SelectedCategories"] as int[];
+}
+
+@if (Model != null)
+{
+    <ul>
+        @foreach (var item in Model)
         {
-            <input type="checkbox" name="CategoryID" value="@item.id" checked />
-            @item.title
+            <li>
+                @* بررسی می‌کنیم آیا این آیتم باید تیک بخوره یا نه *@
+                @if (selectedIds != null && selectedIds.Contains(item.id))
+                {
+                    <input type="checkbox" name="CategoryID" value="@item.id" checked />
+                }
+                else
+                {
+                    <input type="checkbox" name="CategoryID" value="@item.id" />
+                }
+
+                @item.title
+
+                @* فراخوانی بازگشتی برای زیرمجموعه‌ها *@
+                @if (item.subs != null && item.subs.Any())
+                {
+                    @* لیست آی‌دی‌های انتخاب شده رو دوباره پاس میدیم *@
+                    @await Html.PartialAsync("_SubCategories", item.subs, new ViewDataDictionary(ViewData) { { "SelectedCategories", selectedIds } })
+                }
+            </li>
         }
-        else
-        {
-            <input type="checkbox" name="CategoryID" value="@item.id" />
-            @item.title
-        }
-            @Model.Categories = item.subs;
-
-            @await Html.PartialAsync("_SubCategories", Model)
-        </li>
-        
-        
-            
-    }
-
-
-</ul>
+    </ul>
+}

@@ -180,10 +180,11 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 }
                 else
                 {
-                    var editViewModel = await _context.Books
+                    var viewModel = await _context.Books
                                                 .Where(b => b.BookID == id)
                                                 .Select(b => new BooksCreateEditViewModel
                                                 {
+                                                    BookID = b.BookID,
                                                     Title = b.Title,
                                                     Summary = b.Summery,
                                                     Price = b.Price,
@@ -213,13 +214,73 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                     ViewBag.PublisherID = new SelectList(_context.Publisher, "PublisherID", "PublisherName");
                     ViewBag.AuthorID = new SelectList(_context.Authors.Select(t => new AuthorList { AuthorID = t.AuthorID, NameFamily = t.FirstName + " " + t.LastName }), "AuthorID", "NameFamily");
                     ViewBag.TranslatorID = new SelectList(_context.Translator.Select(t => new TranslatorList { TranslatorID = t.TranslatorID, NameFamily = t.FirstName + " " + t.LastName }), "TranslatorID", "NameFamily");
-                    editViewModel.Categories = _repository.GetAllCategories();
+                    viewModel.Categories = _repository.GetAllCategories();
 
-                    return View(editViewModel);
+                    return View(viewModel);
                 }
             }
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(BooksCreateEditViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                Book book = new Book()
+                {
+                    BookID = viewModel.BookID,
+                    Title = viewModel.Title,
+                    Summery = viewModel.Summary,
+                    Price = viewModel.Price,
+                    Stock = viewModel.Stock,
+                    File = viewModel.File,
+                    NumOfPages = viewModel.NumOfPages,
+                    Wheight = viewModel.Weight,
+                    ISBN = viewModel.ISBN,
+                    IsPublish = viewModel.IsPublish,
+                    PublishYear = viewModel.PublishYear,
+                    LanguageID = viewModel.LanguageID,
+                    PublisherID = viewModel.PublisherID,
+                };
+
+                var RecentTranslators = _context.Translator_Books
+                                            .Where(t => t.BookID == viewModel.BookID)
+                                            .Select(b => b.TranslatorID).ToArray();
+                var RecentAuthors = _context.Author_Books
+                                        .Where(t => t.BookID == viewModel.BookID)
+                                        .Select(b => b.AuthorID)
+                                        .ToArray();
+                var RecentCategories = _context.Book_Categories
+                                           .Where(t => t.BookID == viewModel.BookID)
+                                           .Select(b => b.CategoryID)
+                                           .ToArray();
+
+                var deletedTranslators = RecentTranslators.Except(viewModel.TranslatorID);
+                var deletedAuthors = RecentAuthors.Except(viewModel.AuthorID);
+                var deletedCategories = RecentTranslators.Except(viewModel.CategoryID);
+
+                var ToAddTranslators = viewModel.TranslatorID.Except(RecentTranslators);
+                var ToAddAuthors = viewModel.AuthorID.Except(RecentAuthors);
+                var ToAddCategories = viewModel.CategoryID.Except(RecentCategories);
+
+                #region delete tra
+                if (deletedTranslators.Count() != 0)
+                    _context.Translator_Books.RemoveRange(deletedTranslators.Select(t => new Translator_Book { TranslatorID = t, BookID = viewModel.BookID }).ToList());
+
+                if (deletedAuthors.Count() != 0)
+                    _context.Author_Books.RemoveRange(deletedAuthors.Select(a => new Author_Book { AuthorID = a, BookID = viewModel.BookID }).ToList());
+
+                if(deletedCategories.Count()!=0)
+                    _context.Book_Categories.RemoveRange(deletedCategories.Select(c => new Book_Category { CategoryID = c, BookID = viewModel.BookID }).ToList());
 
 
+
+                return View();
+            }
+            else
+            {
+                return View(viewModel);
+            }
         }
     }
 }
