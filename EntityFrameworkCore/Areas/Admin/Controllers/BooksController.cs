@@ -224,62 +224,91 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(BooksCreateEditViewModel viewModel)
         {
+            ViewBag.LanguageID = new SelectList(_context.Languages, "LanguageID", "LanguageName");
+            ViewBag.PublisherID = new SelectList(_context.Publisher, "PublisherID", "PublisherName");
+            ViewBag.AuthorID = new SelectList(_context.Authors.Select(t => new AuthorList { AuthorID = t.AuthorID, NameFamily = t.FirstName + " " + t.LastName }), "AuthorID", "NameFamily");
+            ViewBag.TranslatorID = new SelectList(_context.Translator.Select(t => new TranslatorList { TranslatorID = t.TranslatorID, NameFamily = t.FirstName + " " + t.LastName }), "TranslatorID", "NameFamily");
+            viewModel.Categories = _repository.GetAllCategories();
             if (ModelState.IsValid)
             {
-                Book book = new Book()
+                try
                 {
-                    BookID = viewModel.BookID,
-                    Title = viewModel.Title,
-                    Summery = viewModel.Summary,
-                    Price = viewModel.Price,
-                    Stock = viewModel.Stock,
-                    File = viewModel.File,
-                    NumOfPages = viewModel.NumOfPages,
-                    Wheight = viewModel.Weight,
-                    ISBN = viewModel.ISBN,
-                    IsPublish = viewModel.IsPublish,
-                    PublishYear = viewModel.PublishYear,
-                    LanguageID = viewModel.LanguageID,
-                    PublisherID = viewModel.PublisherID,
-                };
+                    var transaction = _context.Database.BeginTransaction();
+                    Book book = new Book()
+                    {
+                        BookID = viewModel.BookID,
+                        Title = viewModel.Title,
+                        Summery = viewModel.Summary,
+                        Price = viewModel.Price,
+                        Stock = viewModel.Stock,
+                        File = viewModel.File,
+                        NumOfPages = viewModel.NumOfPages,
+                        Wheight = viewModel.Weight,
+                        ISBN = viewModel.ISBN,
+                        IsPublish = viewModel.IsPublish,
+                        PublishYear = viewModel.PublishYear,
+                        LanguageID = viewModel.LanguageID,
+                        PublisherID = viewModel.PublisherID,
+                    };
 
-                var RecentTranslators = _context.Translator_Books
+                    var RecentTranslators = _context.Translator_Books
+                                                .Where(t => t.BookID == viewModel.BookID)
+                                                .Select(b => b.TranslatorID).ToArray();
+                    var RecentAuthors = _context.Author_Books
                                             .Where(t => t.BookID == viewModel.BookID)
-                                            .Select(b => b.TranslatorID).ToArray();
-                var RecentAuthors = _context.Author_Books
-                                        .Where(t => t.BookID == viewModel.BookID)
-                                        .Select(b => b.AuthorID)
-                                        .ToArray();
-                var RecentCategories = _context.Book_Categories
-                                           .Where(t => t.BookID == viewModel.BookID)
-                                           .Select(b => b.CategoryID)
-                                           .ToArray();
+                                            .Select(b => b.AuthorID)
+                                            .ToArray();
+                    var RecentCategories = _context.Book_Categories
+                                               .Where(t => t.BookID == viewModel.BookID)
+                                               .Select(b => b.CategoryID)
+                                               .ToArray();
 
-                var deletedTranslators = RecentTranslators.Except(viewModel.TranslatorID);
-                var deletedAuthors = RecentAuthors.Except(viewModel.AuthorID);
-                var deletedCategories = RecentTranslators.Except(viewModel.CategoryID);
+                    var deletedTranslators = RecentTranslators.Except(viewModel.TranslatorID);
+                    var deletedAuthors = RecentAuthors.Except(viewModel.AuthorID);
+                    var deletedCategories = RecentTranslators.Except(viewModel.CategoryID);
 
-                var ToAddTranslators = viewModel.TranslatorID.Except(RecentTranslators);
-                var ToAddAuthors = viewModel.AuthorID.Except(RecentAuthors);
-                var ToAddCategories = viewModel.CategoryID.Except(RecentCategories);
+                    var ToAddTranslators = viewModel.TranslatorID.Except(RecentTranslators);
+                    var ToAddAuthors = viewModel.AuthorID.Except(RecentAuthors);
+                    var ToAddCategories = viewModel.CategoryID.Except(RecentCategories);
 
-                #region delete tra
-                if (deletedTranslators.Count() != 0)
-                    _context.Translator_Books.RemoveRange(deletedTranslators.Select(t => new Translator_Book { TranslatorID = t, BookID = viewModel.BookID }).ToList());
+                    #region Delete & Add translators-Authurs-Categories
+                    if (deletedTranslators.Count() != 0)
+                        _context.Translator_Books.RemoveRange(deletedTranslators.Select(t => new Translator_Book { TranslatorID = t, BookID = viewModel.BookID }).ToList());
 
-                if (deletedAuthors.Count() != 0)
-                    _context.Author_Books.RemoveRange(deletedAuthors.Select(a => new Author_Book { AuthorID = a, BookID = viewModel.BookID }).ToList());
+                    if (deletedAuthors.Count() != 0)
+                        _context.Author_Books.RemoveRange(deletedAuthors.Select(a => new Author_Book { AuthorID = a, BookID = viewModel.BookID }).ToList());
 
-                if(deletedCategories.Count()!=0)
-                    _context.Book_Categories.RemoveRange(deletedCategories.Select(c => new Book_Category { CategoryID = c, BookID = viewModel.BookID }).ToList());
+                    if (deletedCategories.Count() != 0)
+                        _context.Book_Categories.RemoveRange(deletedCategories.Select(c => new Book_Category { CategoryID = c, BookID = viewModel.BookID }).ToList());
 
+                    if (ToAddTranslators.Count() != 0)
+                        _context.Translator_Books.AddRange(ToAddTranslators.Select(t => new Translator_Book { TranslatorID = t, BookID = viewModel.BookID }).ToList());
 
+                    if (ToAddAuthors.Count() != 0)
+                        _context.Author_Books.AddRange(ToAddAuthors.Select(a => new Author_Book { AuthorID = a, BookID = viewModel.BookID }).ToList());
 
-                return View();
+                    if (ToAddCategories.Count() != 0)
+                        _context.Book_Categories.AddRange(ToAddCategories.Select(c => new Book_Category { CategoryID = c, BookID = viewModel.BookID }).ToList());
+                    #endregion
+                    await _context.SaveChangesAsync();
+                    transaction.Commit();
+
+                    ViewBag.Msg = "ویرایش با موفقیت انجام شد.";
+                    
+                    return RedirectToAction("index");
+
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Msg = "ویرایش با موفقیت انجام شد.";
+                    return View(viewModel);
+                    throw ex;
+                }
             }
             else
             {
-                return View(viewModel);
+                ViewBag.Msg = "اطلاعات فرم نامعتبر است..";
+                return View("index",ViewBag.Msg);
             }
         }
     }
