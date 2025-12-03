@@ -22,7 +22,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             _context = context;
             _repository = repository;
         }
-        public IActionResult Index(string Msg, int pageindex = 1, int row = 5, string sortExpression = "Title", string title = "")
+        public IActionResult Index(string Msg, int pageindex = 1, int row = 5, string sortExpression = "Title", string  title = "")
         {
             if (Msg == "Faild")
             {
