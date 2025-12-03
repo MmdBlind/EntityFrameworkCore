@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.VisualBasic;
 using ReflectionIT.Mvc.Paging;
 using System.Net.WebSockets;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace EntityFrameworkCore.Areas.Admin.Controllers
 {
@@ -22,9 +24,13 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         }
         public IActionResult Index(string Msg, int pageindex = 1, int row = 5, string sortExpression = "Title", string title = "")
         {
-            if (Msg != null)
+            if (Msg == "Faild")
             {
                 ViewBag.Msg = "در ثبت اطلاعات خطایی رخ داده است لطفا مجددا تلاش کنید!!!";
+            }
+            else if (Msg == "Success")
+            {
+                ViewBag.Msg = "عملیات با موفقیت انجام شد.";
             }
             List<int> Rows = new List<int>
             {
@@ -164,6 +170,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 return NotFound();
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -194,7 +201,9 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                                                     Weight = b.Wheight,
                                                     ISBN = b.ISBN,
                                                     IsPublish = b.IsPublish,
+                                                    RecentIsPublish = b.IsPublish,
                                                     PublishYear = b.PublishYear,
+                                                    PublishDate=b.PublishDate,
                                                     LanguageID = b.LanguageID,
                                                     PublisherID = b.PublisherID,
                                                     AuthorID = b.Author_Book
@@ -229,11 +238,23 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             ViewBag.AuthorID = new SelectList(_context.Authors.Select(t => new AuthorList { AuthorID = t.AuthorID, NameFamily = t.FirstName + " " + t.LastName }), "AuthorID", "NameFamily");
             ViewBag.TranslatorID = new SelectList(_context.Translator.Select(t => new TranslatorList { TranslatorID = t.TranslatorID, NameFamily = t.FirstName + " " + t.LastName }), "TranslatorID", "NameFamily");
             viewModel.Categories = _repository.GetAllCategories();
-            if (ModelState.IsValid)
+
+            try
             {
-                try
+                var transaction = _context.Database.BeginTransaction();
+                DateTime? PublishDate;
+                if (viewModel.RecentIsPublish == true && viewModel.IsPublish == false)
                 {
-                    var transaction = _context.Database.BeginTransaction();
+                    PublishDate =null;
+                }
+                else if (viewModel.RecentIsPublish == false && viewModel.IsPublish == true)
+                { 
+                    PublishDate= DateTime.Now;
+                }
+                else
+                {
+                    PublishDate = viewModel.PublishDate;
+                }
                     Book book = new Book()
                     {
                         BookID = viewModel.BookID,
@@ -247,69 +268,68 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                         ISBN = viewModel.ISBN,
                         IsPublish = viewModel.IsPublish,
                         PublishYear = viewModel.PublishYear,
+                        PublishDate=PublishDate,
                         LanguageID = viewModel.LanguageID,
                         PublisherID = viewModel.PublisherID,
                     };
-
-                    var RecentTranslators = _context.Translator_Books
-                                                .Where(t => t.BookID == viewModel.BookID)
-                                                .Select(b => b.TranslatorID).ToArray();
-                    var RecentAuthors = _context.Author_Books
+                _context.Update(book);
+                var RecentTranslators = _context.Translator_Books
                                             .Where(t => t.BookID == viewModel.BookID)
-                                            .Select(b => b.AuthorID)
-                                            .ToArray();
-                    var RecentCategories = _context.Book_Categories
-                                               .Where(t => t.BookID == viewModel.BookID)
-                                               .Select(b => b.CategoryID)
-                                               .ToArray();
+                                            .Select(b => b.TranslatorID).ToArray();
+                var RecentAuthors = _context.Author_Books
+                                        .Where(t => t.BookID == viewModel.BookID)
+                                        .Select(b => b.AuthorID)
+                                        .ToArray();
+                var RecentCategories = _context.Book_Categories
+                                           .Where(t => t.BookID == viewModel.BookID)
+                                           .Select(b => b.CategoryID)
+                                           .ToArray();
+                var inputTranslatorIDs = viewModel.TranslatorID ?? new int[0];
+                var inputAuthorIDs = viewModel.AuthorID ?? new int[0];
+                var inputCategoryIDs = viewModel.CategoryID ?? new int[0];
 
-                    var deletedTranslators = RecentTranslators.Except(viewModel.TranslatorID);
-                    var deletedAuthors = RecentAuthors.Except(viewModel.AuthorID);
-                    var deletedCategories = RecentTranslators.Except(viewModel.CategoryID);
+                var deletedTranslators = RecentTranslators.Except(inputTranslatorIDs);
+                var deletedAuthors = RecentAuthors.Except(inputAuthorIDs);
+                var deletedCategories = RecentCategories.Except(inputCategoryIDs);
 
-                    var ToAddTranslators = viewModel.TranslatorID.Except(RecentTranslators);
-                    var ToAddAuthors = viewModel.AuthorID.Except(RecentAuthors);
-                    var ToAddCategories = viewModel.CategoryID.Except(RecentCategories);
+                var ToAddTranslators = inputTranslatorIDs.Except(RecentTranslators);
+                var ToAddAuthors = inputAuthorIDs.Except(RecentAuthors);
+                var ToAddCategories = inputCategoryIDs.Except(RecentCategories);
 
-                    #region Delete & Add translators-Authurs-Categories
-                    if (deletedTranslators.Count() != 0)
-                        _context.Translator_Books.RemoveRange(deletedTranslators.Select(t => new Translator_Book { TranslatorID = t, BookID = viewModel.BookID }).ToList());
+                #region اضافه کردن و پاک کردن مترجم و نویسنده و دسته بندی به دیتابیس
+                if (deletedTranslators.Count() != 0)
+                    _context.Translator_Books.RemoveRange(deletedTranslators.Select(t => new Translator_Book { TranslatorID = t, BookID = viewModel.BookID }).ToList());
 
-                    if (deletedAuthors.Count() != 0)
-                        _context.Author_Books.RemoveRange(deletedAuthors.Select(a => new Author_Book { AuthorID = a, BookID = viewModel.BookID }).ToList());
+                if (deletedAuthors.Count() != 0)
+                    _context.Author_Books.RemoveRange(deletedAuthors.Select(a => new Author_Book { AuthorID = a, BookID = viewModel.BookID }).ToList());
 
-                    if (deletedCategories.Count() != 0)
-                        _context.Book_Categories.RemoveRange(deletedCategories.Select(c => new Book_Category { CategoryID = c, BookID = viewModel.BookID }).ToList());
+                if (deletedCategories.Count() != 0)
+                    _context.Book_Categories.RemoveRange(deletedCategories.Select(c => new Book_Category { CategoryID = c, BookID = viewModel.BookID }).ToList());
 
-                    if (ToAddTranslators.Count() != 0)
-                        _context.Translator_Books.AddRange(ToAddTranslators.Select(t => new Translator_Book { TranslatorID = t, BookID = viewModel.BookID }).ToList());
+                if (ToAddTranslators.Count() != 0)
+                    _context.Translator_Books.AddRange(ToAddTranslators.Select(t => new Translator_Book { TranslatorID = t, BookID = viewModel.BookID }).ToList());
 
-                    if (ToAddAuthors.Count() != 0)
-                        _context.Author_Books.AddRange(ToAddAuthors.Select(a => new Author_Book { AuthorID = a, BookID = viewModel.BookID }).ToList());
+                if (ToAddAuthors.Count() != 0)
+                    _context.Author_Books.AddRange(ToAddAuthors.Select(a => new Author_Book { AuthorID = a, BookID = viewModel.BookID }).ToList());
 
-                    if (ToAddCategories.Count() != 0)
-                        _context.Book_Categories.AddRange(ToAddCategories.Select(c => new Book_Category { CategoryID = c, BookID = viewModel.BookID }).ToList());
-                    #endregion
-                    await _context.SaveChangesAsync();
-                    transaction.Commit();
+                if (ToAddCategories.Count() != 0)
+                    _context.Book_Categories.AddRange(ToAddCategories.Select(c => new Book_Category { CategoryID = c, BookID = viewModel.BookID }).ToList());
+                #endregion
 
-                    ViewBag.Msg = "ویرایش با موفقیت انجام شد.";
-                    
-                    return RedirectToAction("index");
+                await _context.SaveChangesAsync();
+                transaction.Commit();
 
-                }
-                catch (Exception ex)
-                {
-                    ViewBag.Msg = "ویرایش با موفقیت انجام شد.";
-                    return View(viewModel);
-                    throw ex;
-                }
+                return RedirectToAction("index");
             }
-            else
+            catch
             {
-                ViewBag.Msg = "اطلاعات فرم نامعتبر است..";
-                return View("index",ViewBag.Msg);
+                ViewBag.Msg = "اطلاعات فرم نامعتبر است.";
+                return View("Edit");
+
             }
+
+
+
         }
     }
 }

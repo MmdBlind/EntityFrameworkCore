@@ -47,9 +47,12 @@ namespace EntityFrameworkCore.Models.ViewModels
         [Display(Name = " این کتاب روی سایت منتشر شود.")]
         public bool IsPublish { get; set; }
 
+        public bool RecentIsPublish { get; set; }
 
         [Display(Name = "سال انتشار")]
         public int PublishYear { get; set; }
+
+        public DateTime? PublishDate { get; set; }
 
         [Required(ErrorMessage = "وارد نمودن {0} الزامی است.")]
         [Display(Name = "زبان")]
