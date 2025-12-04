@@ -113,8 +113,10 @@ namespace EntityFrameworkCore.Models
     {
         [Key]
         public int ProviceID { get; set; }
-        public string ProviceName { get; set; }
 
+        [Display(Name ="نام استان")]
+        public string ProviceName { get; set; }
+        
         public List<City> Citys { get; set; }
     }
     public class City

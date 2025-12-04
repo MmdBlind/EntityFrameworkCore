@@ -1,0 +1,49 @@
+﻿@model IEnumerable<Provice>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/_Admin.cshtml";
+}
+
+<div dir="rtl" class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="bg-light card-header">
+                استان ها
+            </div>
+            <div class="card-body">
+                <table  class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.ProviceName)</th>
+                            <th>
+                                شهر های استان
+                            </th>
+                            <th>
+                                عـمـلـیـات
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @item.ProviceName
+                                </td>
+                                <td>
+                                    <a href="/Admin/Cities/Index/@item.ProviceID" class="btn btn-sm btn-info">مشاهده شهرها</a>
+                                </td>
+                                <td>
+                                    <a class="btn btn-info btn-icon" href="/Admin/Provices/Details/@item.ProviceID"><i class="fa fa-eye text-white"></i></a>
+                                    <a class="btn btn-success btn-icon" href="/Admin/Provices/Edit/@item.ProviceID"><i class="fa fa-edit text-white"></i></a>
+                                    <a class="btn btn-danger btn-icon" href="/Admin/Provices/Delete/@item.ProviceID"><i class="fa fa-trash text-white"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

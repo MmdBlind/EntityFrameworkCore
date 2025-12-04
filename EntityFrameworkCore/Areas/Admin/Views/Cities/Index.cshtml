@@ -1,0 +1,45 @@
+﻿@model Provice
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/_Admin.cshtml";
+}
+
+<div dir="rtl" class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="bg-light card-header">
+                شهر های استان @Model.ProviceName
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                نام شهر
+                            </th>
+                            <th>
+                                عـمـلـیـات
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Citys)
+                        {
+                            <tr>
+                                <td>
+                                    @item.CityName
+                                </td>
+                                <td>
+                                    <a class="btn btn-info btn-icon" href="/Admin/Provices/Details/@item.CityID"><i class="fa fa-eye text-white"></i></a>
+                                    <a class="btn btn-success btn-icon" href="/Admin/Provices/Edit/@item.CityID"><i class="fa fa-edit text-white"></i></a>
+                                    <a class="btn btn-danger btn-icon" href="/Admin/Provices/Delete/@item.CityID"><i class="fa fa-trash text-white"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
