@@ -22,7 +22,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             _context = context;
             _repository = repository;
         }
-        public IActionResult Index(string Msg, int pageindex = 1, int row = 5, string sortExpression = "Title", string  title = "")
+        public IActionResult Index(string Msg, int pageindex = 1, int row = 5, string sortExpression = "Title", string title = "")
         {
             if (Msg == "Faild")
             {
@@ -203,7 +203,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                                                     IsPublish = b.IsPublish,
                                                     RecentIsPublish = b.IsPublish,
                                                     PublishYear = b.PublishYear,
-                                                    PublishDate=b.PublishDate,
+                                                    PublishDate = b.PublishDate,
                                                     LanguageID = b.LanguageID,
                                                     PublisherID = b.PublisherID,
                                                     AuthorID = b.Author_Book
@@ -229,6 +229,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 }
             }
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(BooksCreateEditViewModel viewModel)
@@ -245,33 +246,33 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 DateTime? PublishDate;
                 if (viewModel.RecentIsPublish == true && viewModel.IsPublish == false)
                 {
-                    PublishDate =null;
+                    PublishDate = null;
                 }
                 else if (viewModel.RecentIsPublish == false && viewModel.IsPublish == true)
-                { 
-                    PublishDate= DateTime.Now;
+                {
+                    PublishDate = DateTime.Now;
                 }
                 else
                 {
                     PublishDate = viewModel.PublishDate;
                 }
-                    Book book = new Book()
-                    {
-                        BookID = viewModel.BookID,
-                        Title = viewModel.Title,
-                        Summery = viewModel.Summary,
-                        Price = viewModel.Price,
-                        Stock = viewModel.Stock,
-                        File = viewModel.File,
-                        NumOfPages = viewModel.NumOfPages,
-                        Wheight = viewModel.Weight,
-                        ISBN = viewModel.ISBN,
-                        IsPublish = viewModel.IsPublish,
-                        PublishYear = viewModel.PublishYear,
-                        PublishDate=PublishDate,
-                        LanguageID = viewModel.LanguageID,
-                        PublisherID = viewModel.PublisherID,
-                    };
+                Book book = new Book()
+                {
+                    BookID = viewModel.BookID,
+                    Title = viewModel.Title,
+                    Summery = viewModel.Summary,
+                    Price = viewModel.Price,
+                    Stock = viewModel.Stock,
+                    File = viewModel.File,
+                    NumOfPages = viewModel.NumOfPages,
+                    Wheight = viewModel.Weight,
+                    ISBN = viewModel.ISBN,
+                    IsPublish = viewModel.IsPublish,
+                    PublishYear = viewModel.PublishYear,
+                    PublishDate = PublishDate,
+                    LanguageID = viewModel.LanguageID,
+                    PublisherID = viewModel.PublisherID,
+                };
                 _context.Update(book);
                 var RecentTranslators = _context.Translator_Books
                                             .Where(t => t.BookID == viewModel.BookID)
@@ -330,6 +331,31 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
 
 
 
+        }
+
+        public async Task<IActionResult> SearchByISBN(string ISBN)
+        {
+            if (ISBN != null)
+            {
+                var book = _context.Books
+                                   .Where(b => b.ISBN == ISBN)
+                                   .Select(c => new BooksIndexViewModel
+                                   {
+                                       Title = c.Title,
+                                       Author = BookShopContext.GetAllAuthors(c.BookID),
+                                       Category = BookShopContext.GetAllCategories(c.BookID),
+                                       Translator = BookShopContext.GetAllTranslators(c.BookID)
+                                   }).FirstOrDefaultAsync();
+                if (book.Result==null)
+                {
+                    ViewBag.Msg = "کتابی با این شابک یافت نشد.";
+                }
+                return View(book);
+            }
+            else
+            {
+                return View();
+            }
         }
     }
 }
