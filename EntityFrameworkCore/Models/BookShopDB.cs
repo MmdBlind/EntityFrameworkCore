@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore.Infrastructure;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EntityFrameworkCore.Models
@@ -45,11 +46,31 @@ namespace EntityFrameworkCore.Models
     }
     public class Author
     {
+        private ILazyLoader LazyLoader { get; set; }
+        private List<Author_Book> _Author_Books;
+        public Author()
+        { 
+        }
+        private Author(ILazyLoader lazyLoader)
+        {
+            LazyLoader = lazyLoader;
+        }
+
         [Key]
         public int AuthorID { get; set; }
+        
+        [Display(Name ="نام")]
         public string FirstName { get; set; }
+        
+        [Display(Name = "نام خانوادگی")]
         public string LastName { get; set; }
-        public List<Author_Book> Author_Book { get; set; }
+
+        
+        public List<Author_Book> Author_Book
+        {
+            get => LazyLoader.Load(this, ref _Author_Books);
+            set=>_Author_Books = value;
+        }
     }
     public class Author_Book
     {
