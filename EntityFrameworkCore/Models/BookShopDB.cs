@@ -13,7 +13,7 @@ namespace EntityFrameworkCore.Models
         public int Price { get; set; }
         public int Stock { get; set; }
         public string? File { get; set; } = null;
-        public byte[]? Image { get; set; }= null;
+        public byte[]? Image { get; set; } = null;
         public int LanguageID { get; set; }
         public int NumOfPages { get; set; }
         public short Wheight { get; set; }
@@ -22,13 +22,13 @@ namespace EntityFrameworkCore.Models
         public DateTime? PublishDate { get; set; } = null;
         public int PublishYear { get; set; }
         public bool IsDelete { get; set; }
-        public int PublisherID {  get; set; }
+        public int PublisherID { get; set; }
 
 
         public Publisher Publisher { get; set; }
         public int SCategoryID { get; set; }
 
-        
+
         public Language Language { get; set; }
         public Discount Discount { get; set; }
         public List<Author_Book> Author_Book { get; set; }
@@ -41,7 +41,7 @@ namespace EntityFrameworkCore.Models
         public int BookID { get; set; }
         public int CategoryID { get; set; }
 
-        public  Book Book { get; set; }
+        public Book Book { get; set; }
         public Category Category { get; set; }
     }
     public class Author
@@ -49,7 +49,7 @@ namespace EntityFrameworkCore.Models
         private ILazyLoader LazyLoader { get; set; }
         private List<Author_Book> _Author_Books;
         public Author()
-        { 
+        {
         }
         private Author(ILazyLoader lazyLoader)
         {
@@ -58,18 +58,19 @@ namespace EntityFrameworkCore.Models
 
         [Key]
         public int AuthorID { get; set; }
-        
-        [Display(Name ="نام")]
+
+        [Display(Name = "نام")]
         public string FirstName { get; set; }
-        
+
         [Display(Name = "نام خانوادگی")]
         public string LastName { get; set; }
 
-        
+
         public List<Author_Book> Author_Book
         {
-            get => LazyLoader.Load(this, ref _Author_Books);
-            set=>_Author_Books = value;
+            get; set;
+            //    get => LazyLoader.Load(this, ref _Author_Books);
+            //    set=>_Author_Books = value;
         }
     }
     public class Author_Book
@@ -135,9 +136,9 @@ namespace EntityFrameworkCore.Models
         [Key]
         public int ProviceID { get; set; }
 
-        [Display(Name ="نام استان")]
+        [Display(Name = "نام استان")]
         public string ProviceName { get; set; }
-        
+
         public List<City> Citys { get; set; }
     }
     public class City
