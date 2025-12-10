@@ -47,7 +47,7 @@ namespace EntityFrameworkCore.Models
     public class Author
     {
         private ILazyLoader LazyLoader { get; set; }
-        private List<Author_Book> _Author_Books;
+        private List<Author_Book> _Author_Book;
         public Author()
         {
         }
@@ -68,9 +68,9 @@ namespace EntityFrameworkCore.Models
 
         public List<Author_Book> Author_Book
         {
-            get; set;
-            //    get => LazyLoader.Load(this, ref _Author_Books);
-            //    set=>_Author_Books = value;
+            //get; set;
+            get => LazyLoader.Load(this, ref _Author_Book);
+            set => _Author_Book = value;
         }
     }
     public class Author_Book
