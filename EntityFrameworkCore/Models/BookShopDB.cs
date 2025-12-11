@@ -6,7 +6,15 @@ namespace EntityFrameworkCore.Models
 {
     public class Book
     {
-
+        public ILazyLoader LazyLoader { get; set; }
+        private Publisher _Publisher;
+        private Language _Language;
+        public Book()
+        { }
+        public Book(ILazyLoader lazyLoader)
+        {
+            LazyLoader = lazyLoader;
+        }
         public int BookID { get; set; }
         public string Title { get; set; }
         public string Summery { get; set; }
@@ -25,11 +33,19 @@ namespace EntityFrameworkCore.Models
         public int PublisherID { get; set; }
 
 
-        public Publisher Publisher { get; set; }
+        public Publisher Publisher
+        {
+            get => LazyLoader.Load(this, ref _Publisher);
+            set => _Publisher = value;
+        }
         public int SCategoryID { get; set; }
 
 
-        public Language Language { get; set; }
+        public Language Language
+        {
+            get => LazyLoader.Load(this, ref _Language);
+            set => _Language = value;
+        }
         public Discount Discount { get; set; }
         public List<Author_Book> Author_Book { get; set; }
         public List<Order_Book> Order_Book { get; set; }
@@ -75,9 +91,23 @@ namespace EntityFrameworkCore.Models
     }
     public class Author_Book
     {
+        public ILazyLoader LazyLoader { get; set; }
+        private Book _Book;
+        public Author_Book()
+        {
+
+        }
+        private Author_Book(ILazyLoader lazyLoader)
+        {
+            LazyLoader = lazyLoader;
+        }
         public int BookID { get; set; }
         public int AuthorID { get; set; }
-        public Book Book { get; set; }
+        public Book Book
+        {
+            get => LazyLoader.Load(this, ref _Book);
+            set => _Book = value;
+        }
         public Author Author { get; set; }
     }
     public class Discount

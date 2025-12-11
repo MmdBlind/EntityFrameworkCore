@@ -11,7 +11,26 @@
             </div>
             <div class="card-body">
                 <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>عنوان</th>
+                            <th>شابک</th>
+                            <th>ناشر</th>
+                            <th>زبان</th>
+                        </tr>
+                    </thead>
 
+                    <tbody>
+                        @foreach(var item in Model.Author_Book)
+                        {
+                            <tr>
+                                <td>@item.Book.Title</td>
+                                <td>@item.Book.ISBN</td>
+                                <td>@item.Book.Publisher.PublisherName</td>
+                                <td>@item.Book.Language.LanguageName</td>
+                            </tr>
+                        }
+                    </tbody>
                 </table>
             </div>
         </div>
