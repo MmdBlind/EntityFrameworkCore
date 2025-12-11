@@ -1,18 +1,27 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore.Infrastructure;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EntityFrameworkCore.Models
 {
     public class Book
     {
-
+        public ILazyLoader LazyLoader { get; set; }
+        private Publisher _Publisher;
+        private Language _Language;
+        public Book()
+        { }
+        public Book(ILazyLoader lazyLoader)
+        {
+            LazyLoader = lazyLoader;
+        }
         public int BookID { get; set; }
         public string Title { get; set; }
         public string Summery { get; set; }
         public int Price { get; set; }
         public int Stock { get; set; }
         public string? File { get; set; } = null;
-        public byte[]? Image { get; set; }= null;
+        public byte[]? Image { get; set; } = null;
         public int LanguageID { get; set; }
         public int NumOfPages { get; set; }
         public short Wheight { get; set; }
@@ -21,42 +30,85 @@ namespace EntityFrameworkCore.Models
         public DateTime? PublishDate { get; set; } = null;
         public int PublishYear { get; set; }
         public bool IsDelete { get; set; }
-        public int PublisherID {  get; set; }
+        public int PublisherID { get; set; }
 
 
-        public virtual Publisher Publisher { get; set; }
+        public Publisher Publisher
+        {
+            get => LazyLoader.Load(this, ref _Publisher);
+            set => _Publisher = value;
+        }
         public int SCategoryID { get; set; }
 
 
-        public virtual Language Language { get; set; }
-        public virtual Discount Discount { get; set; }
-        public virtual List<Author_Book> Author_Book { get; set; }
-        public virtual List<Order_Book> Order_Book { get; set; }
-        public virtual List<Translator_Book> Translator_Books { get; set; }
-        public virtual List<Book_Category> book_Categories { get; set; }
+        public Language Language
+        {
+            get => LazyLoader.Load(this, ref _Language);
+            set => _Language = value;
+        }
+        public Discount Discount { get; set; }
+        public List<Author_Book> Author_Book { get; set; }
+        public List<Order_Book> Order_Book { get; set; }
+        public List<Translator_Book> Translator_Books { get; set; }
+        public List<Book_Category> book_Categories { get; set; }
     }
     public class Book_Category
     {
         public int BookID { get; set; }
         public int CategoryID { get; set; }
 
-        public virtual Book Book { get; set; }
-        public virtual Category Category { get; set; }
+        public Book Book { get; set; }
+        public Category Category { get; set; }
     }
     public class Author
     {
+        private ILazyLoader LazyLoader { get; set; }
+        private List<Author_Book> _Author_Book;
+        public Author()
+        {
+        }
+        private Author(ILazyLoader lazyLoader)
+        {
+            LazyLoader = lazyLoader;
+        }
+
         [Key]
         public int AuthorID { get; set; }
+
+        [Display(Name = "نام")]
         public string FirstName { get; set; }
+
+        [Display(Name = "نام خانوادگی")]
         public string LastName { get; set; }
-        public virtual List<Author_Book> Author_Book { get; set; }
+
+
+        public List<Author_Book> Author_Book
+        {
+            //get; set;
+            get => LazyLoader.Load(this, ref _Author_Book);
+            set => _Author_Book = value;
+        }
     }
     public class Author_Book
     {
+        public ILazyLoader LazyLoader { get; set; }
+        private Book _Book;
+        public Author_Book()
+        {
+
+        }
+        private Author_Book(ILazyLoader lazyLoader)
+        {
+            LazyLoader = lazyLoader;
+        }
         public int BookID { get; set; }
         public int AuthorID { get; set; }
-        public virtual Book Book { get; set; }
-        public virtual Author Author { get; set; }
+        public Book Book
+        {
+            get => LazyLoader.Load(this, ref _Book);
+            set => _Book = value;
+        }
+        public Author Author { get; set; }
     }
     public class Discount
     {
@@ -115,6 +167,8 @@ namespace EntityFrameworkCore.Models
     {
         [Key]
         public int ProviceID { get; set; }
+
+        [Display(Name = "نام استان")]
         public string ProviceName { get; set; }
 
         public virtual List<City> Citys { get; set; }

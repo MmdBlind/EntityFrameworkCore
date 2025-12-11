@@ -62,6 +62,25 @@ namespace EntityFrameworkCore.Models
         public DbSet<Publisher> Publisher { get; set; }
         public DbSet<Book_Category> Book_Categories { get; set; }
         public DbSet<Translator_Book> Translator_Books { get; set; }
-        public DbSet<ReadAllBook> ReadAllBooks { get; set; } 
+        public DbSet<ReadAllBook> ReadAllBooks { get; set; }
+
+        [DbFunction("GetAllAuthors","dbo")]
+        public static String  GetAllAuthors(int BookID)
+        { 
+            throw new NotImplementedException();
+        }
+
+        [DbFunction("GetAllCategories", "dbo")]
+        public static String GetAllCategories(int BookID)
+        {
+            throw new NotImplementedException();
+        }
+
+        [DbFunction("GetAllTranslators", "dbo")]
+        public static String GetAllTranslators(int BookID)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

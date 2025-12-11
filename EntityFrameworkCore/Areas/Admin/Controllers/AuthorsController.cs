@@ -171,5 +171,18 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             }
             return StateInfo;
         }
+        public async Task<IActionResult> AuthorBooks(int id)
+        {
+            var Author = await _context.Authors.Where(a => a.AuthorID == id).FirstOrDefaultAsync();
+            if (Author == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return View(Author );
+            }
+            
+        }
     }
 }
