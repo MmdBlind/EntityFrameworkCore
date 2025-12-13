@@ -1,4 +1,5 @@
 ﻿using EntityFrameworkCore.Models;
+using EntityFrameworkCore.Models.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -14,18 +15,17 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
     [Area("Admin")]
     public class AuthorsController : Controller
     {
-        private readonly BookShopContext _context;
+        private readonly IUnitOfWork _UW;
 
-        public AuthorsController(BookShopContext context)
+        public AuthorsController(IUnitOfWork UW)
         {
-            _context = context;
+            _UW = UW;
         }
 
         // GET: Admin/Authors
         public async Task<IActionResult> Index()
         {
-            var Author = await _context.Authors.ToListAsync();
-            ViewBag.EntityStatus =DisplayStates(_context.ChangeTracker.Entries());
+            var Author = _UW.BaseRepository<Author>().FindAllAsync();
             return View(Author);
         }
 
@@ -37,8 +37,8 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var author = await _context.Authors
-                .FirstOrDefaultAsync(m => m.AuthorID == id);
+            var author = _UW.BaseRepository<Author>().FindById(id);
+
             if (author == null)
             {
                 return NotFound();
@@ -62,8 +62,8 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(author);
-                await _context.SaveChangesAsync();
+                await _UW.BaseRepository<Author>().Create(author);
+                await _UW.Commit();
                 return RedirectToAction(nameof(Index));
             }
             return View(author);
@@ -77,7 +77,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var author = await _context.Authors.FindAsync(id);
+            var author = await _UW.BaseRepository<Author>().FindById(id);
             if (author == null)
             {
                 return NotFound();
@@ -101,12 +101,12 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             {
                 try
                 {
-                    _context.Update(author);
-                    await _context.SaveChangesAsync();
+                    _UW.BaseRepository<Author>().Update(author);
+                    await _UW.Commit();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AuthorExists(author.AuthorID))
+                    if (_UW.BaseRepository<Author>().FindById(author.AuthorID) == null)
                     {
                         return NotFound();
                     }
@@ -128,8 +128,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var author = await _context.Authors
-                .FirstOrDefaultAsync(m => m.AuthorID == id);
+            var author = await _UW.BaseRepository<Author>().FindById(id);
             if (author == null)
             {
                 return NotFound();
@@ -143,20 +142,16 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var author = await _context.Authors.FindAsync(id);
+            var author = await _UW.BaseRepository<Author>().FindById(id);
             if (author != null)
             {
-                _context.Authors.Remove(author);
+                _UW.BaseRepository<Author>().Delete(author);
             }
 
-            await _context.SaveChangesAsync();
+            await _UW.Commit();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AuthorExists(int id)
-        {
-            return _context.Authors.Any(e => e.AuthorID == id);
-        }
         private List<EntityStatus> DisplayStates(IEnumerable<EntityEntry> entities)
         {
             List<EntityStatus> StateInfo = new List<EntityStatus>();
@@ -173,16 +168,16 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         }
         public async Task<IActionResult> AuthorBooks(int id)
         {
-            var Author = await _context.Authors.Where(a => a.AuthorID == id).FirstOrDefaultAsync();
+            var Author = await _UW.BaseRepository<Author>().FindById(id);
             if (Author == null)
             {
                 return NotFound();
             }
             else
             {
-                return View(Author );
+                return View(Author);
             }
-            
+
         }
     }
 }

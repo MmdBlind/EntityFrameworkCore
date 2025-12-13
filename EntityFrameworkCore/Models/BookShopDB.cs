@@ -33,45 +33,28 @@ namespace EntityFrameworkCore.Models
         public int PublisherID { get; set; }
 
 
-        public Publisher Publisher
-        {
-            get => LazyLoader.Load(this, ref _Publisher);
-            set => _Publisher = value;
-        }
+        public virtual Publisher Publisher { get; set; }
+
         public int SCategoryID { get; set; }
 
 
-        public Language Language
-        {
-            get => LazyLoader.Load(this, ref _Language);
-            set => _Language = value;
-        }
-        public Discount Discount { get; set; }
-        public List<Author_Book> Author_Book { get; set; }
-        public List<Order_Book> Order_Book { get; set; }
-        public List<Translator_Book> Translator_Books { get; set; }
-        public List<Book_Category> book_Categories { get; set; }
+        public virtual Language Language { get; set; }
+        public virtual Discount Discount { get; set; }
+        public virtual List<Author_Book> Author_Book { get; set; }
+        public virtual List<Order_Book> Order_Book { get; set; }
+        public virtual List<Translator_Book> Translator_Books { get; set; }
+        public virtual List<Book_Category> book_Categories { get; set; }
     }
     public class Book_Category
     {
         public int BookID { get; set; }
         public int CategoryID { get; set; }
 
-        public Book Book { get; set; }
-        public Category Category { get; set; }
+        public virtual Book Book { get; set; }
+        public virtual Category Category { get; set; }
     }
     public class Author
     {
-        private ILazyLoader LazyLoader { get; set; }
-        private List<Author_Book> _Author_Book;
-        public Author()
-        {
-        }
-        private Author(ILazyLoader lazyLoader)
-        {
-            LazyLoader = lazyLoader;
-        }
-
         [Key]
         public int AuthorID { get; set; }
 
@@ -82,33 +65,16 @@ namespace EntityFrameworkCore.Models
         public string LastName { get; set; }
 
 
-        public List<Author_Book> Author_Book
-        {
-            //get; set;
-            get => LazyLoader.Load(this, ref _Author_Book);
-            set => _Author_Book = value;
-        }
+        public virtual List<Author_Book> Author_Book { get; set; }
+
+
     }
     public class Author_Book
     {
-        public ILazyLoader LazyLoader { get; set; }
-        private Book _Book;
-        public Author_Book()
-        {
-
-        }
-        private Author_Book(ILazyLoader lazyLoader)
-        {
-            LazyLoader = lazyLoader;
-        }
         public int BookID { get; set; }
         public int AuthorID { get; set; }
-        public Book Book
-        {
-            get => LazyLoader.Load(this, ref _Book);
-            set => _Book = value;
-        }
-        public Author Author { get; set; }
+        public virtual Book Book { get; set; }
+        public virtual Author Author { get; set; }
     }
     public class Discount
     {
@@ -235,7 +201,7 @@ namespace EntityFrameworkCore.Models
     {
         public int BookID { get; set; }
         public int TranslatorID { get; set; }
-        public Book Book { get; set; }
+        public virtual Book Book { get; set; }
         public virtual Translator Translator { get; set; }
     }
 }

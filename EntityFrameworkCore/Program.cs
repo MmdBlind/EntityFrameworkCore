@@ -1,6 +1,7 @@
 using EntityFrameworkCore.Classes;
 using EntityFrameworkCore.Models;
 using EntityFrameworkCore.Models.Repository;
+using EntityFrameworkCore.Models.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using ReflectionIT.Mvc.Paging;
 
@@ -11,6 +12,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<BookShopContext>(Options => Options.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddTransient<BooksRepository>();
 builder.Services.AddTransient<ConvertDate>();
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 
 builder.Services.AddPaging(options => {
