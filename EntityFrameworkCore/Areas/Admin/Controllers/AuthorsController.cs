@@ -25,7 +25,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         // GET: Admin/Authors
         public async Task<IActionResult> Index()
         {
-            var Author = _UW.BaseRepository<Author>().FindAllAsync();
+            var Author = await _UW.BaseRepository<Author>().FindAllAsync();
             return View(Author);
         }
 
@@ -60,12 +60,11 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("AuthorID,FirstName,LastName")] Author author)
         {
-            if (ModelState.IsValid)
-            {
+            
                 await _UW.BaseRepository<Author>().Create(author);
                 await _UW.Commit();
                 return RedirectToAction(nameof(Index));
-            }
+            
             return View(author);
         }
 

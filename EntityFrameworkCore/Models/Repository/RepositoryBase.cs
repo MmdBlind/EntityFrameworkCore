@@ -7,25 +7,29 @@ namespace EntityFrameworkCore.Models.Repository
     public class RepositoryBase<TEntity, TContext> : IRepositoryBase<TEntity> where TEntity : class where TContext : DbContext
     {
         protected TContext _context;
-        
-         private DbSet<TEntity> dbSet;
-        
+
+        private DbSet<TEntity> dbSet;
+
         public RepositoryBase(TContext Context)
         {
             _context = Context;
-            dbSet = dbSet;
+            dbSet = _context.Set<TEntity>();
         }
-        
+
         public async Task<IEnumerable<TEntity>> FindAllAsync()
         {
             return await dbSet.ToListAsync();
         }
-        
+        public IEnumerable<TEntity> FindAll()
+        {
+            return dbSet.ToList();
+        }
+
         public async Task<TEntity> FindById(object id)
         {
             return await dbSet.FindAsync(id);
         }
-        
+
         public async Task<IEnumerable<TEntity>> FindByConditionAsync(Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, params Expression<Func<TEntity, object>>[] includes)
         {
             IQueryable<TEntity> query = dbSet;
@@ -43,12 +47,12 @@ namespace EntityFrameworkCore.Models.Repository
             }
             return await query.ToListAsync();
         }
-       
+
         public async Task Create(TEntity entity)
         {
             await dbSet.AddAsync(entity);
         }
-        
+
         public void Update(TEntity entity) =>
             dbSet.Update(entity);
 

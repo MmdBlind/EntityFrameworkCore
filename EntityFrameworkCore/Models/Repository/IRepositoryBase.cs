@@ -6,6 +6,8 @@ namespace EntityFrameworkCore.Models.Repository
     {
         Task<IEnumerable<TEntity>> FindAllAsync();
 
+        IEnumerable<TEntity> FindAll();
+
         Task<TEntity> FindById(object id);
 
         Task<IEnumerable<TEntity>> FindByConditionAsync(Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, params Expression<Func<TEntity, object>>[] includes);

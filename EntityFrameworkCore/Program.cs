@@ -15,7 +15,8 @@ builder.Services.AddTransient<ConvertDate>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 
-builder.Services.AddPaging(options => {
+builder.Services.AddPaging(options =>
+{
     options.ViewName = "Bootstrap4";
     options.HtmlIndicatorDown = " <span>&darr;</span>";
     options.HtmlIndicatorUp = " <span>&uarr;</span>";

@@ -4,7 +4,7 @@ using NuGet.Protocol.Core.Types;
 
 namespace EntityFrameworkCore.Models.Repository
 {
-    public class BooksRepository
+    public class BooksRepository : IBooksRepository
     {
         private readonly BookShopContext _context;
         public BooksRepository(BookShopContext context)
@@ -36,6 +36,7 @@ namespace EntityFrameworkCore.Models.Repository
             }
 
         }
+
         public List<BooksIndexViewModel> GetAllBooks(string title, string ISBN, string Language, string Publisher, string Author, string Translator, string Category)
         {
 
