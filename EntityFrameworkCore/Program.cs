@@ -4,12 +4,18 @@ using EntityFrameworkCore.Models.Repository;
 using EntityFrameworkCore.Models.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using ReflectionIT.Mvc.Paging;
+using Microsoft.AspNetCore.Identity;
+using EntityFrameworkCore.Areas.Identity.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<BookShopContext>(Options => Options.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<BookShopContext>(options =>
+    options.UseLazyLoadingProxies()
+           .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDefaultIdentity<BookShopUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<BookShopContext>();
 builder.Services.AddTransient<BooksRepository>();
 builder.Services.AddTransient<ConvertDate>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();

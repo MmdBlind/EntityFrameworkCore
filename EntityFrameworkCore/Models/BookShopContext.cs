@@ -1,10 +1,12 @@
-﻿using EntityFrameworkCore.Mapping;
-using Microsoft.EntityFrameworkCore;
+﻿using EntityFrameworkCore.Areas.Identity.Data;
+using EntityFrameworkCore.Mapping;
 using EntityFrameworkCore.Models;
 using EntityFrameworkCore.Models.ViewModels;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 namespace EntityFrameworkCore.Models
 {
-    public class BookShopContext : DbContext
+    public class BookShopContext : IdentityDbContext<BookShopUser>
     {
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
@@ -18,6 +20,8 @@ namespace EntityFrameworkCore.Models
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.ApplyConfiguration(new Author_BookMap());
 
             modelBuilder.ApplyConfiguration(new BookMap());
