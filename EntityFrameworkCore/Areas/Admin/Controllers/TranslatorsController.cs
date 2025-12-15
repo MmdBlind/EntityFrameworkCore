@@ -1,4 +1,5 @@
 ﻿using EntityFrameworkCore.Models;
+using EntityFrameworkCore.Models.UnitOfWork;
 using EntityFrameworkCore.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,15 +9,15 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
     [Area("Admin")]
     public class TranslatorsController : Controller
     {
-        private readonly BookShopContext _context;
-        public TranslatorsController(BookShopContext context)
+        private readonly IUnitOfWork _UW;
+        public TranslatorsController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _UW = unitOfWork;
         }
 
         public async Task<IActionResult>  Index()
         {
-            return View(await _context.Translator.ToListAsync());
+            return View(await _UW.BaseRepository<Translator>().FindAllAsync());
         }
         [HttpGet]
         public IActionResult Create()
@@ -33,9 +34,9 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 {
                     FirstName = ViewModel.FirstName,
                     LastName = ViewModel.LastName
-                };  
-                _context.Translator.Add(translator);
-                await _context.SaveChangesAsync();
+                };
+                _UW.BaseRepository<Translator>().Create(translator);
+                await _UW.Commit();
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -52,7 +53,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             }
             else
             {
-                var Translator = await _context.Translator.FirstOrDefaultAsync(m => m.TranslatorID == id);
+                var Translator = await _UW.BaseRepository<Translator>().FindById(id);
                 if (Translator == null)
                 {
                     return NotFound();
@@ -71,8 +72,8 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         {
             try
             {
-                _context.Update(translator);
-                await _context.SaveChangesAsync();
+                _UW.BaseRepository<Translator>().Update(translator);
+                await _UW.Commit();
                 return RedirectToAction("Index");
             }
             catch
@@ -89,7 +90,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             }
             else
             {
-                var Translator = await _context.Translator.FirstOrDefaultAsync(m => m.TranslatorID == id);
+                var Translator = await _UW.BaseRepository<Translator>().FindById(id);
                 if (Translator == null)
                 {
                     return NotFound();
@@ -104,9 +105,9 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Deleted(int TranslatorID)
         {
-            var Translator = await _context.Translator.FirstAsync(m => m.TranslatorID == TranslatorID);
-            _context.Translator.Remove(Translator);
-            await _context.SaveChangesAsync();
+            var Translator = await _UW.BaseRepository<Translator>().FindById(TranslatorID);
+            _UW.BaseRepository<Translator>().Delete(Translator);
+            await _UW.Commit();
             return RedirectToAction("Index");
         }
 

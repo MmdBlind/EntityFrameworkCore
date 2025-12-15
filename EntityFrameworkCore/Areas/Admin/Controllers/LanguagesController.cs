@@ -1,29 +1,29 @@
-﻿using System;
+﻿using EntityFrameworkCore.Models;
+using EntityFrameworkCore.Models.UnitOfWork;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using EntityFrameworkCore.Models;
-using Microsoft.Data.SqlClient;
 
 namespace EntityFrameworkCore.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class LanguagesController : Controller
     {
-        private readonly BookShopContext _context;
-
-        public LanguagesController(BookShopContext context)
+        private readonly IUnitOfWork _UW;
+        public LanguagesController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _UW = unitOfWork;
         }
 
         // GET: Admin/Languages
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Languages.ToListAsync());
+            return View(await _UW.BaseRepository<Language>().FindAllAsync());
         }
 
         // GET: Admin/Languages/Details/5
@@ -34,8 +34,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var language = await _context.Languages
-                .FirstOrDefaultAsync(m => m.LanguageID == id);
+            var language = await _UW.BaseRepository<Language>().FindById(id);
             if (language == null)
             {
                 return NotFound();
@@ -55,12 +54,12 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( Language language)
+        public async Task<IActionResult> Create(Language language)
         {
-           try
+            try
             {
-                _context.Add(language);
-                await _context.SaveChangesAsync();
+                _UW.BaseRepository<Language>().Create(language);
+                await _UW.Commit();
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -78,7 +77,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var language = await _context.Languages.FindAsync(id);
+            var language = await _UW.BaseRepository<Language>().FindById(id);
             if (language == null)
             {
                 return NotFound();
@@ -101,8 +100,8 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             {
                 try
                 {
-                    _context.Update(language);
-                    await _context.SaveChangesAsync();
+                    _UW.BaseRepository<Language>().Update(language);
+                    await _UW.Commit();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -117,7 +116,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            
+
             return View(language);
         }
 
@@ -129,8 +128,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var language = await _context.Languages
-                .FirstOrDefaultAsync(m => m.LanguageID == id);
+            var language = await _UW.BaseRepository<Language>().FindById(id);
             if (language == null)
             {
                 return NotFound();
@@ -150,14 +148,22 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             //    _context.Languages.Remove(language);
             //}
             //await _context.SaveChangesAsync();
-            object[] Parameters = { new SqlParameter("@id", id) };
-            await _context.Database.ExecuteSqlRawAsync("Delete From dbo.Languages Where(LanguageID=@id)", Parameters);
-            return RedirectToAction(nameof(Index));
+            var language = await _UW.BaseRepository<Language>().FindById(id);
+            if (language == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                _UW.BaseRepository<Language>().Delete(language);
+                _UW.Commit();
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         private bool LanguageExists(int id)
         {
-            return _context.Languages.Any(e => e.LanguageID == id);
+            return _UW._Context.Languages.Any(e => e.LanguageID == id);
         }
     }
 }

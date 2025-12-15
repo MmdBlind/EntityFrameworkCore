@@ -13,6 +13,7 @@ builder.Services.AddDbContext<BookShopContext>(Options => Options.UseLazyLoading
 builder.Services.AddTransient<BooksRepository>();
 builder.Services.AddTransient<ConvertDate>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+builder.Services.AddTransient<IBooksRepository, BooksRepository>();
 
 
 builder.Services.AddPaging(options =>
