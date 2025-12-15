@@ -19,7 +19,7 @@ namespace EntityFrameworkCore.Migrations
                 oldClrType: typeof(DateTime),
                 oldType: "datetime2",
                 oldNullable: true,
-                oldDefaultValueSql: "CONVERT(datetime,GetData())");
+                oldDefaultValueSql: "CONVERT(dtetime,GetData())");
 
             migrationBuilder.AlterColumn<bool>(
                 name: "IsDelete",
