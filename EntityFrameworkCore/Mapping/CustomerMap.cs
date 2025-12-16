@@ -19,13 +19,13 @@ namespace EntityFrameworkCore.Mapping
                    .HasForeignKey("City2CityID")
                    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(c => c.FirstName)
-                   .HasColumnName("FName")
-                   .HasColumnType("nvarchar(20)");
+            //builder.Property(c => c.FirstName)
+            //       .HasColumnName("FName")
+            //       .HasColumnType("nvarchar(20)");
 
-            builder.Property(c => c.LastName)
-                   .HasColumnName("LName")
-                   .HasMaxLength(100);
+            //builder.Property(c => c.LastName)
+            //       .HasColumnName("LName")
+            //       .HasMaxLength(100);
 
             builder.HasOne(p => p.City1)
                    .WithMany(t => t.Customers1)
@@ -35,7 +35,7 @@ namespace EntityFrameworkCore.Mapping
                    .WithMany(t => t.Customers2)
                    .HasForeignKey(f => f.cityID2);
 
-            builder.Ignore(c => c.Age);
+            //builder.Ignore(c => c.Age);
         }
     }
 }

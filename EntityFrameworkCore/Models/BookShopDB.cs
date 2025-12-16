@@ -109,18 +109,14 @@ namespace EntityFrameworkCore.Models
     public class Customer
     {
         [Key]
-        public int CustomerID { get; set; }
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
-        public DateTime BirthDate { get; set; }
+        public string CustomerID { get; set; }
         public string Address1 { get; set; }
         public string Address2 { get; set; }
-        public string Mobile { get; set; }
         public string Tellephone { get; set; }
         public string Image { get; set; }
+        public string PostalCode1 { get; set; }
+        public string PostalCode2 { get; set; }
 
-        public int Age { get; set; }
 
         public virtual City City1 { get; set; }
         public virtual City City2 { get; set; }
