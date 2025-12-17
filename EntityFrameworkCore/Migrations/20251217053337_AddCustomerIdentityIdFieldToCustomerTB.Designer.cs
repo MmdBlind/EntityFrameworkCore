@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(BookShopContext))]
-    [Migration("20251216111023_ChangeCustomerIDType")]
-    partial class ChangeCustomerIDType
+    [Migration("20251217053337_AddCustomerIdentityIdFieldToCustomerTB")]
+    partial class AddCustomerIdentityIdFieldToCustomerTB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -283,8 +283,11 @@ namespace EntityFrameworkCore.Migrations
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Customer", b =>
                 {
-                    b.Property<string>("CustomerID")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("CustomerID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerID"));
 
                     b.Property<string>("Address1")
                         .IsRequired()
@@ -299,6 +302,10 @@ namespace EntityFrameworkCore.Migrations
 
                     b.Property<int>("City2CityID")
                         .HasColumnType("int");
+
+                    b.Property<string>("CustomerIdentityID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Image")
                         .IsRequired()
@@ -381,9 +388,8 @@ namespace EntityFrameworkCore.Migrations
                     b.Property<DateTime>("BuyDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("CustomerID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("CustomerID")
+                        .HasColumnType("int");
 
                     b.Property<string>("DispatchNumber")
                         .IsRequired()

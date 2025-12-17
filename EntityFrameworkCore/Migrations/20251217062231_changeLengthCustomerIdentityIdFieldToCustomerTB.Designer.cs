@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(BookShopContext))]
-    [Migration("20251216104057_Relationship_AspUser_Customer")]
-    partial class Relationship_AspUser_Customer
+    [Migration("20251217062231_changeLengthCustomerIdentityIdFieldToCustomerTB")]
+    partial class changeLengthCustomerIdentityIdFieldToCustomerTB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -302,6 +302,11 @@ namespace EntityFrameworkCore.Migrations
 
                     b.Property<int>("City2CityID")
                         .HasColumnType("int");
+
+                    b.Property<string>("CustomerIdentityID")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Image")
                         .IsRequired()

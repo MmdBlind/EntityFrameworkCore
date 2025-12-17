@@ -109,7 +109,9 @@ namespace EntityFrameworkCore.Models
     public class Customer
     {
         [Key]
-        public string CustomerID { get; set; }
+        public int CustomerID { get; set; }
+        [MaxLength(450)]
+        public string CustomerIdentityID { get; set; }
         public string Address1 { get; set; }
         public string Address2 { get; set; }
         public string Tellephone { get; set; }

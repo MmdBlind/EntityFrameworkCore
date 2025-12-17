@@ -5,28 +5,25 @@
 namespace EntityFrameworkCore.Migrations
 {
     /// <inheritdoc />
-    public partial class Relationship_AspUser_Customer : Migration
+    public partial class RelationShip_AspNetUsers_Customers : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddForeignKey(
-                name: "Fk_Customers_AspNetUser_CustomerID",
+                name: "FK_Customers_AspNetUsers_CustomerIdentityID",
                 table: "Customers",
-                column: "CustomerID",
+                column: "CustomerIdentityID",
                 principalTable: "AspNetUsers",
-                principalColumn: "id",
-                onDelete: ReferentialAction.Restrict
-            );
+                principalColumn: "id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "Fk_Customers_AspNetUser_CustomerID",
-                table: "Customers"
-            );
+                name: "FK_Customers_AspNetUsers_CustomerIdentityID",
+                table: "Customers");
 
         }
     }
