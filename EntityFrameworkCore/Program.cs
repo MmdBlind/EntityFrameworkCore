@@ -14,8 +14,13 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<BookShopContext>(options =>
     options.UseLazyLoadingProxies()
            .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddDefaultIdentity<BookShopUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<BookShopContext>();
+
+//builder.Services.AddDefaultIdentity<BookShopUser>(options => options.SignIn.RequireConfirmedAccount = true)
+//    .AddEntityFrameworkStores<BookShopContext>();
+builder.Services.AddIdentity<BookShopUser, IdentityRole>()
+    .AddEntityFrameworkStores<BookShopContext>()
+    .AddDefaultUI()
+    .AddDefaultTokenProviders();
 builder.Services.AddTransient<BooksRepository>();
 builder.Services.AddTransient<ConvertDate>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
