@@ -13,19 +13,31 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         {
             _roleManager = roleManager;
         }
-        public IActionResult Index(int page=1,int row=10)
+        public IActionResult Index(int page = 1, int row = 10)
         {
-            var Roles= _roleManager.Roles.Select(r=>new RolesViewModel 
+            var Roles = _roleManager.Roles.Select(r => new RolesViewModel
             {
-                RoleID=r.Id,
-                RoleName=r.Name
+                RoleID = r.Id,
+                RoleName = r.Name
             }).ToList();
-            var PagingModel = PagingList.Create(Roles,row,page);
-            PagingModel.RouteValue=new RouteValueDictionary
+            var PagingModel = PagingList.Create(Roles, row, page);
+            PagingModel.RouteValue = new RouteValueDictionary
             {
                 {"row",row}
             };
             return View(PagingModel);
+        }
+
+        [HttpGet]
+        public IActionResult CreateRole()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateRole(RolesViewModel viewModel)
+        {
+            return View();
         }
     }
 }
