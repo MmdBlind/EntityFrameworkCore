@@ -33,11 +33,42 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         {
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateRole(RolesViewModel viewModel)
         {
-            return View();
+            if (ModelState.IsValid)
+            {
+                var resault = await _roleManager.CreateAsync(new IdentityRole(viewModel.RoleName));
+                if(resault.Succeeded)
+                {
+                    return RedirectToAction("Index");
+                }
+
+                ViewBag.Error = "در ذخیره اطلاعات هطایی رخ داده است.";
+                return View(viewModel );
+            }
+            return View(viewModel);
+        }
+        
+        public async Task<IActionResult> EditRole(string? id)
+        {
+            if(id is null)
+            {
+                return NotFound();
+            }
+            var Role = await _roleManager.FindByIdAsync(id);
+            if(Role is null)
+            {
+                return NotFound();
+            }
+            RolesViewModel viewModel = new RolesViewModel
+            {
+                RoleID = Role.Id,
+                RoleName = Role.Name
+            };
+                return View(viewModel);
         }
     }
 }
