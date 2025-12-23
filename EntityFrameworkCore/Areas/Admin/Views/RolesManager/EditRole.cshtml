@@ -1,4 +1,59 @@
-﻿@{
+﻿@model EntityFrameworkCore.Models.ViewModels.RolesViewModel
+
+@{
     ViewData["Title"] = "EditRole";
     Layout = "~/Views/_Admin.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-light">
+                ویرایش نقش
+            </div>
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert @ViewBag.Message alert-dismissable">
+                    @if (ViewBag.Message == "alert-success")
+                    {
+                        <span>ذخیره تغییرات با موفقیت انجام شد</span>
+                    }
+                    else
+                    {
+                        <span>در ذخیره تغییرات خطایی رخ داده است.</span>
+                    }
+
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+            <form asp-action="EditRole">
+                <div class="row card-body mb-3">
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <input type="hidden" asp-for="RoleID" />
+                            <div class="col-md-3">
+                                <label asp-for="RoleName" class="control-label"></label>
+                            </div>
+                            <div class="col-md-9">
+                                <input asp-for="RoleName" class="form-control" />
+                                <span asp-validation-for="RoleName" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-info float-right">ذخیره تغییرات</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
