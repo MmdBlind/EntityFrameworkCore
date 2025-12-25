@@ -73,7 +73,6 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-
         public async Task<IActionResult> EditRole(RolesViewModel viewModel)
         {
             if (ModelState.IsValid)
@@ -99,6 +98,60 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             }
             ViewBag.Error = "اطلاعات وارد شده معتبر نمی باشد.";
             return View(viewModel);
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> DeleteRole(string id)
+        {
+            if(id == null)
+            {
+                return NotFound();
+            }
+            var Role = await _roleManager.FindByIdAsync(id);
+            if(Role==null)
+            {
+                return NotFound();
+            }
+            RolesViewModel viewModel = new RolesViewModel 
+            {
+                RoleID= Role.Id,
+                RoleName=Role.Name
+            };
+            return View(viewModel);
+        }
+
+        [HttpPost,ActionName("DeleteRole")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletedRole(string id)
+        {
+            if(id==null)
+            {
+                return NotFound();
+            }
+            var Role= await _roleManager.FindByIdAsync(id);
+            if (Role == null)
+            {
+                return NotFound();
+            }
+            var Resault =await _roleManager.DeleteAsync(Role);
+            if(Resault.Succeeded)
+            {
+                ViewBag.Message = "عملیات با موفقیت انجام شد.";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                RolesViewModel viewModel = new RolesViewModel
+                {
+                    RoleID = Role.Id,
+                    RoleName = Role.Name
+                };
+
+                ViewBag.Message = "عملیات با شکست مواجه شد";
+                
+                return View(viewModel);
+            }
+                
         }
     }
 }

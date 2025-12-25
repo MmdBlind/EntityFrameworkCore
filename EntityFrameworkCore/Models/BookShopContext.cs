@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 namespace EntityFrameworkCore.Models
 {
-    public class BookShopContext : IdentityDbContext<BookShopUser>
+    public class BookShopContext : IdentityDbContext<BookShopUser,ApplicationRole,string>
     {
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
@@ -21,6 +21,8 @@ namespace EntityFrameworkCore.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ApplicationRole>().ToTable("AspNetRoles").ToTable("AppRoles");
 
             modelBuilder.ApplyConfiguration(new Author_BookMap());
 
