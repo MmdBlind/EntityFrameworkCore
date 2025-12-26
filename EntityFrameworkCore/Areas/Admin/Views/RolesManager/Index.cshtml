@@ -23,6 +23,9 @@
                             <th>
                                 @Html.SortableHeaderFor(model => model.RoleName) 
                             </th>
+                            <th>
+                                @Html.SortableHeaderFor(model => model.RoleDescription)
+                            </th>
                             <th class="text-center">عملیات</th>
                         </tr>
                     </thead>
@@ -32,6 +35,9 @@
                             <tr>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.RoleName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.RoleDescription)
                                 </td>
                                 <td class="text-center">
                                     <a asp-action="EditRole" asp-route-id="@item.RoleID" class="btn btn-success btn-icon">

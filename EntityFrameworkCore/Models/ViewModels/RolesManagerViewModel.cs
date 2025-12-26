@@ -9,5 +9,8 @@ namespace EntityFrameworkCore.Models.ViewModels
         [Display(Name = "عنوان نقش")]
         [Required(ErrorMessage ="وارد نمودن {0} الزامی است.")]
         public string RoleName { get; set; }
+        [Display(Name ="توضیحات نقش")]
+        [Required(ErrorMessage ="وارد نمودن {0} الزامی است")]
+        public string RoleDescription { get; set; }
     }
 }
