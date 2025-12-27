@@ -26,6 +26,9 @@
                             <th>
                                 @Html.SortableHeaderFor(model => model.RoleDescription)
                             </th>
+                            <th class="text-center">
+                                @Html.SortableHeaderFor(model => model.UsersCount)
+                            </th>
                             <th class="text-center">عملیات</th>
                         </tr>
                     </thead>
@@ -38,6 +41,17 @@
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.RoleDescription)
+                                </td>
+                                <td class="text-center">
+                                    <a class="btn btn-info btn-icon">
+                                        <i class="fa fa-user p-1">
+                                            @Html.DisplayFor(modelItem => item.UsersCount)
+                                        </i>
+                                        |
+                                        <span class="p-1">
+                                            کاربران
+                                        </span>
+                                    </a>
                                 </td>
                                 <td class="text-center">
                                     <a asp-action="EditRole" asp-route-id="@item.RoleID" class="btn btn-success btn-icon">

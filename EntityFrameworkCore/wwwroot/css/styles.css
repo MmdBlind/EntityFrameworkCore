@@ -2673,7 +2673,7 @@ a.btn.disabled, fieldset:disabled a.btn {
         }
 
 .btn-info {
-    color: #fff;
+    color: #fff !important;
     background-color: #26c6da;
     border-color: #26c6da;
 }

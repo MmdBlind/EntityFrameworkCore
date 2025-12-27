@@ -2,11 +2,12 @@
 using EntityFrameworkCore.Mapping;
 using EntityFrameworkCore.Models;
 using EntityFrameworkCore.Models.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 namespace EntityFrameworkCore.Models
 {
-    public class BookShopContext : IdentityDbContext<BookShopUser,ApplicationRole,string>
+    public class BookShopContext : IdentityDbContext<BookShopUser,ApplicationRole,string,IdentityUserClaim<string>,ApplicationUserRole,IdentityUserLogin<string>,IdentityRoleClaim<string>,IdentityUserToken<string>>
     {
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
@@ -21,6 +22,13 @@ namespace EntityFrameworkCore.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ApplicationUserRole>().ToTable("AppUserRole");
+
+            modelBuilder.Entity<ApplicationUserRole>()
+                .HasOne(userRole => userRole.Role)
+                .WithMany(role => role.Users)
+                .HasForeignKey(r=>r.RoleId);
 
             modelBuilder.Entity<ApplicationRole>().ToTable("AspNetRoles").ToTable("AppRoles");
 
@@ -43,6 +51,7 @@ namespace EntityFrameworkCore.Models
             modelBuilder.ApplyConfiguration(new Book_TranslatorMap());
 
             modelBuilder.ApplyConfiguration(new Book_CategoryMap());
+
             modelBuilder
             .Entity<ReadAllBook>()
             .HasNoKey()

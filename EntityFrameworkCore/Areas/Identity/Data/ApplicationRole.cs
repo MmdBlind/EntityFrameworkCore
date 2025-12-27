@@ -16,6 +16,9 @@ namespace EntityFrameworkCore.Areas.Identity.Data
         {
             Description= description; 
         }
+
         public string Description { get; set; }
+
+        public virtual ICollection<ApplicationUserRole> Users { get; set; }
     }
 }

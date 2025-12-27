@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using EntityFrameworkCore.Areas.Identity.Data;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddRazorPages();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<BookShopContext>(options =>
@@ -25,6 +25,7 @@ builder.Services.AddTransient<BooksRepository>();
 builder.Services.AddTransient<ConvertDate>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<IBooksRepository, BooksRepository>();
+builder.Services.AddScoped<IApplicationRoleManager, ApplicationRoleManager>();
 
 
 builder.Services.AddPaging(options =>
@@ -51,6 +52,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 
+
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
@@ -59,5 +61,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-
+app.MapRazorPages();
 app.Run();

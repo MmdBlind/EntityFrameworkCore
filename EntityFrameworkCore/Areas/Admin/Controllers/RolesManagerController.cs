@@ -9,19 +9,14 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
     [Area("Admin")]
     public class RolesManagerController : Controller
     {
-        private readonly RoleManager<ApplicationRole> _roleManager;
-        public RolesManagerController(RoleManager<ApplicationRole> roleManager)
+        private readonly IApplicationRoleManager _roleManager;
+        public RolesManagerController(IApplicationRoleManager roleManager)
         {
             _roleManager = roleManager;
         }
         public IActionResult Index(int page = 1, int row = 10)
         {
-            var Roles = _roleManager.Roles.Select(r => new RolesViewModel
-            {
-                RoleID = r.Id,
-                RoleName = r.Name,
-                RoleDescription = r.Description
-            }).ToList();
+            var Roles = _roleManager.GetAllRolesAndUsersCount();
             var PagingModel = PagingList.Create(Roles, row, page);
             PagingModel.RouteValue = new RouteValueDictionary
             {
@@ -77,7 +72,8 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             {
                 RoleID = Role.Id,
                 RoleName = Role.Name,
-                RoleDescription = Role.Description
+                RoleDescription = Role.Description,
+               RecentRoleName=Role.Name 
             };
             return View(viewModel);
         }
@@ -92,7 +88,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 {
                     return NotFound();
                 }
-                if(await _roleManager.RoleExistsAsync(viewModel.RoleName))
+                if(await _roleManager.RoleExistsAsync(viewModel.RoleName)&&viewModel.RecentRoleName!=viewModel.RoleName)
                 {
                     ViewBag.Message = "نام نقش تکراری می‌باشد.";
                     return View(viewModel);
