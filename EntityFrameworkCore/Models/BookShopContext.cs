@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 namespace EntityFrameworkCore.Models
 {
-    public class BookShopContext : IdentityDbContext<BookShopUser,ApplicationRole,string,IdentityUserClaim<string>,ApplicationUserRole,IdentityUserLogin<string>,IdentityRoleClaim<string>,IdentityUserToken<string>>
+    public class BookShopContext : IdentityDbContext<ApplicationUser, ApplicationRole, string, IdentityUserClaim<string>, ApplicationUserRole, IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
     {
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
@@ -28,7 +28,14 @@ namespace EntityFrameworkCore.Models
             modelBuilder.Entity<ApplicationUserRole>()
                 .HasOne(userRole => userRole.Role)
                 .WithMany(role => role.Users)
-                .HasForeignKey(r=>r.RoleId);
+                .HasForeignKey(r => r.RoleId);
+
+            modelBuilder.Entity<ApplicationUser>().ToTable("AppUsers");
+
+            modelBuilder.Entity<ApplicationUserRole>()
+                .HasOne(userRole => userRole.User)
+                .WithMany(User => User.Roles)
+                .HasForeignKey(r => r.UserId);
 
             modelBuilder.Entity<ApplicationRole>().ToTable("AspNetRoles").ToTable("AppRoles");
 
@@ -79,9 +86,9 @@ namespace EntityFrameworkCore.Models
         public DbSet<Translator_Book> Translator_Books { get; set; }
         public DbSet<ReadAllBook> ReadAllBooks { get; set; }
 
-        [DbFunction("GetAllAuthors","dbo")]
-        public static String  GetAllAuthors(int BookID)
-        { 
+        [DbFunction("GetAllAuthors", "dbo")]
+        public static String GetAllAuthors(int BookID)
+        {
             throw new NotImplementedException();
         }
 

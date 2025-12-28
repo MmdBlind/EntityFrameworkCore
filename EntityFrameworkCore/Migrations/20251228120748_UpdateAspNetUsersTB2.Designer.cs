@@ -4,6 +4,7 @@ using EntityFrameworkCore.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(BookShopContext))]
-    partial class BookShopContextModelSnapshot : ModelSnapshot
+    [Migration("20251228120748_UpdateAspNetUsersTB2")]
+    partial class UpdateAspNetUsersTB2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -142,7 +145,7 @@ namespace EntityFrameworkCore.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("AppUsers", (string)null);
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Areas.Identity.Data.ApplicationUserRole", b =>
@@ -726,15 +729,13 @@ namespace EntityFrameworkCore.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EntityFrameworkCore.Areas.Identity.Data.ApplicationUser", "User")
-                        .WithMany("Roles")
+                    b.HasOne("EntityFrameworkCore.Areas.Identity.Data.ApplicationUser", null)
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Role");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Author_Book", b =>
@@ -941,11 +942,6 @@ namespace EntityFrameworkCore.Migrations
             modelBuilder.Entity("EntityFrameworkCore.Areas.Identity.Data.ApplicationRole", b =>
                 {
                     b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("EntityFrameworkCore.Areas.Identity.Data.ApplicationUser", b =>
-                {
-                    b.Navigation("Roles");
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Author", b =>
