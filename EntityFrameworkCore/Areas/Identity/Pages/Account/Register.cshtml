@@ -1,66 +1,114 @@
-﻿@page "/Register"
+﻿@page "/Identity/Account/Register"
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
+    Layout = "~/Views/_Admin.cshtml";
+
 }
 
-<h1>@ViewData["Title"]</h1>
-
-<div class="row">
-    <div class="col-md-4">
-        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <h2>Create a new account.</h2>
-            <hr />
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                <label asp-for="Input.Email">Email</label>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.Password">Password</label>
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="Input.ConfirmPassword">Confirm Password</label>
-                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-            </div>
-            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
-        </form>
+<div class="card">
+    <div class="card-header bg-light">
+        عضویت کاربر جدید
     </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Use another service to register.</h3>
-            <hr />
-            @{
-                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                {
-                    <div>
-                        <p>
-                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
-                            about setting up this ASP.NET application to support logging in via external services</a>.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                        <div>
-                            <p>
-                                @foreach (var provider in Model.ExternalLogins!)
-                                {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                                }
-                            </p>
+    <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="col-md-12 text-center">
+                        <div class="fileinput fileinput-new" data-provides="fileinput">
+                            <div class="fileinput-new thumbnail" style="height: 150px;">
+                                <img src="~/images/UserPic.png" />
+                            </div>
+                            <div class="fileinput-preview fileinput-exists thumbnail" style="height:200px"> </div>
+                            <div>
+                                <span class="btn default btn-file">
+                                    <span class="fileinput-new btn btn-success"> انتخاب کنید </span>
+                                    <span class="fileinput-exists btn btn-default"> تغییر عکس </span>
+                                    <input type="file" name="Image" accept=".jpg, .png, .jpeg, .gif, .tif, .tiff, .JPG" />
+                                </span>
+                                <a href="javascript:;" class="btn btn-danger fileinput-exists" data-dismiss="fileinput"> حذف </a>
+                            </div>
                         </div>
-                    </form>
-                }
-            }
-        </section>
-    </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div asp-validation-summary="All" class="text-danger">
+                    </div>
+                    <div class="row">
+
+                        <div class="form-group col-md-6">
+                            <label asp-for="Input.UserName"></label>
+                            <input asp-for="Input.UserName" class="form-control" />
+                            <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label asp-for="Input.Email"></label>
+                            <input asp-for="Input.Email" class="form-control" />
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label asp-for="Input.Password"></label>
+                            <input asp-for="Input.Password" class="form-control" />
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label asp-for="Input.ConfirmPassword"></label>
+                            <input asp-for="Input.ConfirmPassword" class="form-control" />
+                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label asp-for="Input.Name"></label>
+                            <input asp-for="Input.Name" class="form-control" />
+                            <span asp-validation-for="Input.Name" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label asp-for="Input.Family"></label>
+                            <input asp-for="Input.Family" class="form-control" />
+                            <span asp-validation-for="Input.Family" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label asp-for="Input.PhoneNumber"></label>
+                            <input asp-for="Input.PhoneNumber" class="form-control" />
+                            <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label asp-for="Input.BirthDate"></label>
+                            <input asp-for="Input.BirthDate" class="form-control" />
+                            <span asp-validation-for="Input.BirthDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <button class="btn btn-primary mb-3" type="button" data-toggle="collapse" data-target="#demo">افزودن نقش کاربر</button>
+
+                            <div id="demo" class="collapse">
+                                <ul class="list-unstyled">
+                                    @foreach (var item in Model.GetRoles)
+                                    {
+                                        <li class="p-1">
+                                            <input type="checkbox" value="@item.Name" name="UserRoles" />
+                                            @item.Name
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer clearfix bg-light">
+            <button type="submit" class="btn btn-primary float-left">عضویت</button>
+        </div>
+
+    </form>
+
 </div>
+
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

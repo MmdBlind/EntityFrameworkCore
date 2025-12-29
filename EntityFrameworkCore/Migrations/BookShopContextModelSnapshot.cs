@@ -178,7 +178,7 @@ namespace EntityFrameworkCore.Migrations
 
                     b.HasKey("AuthorID");
 
-                    b.ToTable("Authors");
+                    b.ToTable("Authors", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Author_Book", b =>
@@ -193,7 +193,7 @@ namespace EntityFrameworkCore.Migrations
 
                     b.HasIndex("AuthorID");
 
-                    b.ToTable("Author_Books");
+                    b.ToTable("Author_Books", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Book", b =>
@@ -276,7 +276,7 @@ namespace EntityFrameworkCore.Migrations
 
                     b.HasIndex("CategoryID");
 
-                    b.ToTable("Book_Categories");
+                    b.ToTable("Book_Categories", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Category", b =>
@@ -298,7 +298,7 @@ namespace EntityFrameworkCore.Migrations
 
                     b.HasIndex("ParentCategoryID");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
 
                     b.HasData(
                         new
@@ -334,7 +334,7 @@ namespace EntityFrameworkCore.Migrations
 
                     b.HasIndex("ProviceID");
 
-                    b.ToTable("Citys");
+                    b.ToTable("Citys", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Customer", b =>
@@ -392,7 +392,7 @@ namespace EntityFrameworkCore.Migrations
 
                     b.HasIndex("cityID2");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Discount", b =>
@@ -411,7 +411,7 @@ namespace EntityFrameworkCore.Migrations
 
                     b.HasKey("BookID");
 
-                    b.ToTable("Discounts");
+                    b.ToTable("Discounts", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Language", b =>
@@ -428,7 +428,7 @@ namespace EntityFrameworkCore.Migrations
 
                     b.HasKey("LanguageID");
 
-                    b.ToTable("Languages");
+                    b.ToTable("Languages", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Order", b =>
@@ -461,7 +461,7 @@ namespace EntityFrameworkCore.Migrations
 
                     b.HasIndex("OrderStatusID");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.OrderStatus", b =>
@@ -477,7 +477,7 @@ namespace EntityFrameworkCore.Migrations
 
                     b.HasKey("OrderStatusID");
 
-                    b.ToTable("OrderStatuses");
+                    b.ToTable("OrderStatuses", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Order_Book", b =>
@@ -492,7 +492,7 @@ namespace EntityFrameworkCore.Migrations
 
                     b.HasIndex("OrderID");
 
-                    b.ToTable("Order_Books");
+                    b.ToTable("Order_Books", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Provice", b =>
@@ -506,7 +506,7 @@ namespace EntityFrameworkCore.Migrations
 
                     b.HasKey("ProviceID");
 
-                    b.ToTable("Provices");
+                    b.ToTable("Provices", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Publisher", b =>
@@ -523,7 +523,7 @@ namespace EntityFrameworkCore.Migrations
 
                     b.HasKey("PublisherID");
 
-                    b.ToTable("Publisher");
+                    b.ToTable("Publisher", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Translator", b =>
@@ -544,7 +544,7 @@ namespace EntityFrameworkCore.Migrations
 
                     b.HasKey("TranslatorID");
 
-                    b.ToTable("Translator");
+                    b.ToTable("Translator", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.Translator_Book", b =>
@@ -559,7 +559,7 @@ namespace EntityFrameworkCore.Migrations
 
                     b.HasIndex("TranslatorID");
 
-                    b.ToTable("Translator_Books");
+                    b.ToTable("Translator_Books", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Models.ViewModels.ReadAllBook", b =>

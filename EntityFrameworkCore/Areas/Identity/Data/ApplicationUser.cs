@@ -13,6 +13,7 @@ public class ApplicationUser : IdentityUser
     {
         FirstName = "";
         LastName = "";
+        image = "";
     }
     
     public string FirstName { get; set; }
