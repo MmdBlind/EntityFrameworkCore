@@ -20,6 +20,7 @@ builder.Services.AddDbContext<BookShopContext>(options =>
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<BookShopContext>()
     .AddDefaultUI()
+    .AddErrorDescriber<ApplicationIdentityErrorDescriber>()
     .AddDefaultTokenProviders();
 builder.Services.AddTransient<BooksRepository>();
 builder.Services.AddTransient<ConvertDate>();
