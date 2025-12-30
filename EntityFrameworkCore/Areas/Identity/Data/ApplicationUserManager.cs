@@ -1,11 +1,12 @@
-﻿using EntityFrameworkCore.Models.ViewModels;
+﻿using EntityFrameworkCore.Areas.Admin.Controllers;
+using EntityFrameworkCore.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace EntityFrameworkCore.Areas.Identity.Data
 {
-    public class ApplicationUserManager : UserManager<ApplicationUser>
+    public class ApplicationUserManager : UserManager<ApplicationUser> , IApplicationUserManager
     {
         private readonly ApplicationIdentityErrorDescriber _errors;
         private readonly ILookupNormalizer _keyNormalizer;
@@ -35,7 +36,7 @@ namespace EntityFrameworkCore.Areas.Identity.Data
         public async Task<List<UsersViewModel>> GetAllUsersWithRolesAsync()
         {
             return await Users.Select(user=> new UsersViewModel { 
-                id= user.Id,
+                Id= user.Id,
                 UserName = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
@@ -53,6 +54,11 @@ namespace EntityFrameworkCore.Areas.Identity.Data
                 AccessFailedCount= user.AccessFailedCount,
                 LockoutEnd= user.LockoutEnd
             }).ToListAsync();
+        }
+
+        public string NormalizeKey(string key)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -5,7 +5,7 @@ namespace EntityFrameworkCore.Models.ViewModels
 {
     public class UsersViewModel
     {
-        public string id { get; set; }
+        public string Id { get; set; }
 
         [Display(Name ="نام کاربری")]
         public string UserName { get; set; }

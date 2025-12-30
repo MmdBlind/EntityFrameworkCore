@@ -1,6 +1,6 @@
-﻿@model ReflectionIT.Mvc.Paging.IPagingList<EntityFrameworkCore.Models.ViewModels.UsersViewModel>
+﻿@model ReflectionIT.Mvc.Paging.PagingList<EntityFrameworkCore.Models.ViewModels.UsersViewModel>
 @using ReflectionIT.Mvc.Paging
-@addTagHelper *, ReflectionIT.Mvc.Paging
+@addTagHelper*,ReflectionIT.Mvc.Paging
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/_Admin.cshtml";
@@ -29,13 +29,13 @@
                         <thead>
                             <tr>
                                 <th class="text-center">
-                                    @Html.SortableHeaderFor(Model => Model.Image)
+                                    @Html.SortableHeaderFor(model => model.Image)
                                 </th>
                                 <th class="text-center">
-                                    @Html.SortableHeaderFor(model => model.FirstName)
+                                    @Html.SortableHeaderFor(model => model.Name)
                                 </th>
                                 <th class="text-center">
-                                    @Html.SortableHeaderFor(model => model.LastName)
+                                    @Html.SortableHeaderFor(model => model.Family)
                                 </th>
                                 <th class="text-center">
                                     @Html.SortableHeaderFor(model => model.UserName)
@@ -71,10 +71,10 @@
                                         }
                                     </td>
                                     <td class="text-center">
-                                        @Html.DisplayFor(modelItem => item.FirstName)
+                                        @Html.DisplayFor(modelItem => item.Name)
                                     </td>
                                     <td class="text-center">
-                                        @Html.DisplayFor(modelItem => item.LastName)
+                                        @Html.DisplayFor(modelItem => item.Family)
                                     </td>
                                     <td class="text-center">
                                         @Html.DisplayFor(modelItem => item.UserName)

@@ -28,6 +28,7 @@ builder.Services.AddTransient<ConvertDate>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<IBooksRepository, BooksRepository>();
 builder.Services.AddScoped<IApplicationRoleManager, ApplicationRoleManager>();
+builder.Services.AddScoped<IApplicationUserManager,ApplicationUserManager>();
 builder.Services.Configure<IdentityOptions>(options =>
 {
     //Configure Password
