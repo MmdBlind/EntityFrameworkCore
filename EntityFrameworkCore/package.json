@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "name": "asp.net",
+  "private": true,
+  "devDependencies": {
+    "eslint": "^9.39.2",
+    "md.bootstrappersiandatetimepicker": "4.5.0",
+    "select2": "4.1.0-rc.0"
+  }
+}

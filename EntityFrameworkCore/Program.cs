@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using ReflectionIT.Mvc.Paging;
 using Microsoft.AspNetCore.Identity;
 using EntityFrameworkCore.Areas.Identity.Data;
+using EntityFrameworkCore.Areas.Admin.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
@@ -27,7 +28,20 @@ builder.Services.AddTransient<ConvertDate>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<IBooksRepository, BooksRepository>();
 builder.Services.AddScoped<IApplicationRoleManager, ApplicationRoleManager>();
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    //Configure Password
+    options.Password.RequireDigit = false;
+    options.Password.RequiredLength = 8;
+    options.Password.RequiredUniqueChars = 1;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
 
+    //Configure User
+    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    options.User.RequireUniqueEmail = true;
+});
 
 builder.Services.AddPaging(options =>
 {

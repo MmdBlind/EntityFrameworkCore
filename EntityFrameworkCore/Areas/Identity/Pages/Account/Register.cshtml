@@ -58,7 +58,7 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label asp-for="Input.Name"></label>
-                            <input asp-for="Input.Name" class="form-control" />
+                            <input asp-for="Input.Name" class="form-control" id="InputName" />
                             <span asp-validation-for="Input.Name" class="text-danger"></span>
                         </div>
                         <div class="form-group col-md-6">
@@ -75,8 +75,16 @@
 
                         <div class="form-group col-md-6">
                             <label asp-for="Input.BirthDate"></label>
-                            <input asp-for="Input.BirthDate" class="form-control" />
-                            <span asp-validation-for="Input.BirthDate" class="text-danger"></span>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text cursor-pointer" id="BirthDate">
+                                        <i class="fa fa-calendar"></i>
+                                    </span>
+                                </div>
+                                <input asp-for="Input.BirthDate" class="form-control" id="InputBirthDate" dir="ltr"/>
+                                <span asp-validation-for="Input.BirthDate" class="text-danger"></span>
+                            </div>
+                            
                         </div>
 
                         <div class="form-group col-md-6">
@@ -108,8 +116,46 @@
     </form>
 
 </div>
-
+<script src="~/js/mds.bs.datetimepicker.js"></script>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+<script src="~/js/mds.bs.datetimepicker.js"></script>
+
+<script>
+    $("#BirthDate").MdPersianDateTimePicker({
+         targetTextSelector:"#InputBirthDate",
+         placement:'top',
+    });
+
+    $(document).ready(function()
+    {
+     Persian character and numbers (and space!)
+     Inputmask.extendDefinitions({
+        'f': {
+            validator: "[۰-۹\u060C-\u0638\u0639-\u0648\u06A9\u06AF\u06CC\u067E\u0686\u064A\u0649\u0626\u0698 ]",
+            cardinality: 1
+        },
+
+        'n':
+        {
+           validator:"[1-9]",
+        },
+
+        'm':
+        {
+            validator:"[۰-۹]",
+        },
+
+        'z':
+        {
+           validator:"[۱-۹]",
+        }
+     });
+
+     $("#InputBirthDate").inputmask("(n999|zmmm)/(0n|10|11|12|۰z|۱۰|۱۱|۱۲)/(0n|19|29|30|31|۰z|۱m|۲m|۳۰|۳۱)",{"placeholder":"_"});
+     $("#InputName").inputmask( "f{*}");
+
+    });
+</script> 

@@ -94,6 +94,7 @@ namespace EntityFrameworkCore.Areas.Identity.Pages.Account
             [Display(Name = "تاریخ تولد")]
             [Required(ErrorMessage = "وارد نمودن {0} الزامی است.")]
             [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+            [PersianDate]
             public string BirthDate { get; set; }
 
 
