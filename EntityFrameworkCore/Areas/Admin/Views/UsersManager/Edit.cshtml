@@ -1,9 +1,7 @@
-﻿@page "/Identity/Account/Register"
-@model RegisterModel
+﻿@model EntityFrameworkCore.Models.ViewModels.UsersViewModel
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Edit";
     Layout = "~/Views/_Admin.cshtml";
-
 }
 
 <div class="card">
@@ -81,10 +79,10 @@
                                         <i class="fa fa-calendar"></i>
                                     </span>
                                 </div>
-                                <input asp-for="Input.BirthDate" class="form-control" id="InputBirthDate" dir="ltr"/>
+                                <input asp-for="Input.BirthDate" class="form-control" id="InputBirthDate" dir="ltr" />
                                 <span asp-validation-for="Input.BirthDate" class="text-danger"></span>
                             </div>
-                            
+
                         </div>
 
                         <div class="form-group col-md-6">

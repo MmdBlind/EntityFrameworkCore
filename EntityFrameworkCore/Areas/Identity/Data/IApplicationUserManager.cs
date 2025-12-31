@@ -3,7 +3,7 @@ using EntityFrameworkCore.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
-namespace EntityFrameworkCore.Areas.Admin.Controllers
+namespace EntityFrameworkCore.Areas.Identity.Data
 {
     public interface IApplicationUserManager
     {
@@ -113,7 +113,10 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
 
         #region CustomMethod
         Task<List<ApplicationUser>> GetAllUsersAsync();
+
         Task<List<UsersViewModel>> GetAllUsersWithRolesAsync();
+
+        Task<UsersViewModel> FindUsersWithRolesByIdAsync(string userId);
         #endregion
     }
 }

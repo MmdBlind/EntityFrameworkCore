@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace EntityFrameworkCore.Areas.Identity.Data
 {
-    public class ApplicationUserManager : UserManager<ApplicationUser>
+    public class ApplicationUserManager : UserManager<ApplicationUser>, IApplicationUserManager
     {
         private readonly ApplicationIdentityErrorDescriber _errors;
         private readonly ILookupNormalizer _keyNormalizer;
@@ -34,25 +34,54 @@ namespace EntityFrameworkCore.Areas.Identity.Data
         }
         public async Task<List<UsersViewModel>> GetAllUsersWithRolesAsync()
         {
-            return await Users.Select(user=> new UsersViewModel { 
-                id= user.Id,
+            return await Users.Select(user => new UsersViewModel
+            {
+                Id = user.Id,
                 UserName = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 Name = user.FirstName,
                 Family = user.LastName,
-                Image = user.image,
+                Image = user.Image,
                 RegisterDate = user.RegisterDate,
                 LastVisitDateTime = user.LastVisitDateTime,
                 IsActive = user.IsActive,
-                Roles=user.Roles.Select(r=>r.Role.Name),
+                Roles = user.Roles.Select(r => r.Role.Name),
                 PhoneNumberConfirmed = user.PhoneNumberConfirmed,
-                TwoFactorEnabled= user.TwoFactorEnabled,
-                LockoutEnabled= user.LockoutEnabled,
-                EmailConfirmed= user.EmailConfirmed,
-                AccessFailedCount= user.AccessFailedCount,
-                LockoutEnd= user.LockoutEnd
+                TwoFactorEnabled = user.TwoFactorEnabled,
+                LockoutEnabled = user.LockoutEnabled,
+                EmailConfirmed = user.EmailConfirmed,
+                AccessFailedCount = user.AccessFailedCount,
+                LockoutEnd = user.LockoutEnd
             }).ToListAsync();
+        }
+        public async Task<UsersViewModel> FindUsersWithRolesByIdAsync(string userId)
+        {
+            return await Users.Where(user => user.Id == userId).Select(user => new UsersViewModel
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Name = user.FirstName,
+                Family = user.LastName,
+                Image = user.Image,
+                RegisterDate = user.RegisterDate,
+                LastVisitDateTime = user.LastVisitDateTime,
+                IsActive = user.IsActive,
+                Roles = user.Roles.Select(r => r.Role.Name),
+                PhoneNumberConfirmed = user.PhoneNumberConfirmed,
+                TwoFactorEnabled = user.TwoFactorEnabled,
+                LockoutEnabled = user.LockoutEnabled,
+                EmailConfirmed = user.EmailConfirmed,
+                AccessFailedCount = user.AccessFailedCount,
+                LockoutEnd = user.LockoutEnd,
+            }).FirstOrDefaultAsync();
+        }
+
+        public string NormalizeKey(string key)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -9,12 +9,6 @@ namespace EntityFrameworkCore.Areas.Identity.Data;
 // Add profile data for application users by adding properties to the BookShopUser class
 public class ApplicationUser : IdentityUser
 {
-    public ApplicationUser()
-    {
-        FirstName = "";
-        LastName = "";
-        image = "";
-    }
     
     public string FirstName { get; set; }
     
@@ -22,11 +16,11 @@ public class ApplicationUser : IdentityUser
     
     public DateTime BirthDate { get; set; }
     
-    public string image { get; set; }
+    public string? Image { get; set; }
     
     public DateTime RegisterDate { get; set; }
     
-    public DateTime LastVisitDateTime { get; set; }
+    public DateTime? LastVisitDateTime { get; set; }
 
     public bool IsActive { get; set; }
 
