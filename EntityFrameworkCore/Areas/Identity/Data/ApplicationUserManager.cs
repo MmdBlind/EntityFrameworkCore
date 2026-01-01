@@ -1,4 +1,5 @@
-﻿using EntityFrameworkCore.Models.ViewModels;
+﻿using EntityFrameworkCore.Areas.Admin.Controllers;
+using EntityFrameworkCore.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Options;
 namespace EntityFrameworkCore.Areas.Identity.Data
 {
     public class ApplicationUserManager : UserManager<ApplicationUser>, IApplicationUserManager
+
     {
         private readonly ApplicationIdentityErrorDescriber _errors;
         private readonly ILookupNormalizer _keyNormalizer;
@@ -33,8 +35,7 @@ namespace EntityFrameworkCore.Areas.Identity.Data
             return await Users.ToListAsync();
         }
         public async Task<List<UsersViewModel>> GetAllUsersWithRolesAsync()
-        {
-            return await Users.Select(user => new UsersViewModel
+        {            return await Users.Select(user => new UsersViewModel
             {
                 Id = user.Id,
                 UserName = user.UserName,
