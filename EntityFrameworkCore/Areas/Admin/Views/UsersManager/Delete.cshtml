@@ -1,0 +1,26 @@
+﻿@model EntityFrameworkCore.Areas.Identity.Data.ApplicationUser
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/_Admin.cshtml";
+}
+<div class="row w-75 m-auto">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-light">
+                حذف اطلاعات
+            </div>
+            <div class="card-body">
+                <p>
+                    آیا میخواهید @Model.FirstName @Model.LastName را حذف کنید؟(با حذف کاربر تمام اطلاعات از قبیل سفارشات کاربر حذف خواهد شد)
+                </p>
+            </div>
+            <div class="card-footer bg-light text-right clearfix">
+                <form method="post" asp-action="Delete">
+                    <input type="hidden" value="@Model.Id" asp-for="Id" />
+                    <button type="submit" class="btn btn-danger float-left">حذف</button>
+                    <a asp-action="Index" class="btn btn-secondary">انصراف</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

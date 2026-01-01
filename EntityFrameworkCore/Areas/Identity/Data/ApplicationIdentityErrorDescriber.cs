@@ -46,10 +46,18 @@ namespace EntityFrameworkCore.Areas.Identity.Data
             Code = nameof(InvalidUserName),
             Description = $"نام کاربری باید شامل کاراکتر های (0-9) و (a-z) باشد"
         };
+        
         public override IdentityError DuplicateEmail(string email) => new IdentityError
         {
             Code = nameof(DuplicateEmail),
             Description = $"پست الکترونیک {0} قبلا ثت نام کرده است."
         };
+
+        public override IdentityError DuplicateRoleName(string role) =>new IdentityError
+        {
+            Code = nameof(DuplicateRoleName),
+            Description = $"نقش {role} قبلا ثبت شده است."
+        };
+        
     }
 }

@@ -7,22 +7,19 @@ using ReflectionIT.Mvc.Paging;
 namespace EntityFrameworkCore.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class RolesManagerController : Controller
+    public class RolesManagerController(IApplicationRoleManager roleManager) : Controller
     {
-        private readonly IApplicationRoleManager _roleManager;
-        public RolesManagerController(IApplicationRoleManager roleManager)
-        {
-            _roleManager = roleManager;
-        }
         public IActionResult Index(int page = 1, int row = 10)
         {
-            var Roles = _roleManager.GetAllRolesAndUsersCount();
+
+            var Roles = roleManager.GetAllRolesAndUsersCount();
             var PagingModel = PagingList.Create(Roles, row, page);
             PagingModel.RouteValue = new RouteValueDictionary
             {
                 {"row",row}
             };
             return View(PagingModel);
+
         }
 
         [HttpGet]
@@ -37,20 +34,14 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (await _roleManager.RoleExistsAsync(viewModel.RoleName))
+                var resault = await roleManager.CreateAsync(new ApplicationRole(viewModel.RoleName, viewModel.RoleDescription));
+                if (resault.Succeeded)
                 {
-                    ViewBag.Error = "نام نقش تکراری می‌باشد.";
-                    return View();
+                    return RedirectToAction("Index");
                 }
-                else
+                foreach (var error in resault.Errors)
                 {
-                    var resault = await _roleManager.CreateAsync(new ApplicationRole(viewModel.RoleName, viewModel.RoleDescription));
-                    if (resault.Succeeded)
-                    {
-                        return RedirectToAction("Index");
-                    }
-
-                    ViewBag.Error = "در ذخیره اطلاعات هطایی رخ داده است.";
+                    ModelState.AddModelError("", error.Description);
                 }
             }
             return View(viewModel);
@@ -63,7 +54,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            var Role = await _roleManager.FindByIdAsync(id);
+            var Role = await roleManager.FindByIdAsync(id);
             if (Role is null)
             {
                 return NotFound();
@@ -73,7 +64,6 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 RoleID = Role.Id,
                 RoleName = Role.Name,
                 RoleDescription = Role.Description,
-               RecentRoleName=Role.Name 
             };
             return View(viewModel);
         }
@@ -83,32 +73,25 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                var Role = await _roleManager.FindByIdAsync(viewModel.RoleID);
+                var Role = await roleManager.FindByIdAsync(viewModel.RoleID);
                 if (Role is null)
                 {
                     return NotFound();
                 }
-                if(await _roleManager.RoleExistsAsync(viewModel.RoleName)&&viewModel.RecentRoleName!=viewModel.RoleName)
-                {
-                    ViewBag.Message = "نام نقش تکراری می‌باشد.";
-                    return View(viewModel);
-                }
-                else
-                {
-                    Role.Name = viewModel.RoleName;
-                    Role.Description = viewModel.RoleDescription;
+                Role.Name = viewModel.RoleName;
+                Role.Description = viewModel.RoleDescription;
 
-                    var Resault = await _roleManager.UpdateAsync(Role);
-                    if (Resault.Succeeded is true)
-                    {
-                        ViewBag.Message = "عملیات با موفقیت انجام شد.";
-                        return RedirectToAction("Index");
-                    }
-                    else
-                    {
-                        ViewBag.Error = "در ذخیره اطلاعات خطایی رخ داده است.";
-                        return View(viewModel);
-                    }
+                var Resault = await roleManager.UpdateAsync(Role);
+
+                if (Resault.Succeeded is true)
+                {
+                    ViewBag.Message = "عملیات با موفقیت انجام شد.";
+                    return RedirectToAction("Index");
+                }
+
+                foreach (var error in Resault.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
                 }
             }
             ViewBag.Error = "اطلاعات وارد شده معتبر نمی باشد.";
@@ -122,7 +105,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            var Role = await _roleManager.FindByIdAsync(id);
+            var Role = await roleManager.FindByIdAsync(id);
             if (Role == null)
             {
                 return NotFound();
@@ -143,12 +126,12 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            var Role = await _roleManager.FindByIdAsync(id);
+            var Role = await roleManager.FindByIdAsync(id);
             if (Role == null)
             {
                 return NotFound();
             }
-            var Resault = await _roleManager.DeleteAsync(Role);
+            var Resault = await roleManager.DeleteAsync(Role);
             if (Resault.Succeeded)
             {
                 ViewBag.Message = "عملیات با موفقیت انجام شد.";

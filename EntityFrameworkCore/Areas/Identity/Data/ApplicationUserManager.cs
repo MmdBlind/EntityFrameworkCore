@@ -66,6 +66,7 @@ namespace EntityFrameworkCore.Areas.Identity.Data
                 Name = user.FirstName,
                 Family = user.LastName,
                 Image = user.Image,
+                BirthDate=user.BirthDate,
                 RegisterDate = user.RegisterDate,
                 LastVisitDateTime = user.LastVisitDateTime,
                 IsActive = user.IsActive,

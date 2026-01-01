@@ -1,4 +1,5 @@
 ﻿@model EntityFrameworkCore.Models.ViewModels.UsersViewModel
+@using EntityFrameworkCore.Areas.Identity.Data
 @{
     ViewData["Title"] = "Edit";
     Layout = "~/Views/_Admin.cshtml";
@@ -6,9 +7,18 @@
 
 <div class="card">
     <div class="card-header bg-light">
-        عضویت کاربر جدید
+        ویرایش اطلاعات کاربر
     </div>
-    <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+    @if (ViewBag.AlertSuccess != null)
+    {
+        <div class="alert alert-success alert-dismissible">
+            @ViewBag.AlertSuccess
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+    <form asp-action="Edit" method="post">
         <div class="card-body">
             <div class="row">
                 <div class="col-md-2">
@@ -33,54 +43,44 @@
                     <div asp-validation-summary="All" class="text-danger">
                     </div>
                     <div class="row">
-
+                        <input type="hidden" asp-for="Id" />
                         <div class="form-group col-md-6">
-                            <label asp-for="Input.UserName"></label>
-                            <input asp-for="Input.UserName" class="form-control" />
-                            <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                            <label asp-for="UserName"></label>
+                            <input asp-for="UserName" class="form-control" />
+                            <span asp-validation-for="UserName" class="text-danger"></span>
                         </div>
                         <div class="form-group col-md-6">
-                            <label asp-for="Input.Email"></label>
-                            <input asp-for="Input.Email" class="form-control" />
-                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            <label asp-for="Email"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
                         <div class="form-group col-md-6">
-                            <label asp-for="Input.Password"></label>
-                            <input asp-for="Input.Password" class="form-control" />
-                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                            <label asp-for="Name"></label>
+                            <input asp-for="Name" class="form-control" id="InputName" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
                         <div class="form-group col-md-6">
-                            <label asp-for="Input.ConfirmPassword"></label>
-                            <input asp-for="Input.ConfirmPassword" class="form-control" />
-                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label asp-for="Input.Name"></label>
-                            <input asp-for="Input.Name" class="form-control" id="InputName" />
-                            <span asp-validation-for="Input.Name" class="text-danger"></span>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label asp-for="Input.Family"></label>
-                            <input asp-for="Input.Family" class="form-control" />
-                            <span asp-validation-for="Input.Family" class="text-danger"></span>
+                            <label asp-for="Family"></label>
+                            <input asp-for="Family" class="form-control" />
+                            <span asp-validation-for="Family" class="text-danger"></span>
                         </div>
 
                         <div class="form-group col-md-6">
-                            <label asp-for="Input.PhoneNumber"></label>
-                            <input asp-for="Input.PhoneNumber" class="form-control" />
-                            <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                            <label asp-for="PhoneNumber"></label>
+                            <input asp-for="PhoneNumber" class="form-control" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                         </div>
 
                         <div class="form-group col-md-6">
-                            <label asp-for="Input.BirthDate"></label>
+                            <label asp-for="PersianBirthDate"></label>
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text cursor-pointer" id="BirthDate">
+                                    <span class="input-group-text cursor-pointer" id="PersianBirthDate">
                                         <i class="fa fa-calendar"></i>
                                     </span>
                                 </div>
-                                <input asp-for="Input.BirthDate" class="form-control" id="InputBirthDate" dir="ltr" />
-                                <span asp-validation-for="Input.BirthDate" class="text-danger"></span>
+                                <input asp-for="PersianBirthDate" class="form-control" id="PersianBirthDate" dir="ltr" />
+                                <span asp-validation-for="PersianBirthDate" class="text-danger"></span>
                             </div>
 
                         </div>
@@ -90,10 +90,26 @@
 
                             <div id="demo" class="collapse">
                                 <ul class="list-unstyled">
-                                    @foreach (var item in Model.GetRoles)
+                                    @foreach (var item in ViewBag.AllRoles as List<ApplicationRole>)
                                     {
+
                                         <li class="p-1">
-                                            <input type="checkbox" value="@item.Name" name="UserRoles" />
+                                            @if (Model.Roles != null)
+                                            {
+                                                if (Model.Roles.Contains(item.Name))
+                                                {
+                                                    <input type="checkbox" value="@item.Name" name="Roles" checked />
+
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" value="@item.Name" name="Roles" />
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" value="@item.Name" name="Roles" />
+                                            }
                                             @item.Name
                                         </li>
                                     }
@@ -108,7 +124,7 @@
         </div>
 
         <div class="card-footer clearfix bg-light">
-            <button type="submit" class="btn btn-primary float-left">عضویت</button>
+            <button type="submit" class="btn btn-primary float-left">ذخیره تغییرات</button>
         </div>
 
     </form>

@@ -26,6 +26,7 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
 builder.Services.AddTransient<BooksRepository>();
 builder.Services.AddTransient<ConvertDate>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+builder.Services.AddTransient<IConvertDate, ConvertDate>();
 builder.Services.AddTransient<IBooksRepository, BooksRepository>();
 builder.Services.AddScoped<IApplicationRoleManager, ApplicationRoleManager>();
 builder.Services.AddScoped<ApplicationIdentityErrorDescriber>();

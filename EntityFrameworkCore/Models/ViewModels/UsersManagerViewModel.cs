@@ -31,6 +31,9 @@ namespace EntityFrameworkCore.Models.ViewModels
         [Display(Name="تاریخ تولد")]
         public DateTime BirthDate { get; set; }
 
+        [Display(Name="تاریخ تولد")]
+        public string? PersianBirthDate { get; set; }
+
         [Display(Name = "آخرین بازدید")]
         public DateTime? LastVisitDateTime { get; set; }
 
