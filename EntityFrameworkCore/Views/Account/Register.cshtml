@@ -1,4 +1,6 @@
 ﻿@model EntityFrameworkCore.Models.ViewModels.RegisterViewModel
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
 @{
     Layout = null;
 }
@@ -8,8 +10,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>عضویت در فروشگاه میزفا</title>
+    <title>عضویت در فروشگاه گل ممد</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src='https://www.google.com/recaptcha/api.js?hl=fa'></script>
 </head>
 <body>
     <div class="page-wrapper flex-row align-items-center">
@@ -17,46 +21,46 @@
             <div class="row justify-content-center">
                 <div class="col-md-5">
                     <div class="card p-4">
-                        <div class="card-header text-center text-uppercase h4 font-weight-light">
-                            عضویت در فروشگاه میزفا
+                        <div class="text-center text-uppercase h4 font-weight-light">
+                            عضویت در فروشگاه گل ممد
                         </div>
                         <hr />
-                        <div asp-validation-summary="ModelOnly" class="text-danger">
+                        <div asp-validation-summary="All" class="text-danger">
                         </div>
                         <form asp-action="Register">
                             <div class="card-body py-2">
                                 <div class="form-group">
                                     <label class="form-control-label" asp-for="UserName"></label>
                                     <input type="text" class="form-control" asp-for="UserName" placeholder="نام کاربری">
-                                    <span asp-validation-for="UserName" class="text-danger "></span>
+                                    <span asp-validation-for="UserName" class="text-danger"></span>
                                 </div>
 
 
                                 <div class="form-group">
                                     <label class="form-control-label" asp-for="Email"></label>
                                     <input type="text" class="form-control" asp-for="Email" placeholder="ایمیل">
-                                    <span asp-validation-for="Email" class="text-danger "></span>
+                                    <span asp-validation-for="Email" class="text-danger"></span>
                                 </div>
 
                                 <div class="form-group">
                                     <label class="form-control-label" asp-for="PhoneNumber"></label>
                                     <input type="text" class="form-control" asp-for="PhoneNumber" placeholder="شماره موبایل">
-                                    <span asp-validation-for="PhoneNumber" class="text-danger "></span>
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                                 </div>
 
                                 <div class="form-group">
                                     <label class="form-control-label" asp-for="Password"></label>
                                     <input class="form-control" asp-for="Password" placeholder="کلمه عبور">
-                                    <span asp-validation-for="Password" class="text-danger "></span>
-
+                                    <span asp-validation-for="Password" class="text-danger"></span>
                                 </div>
 
                                 <div class="form-group">
                                     <label class="form-control-label" asp-for="ConfirmPassword"></label>
                                     <input class="form-control" asp-for="ConfirmPassword" placeholder="تکرار کلمه عبور">
-                                    <span asp-validation-for="ConfirmPassword" class="text-danger "></span>
+                                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                                 </div>
-
+                                <div class="g-recaptcha" data-sitekey="@(Configuration.GetValue<string>("GoogleReCaptcha:ClientKey"))">
+                                </div>
                             </div>
                             <div class="card-footer">
                                 <button type="submit" class="btn btn-primary btn-block">عضویت در سایت</button>
