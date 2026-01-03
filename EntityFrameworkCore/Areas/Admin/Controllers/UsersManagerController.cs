@@ -64,7 +64,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             }
             else
             {
-                if(User.BirthDate!=null)
+                if (User.BirthDate != null)
                 {
                     User.PersianBirthDate = convertDate.ConvertMiladiToShamsi((DateTime)User.BirthDate, "yyyy/MM/dd");
                 }
@@ -103,7 +103,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                             User.LastName = viewModel.Family;
                             User.Email = viewModel.Email;
                             User.PhoneNumber = viewModel.PhoneNumber;
-                            if(viewModel.PersianBirthDate!=null)
+                            if (viewModel.PersianBirthDate != null)
                             {
                                 User.BirthDate = convertDate.ConvertShamsiToMiladi(viewModel.PersianBirthDate);
                             }
@@ -187,11 +187,11 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ChangeLockOutEnable(string userId,bool status)
+        public async Task<IActionResult> ChangeLockOutEnable(string userId, bool status)
         {
-            var User=await userManager.FindByIdAsync(userId);
+            var User = await userManager.FindByIdAsync(userId);
 
-            if (User==null)
+            if (User == null)
             {
                 return NotFound();
             }
@@ -204,16 +204,16 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult>  LockUserAccount(string userId)
+        public async Task<IActionResult> LockUserAccount(string userId)
         {
-            var User=await userManager.FindByIdAsync(userId);
+            var User = await userManager.FindByIdAsync(userId);
             if (User == null)
             {
                 return NotFound();
             }
             else
             {
-                await userManager.SetLockoutEndDateAsync(User,DateTimeOffset.UtcNow.AddMinutes(20));
+                await userManager.SetLockoutEndDateAsync(User, DateTimeOffset.UtcNow.AddMinutes(20));
                 return RedirectToAction("Details", new { id = User.Id });
             }
         }
@@ -229,12 +229,79 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             }
             else
             {
-                await userManager.SetLockoutEndDateAsync(User,null);
+                await userManager.SetLockoutEndDateAsync(User, null);
                 return RedirectToAction("Details", new { id = User.Id });
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeActiveOrActiveUserAccount(string userId, bool status)
+        {
+            var User = await userManager.FindByIdAsync(userId);
+            if (User == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                User.IsActive = status;
+                await userManager.UpdateAsync(User);
+                return RedirectToAction("Details", new { id = User.Id });
+            }
+        }
 
+        [HttpGet]
+        public async Task<IActionResult> ResetPassword(string userId)
+        {
+            var User = await userManager.FindByIdAsync(userId);
+            if (User == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                var viewModel = new UsersResetPasswordViewModel
+                {
+                    Id = User.Id,
+                    Email = User.Email,
+                    UserName = User.UserName,
+                };
+                return View(viewModel);
+            }
+        }
+
+        public async Task<IActionResult> ResetPassword(UsersResetPasswordViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var User = await userManager.FindByIdAsync(viewModel.Id);
+                if (User == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    IdentityResult resault = await userManager.RemovePasswordAsync(User);
+
+                    if (resault.Succeeded)
+                    {
+                        resault = await userManager.AddPasswordAsync(User, viewModel.NewPassword);
+                        if(resault.Succeeded)
+                        {
+                            ViewBag.AlertSuccess = "بازنشانی کلمه عبور با موفقیت انجام شد.";
+                            viewModel.UserName = User.UserName;
+                            viewModel.Email = User.Email;
+                        }
+                    }
+                    foreach(var error in resault.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+            }
+            return View(viewModel);
+        }
     }
 
 }

@@ -98,18 +98,25 @@ namespace EntityFrameworkCore.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    var Resault = await signInManager.PasswordSignInAsync(viewModel.UserName, viewModel.Password, viewModel.RememberMe, true);
-                    if (Resault.Succeeded)
+                    var User = await userManager.FindByNameAsync(viewModel.UserName);
+                    if (User.IsActive)
                     {
-                        return RedirectToAction("Index", "Home");
+                        var Resault = await signInManager.PasswordSignInAsync(viewModel.UserName, viewModel.Password, viewModel.RememberMe, true);
+                        if (Resault.Succeeded)
+                        {
+                            return RedirectToAction("Index", "Home");
+                        }
+                        if (Resault.IsLockedOut)
+                        {
+                            ModelState.AddModelError(string.Empty, "حساب کاربری شما به مدت 20 دقیقه به دلیل تلاش های ناموفق قفل شد.");
+                            return View();
+                        }
+                        ModelState.AddModelError(string.Empty, "نام کاربری یا کلمه عبور شما صحیح نمی‌باشد.");
                     }
-                    if (Resault.IsLockedOut)
+                    else
                     {
-                        ModelState.AddModelError(string.Empty, "حساب کاربری شما به مدت 20 دقیقه به دلیل تلاش های ناموفق قفل شد.");
-                        return View();
+                        ModelState.AddModelError(string.Empty, "حساب کاربری شما غیرفعال می‌باشد.لطفا با پشتیبانی سایت تماس بگیرید.");
                     }
-                    ModelState.AddModelError(string.Empty, "نام کاربری یا کلمه عبور شما صحیح نمی‌باشد.");
-
                 }
             }
             else
@@ -207,7 +214,7 @@ namespace EntityFrameworkCore.Controllers
                 }
                 else
                 {
-                    var Resault = await userManager.ResetPasswordAsync(User, viewModel.Code, viewModel.Password);
+                    var Resault = await userManager.ResetPasswordAsync(User, viewModel.Code, viewModel.NewPassword);
                     if (Resault.Succeeded)
                     {
                         return RedirectToAction("ResetPasswordConfirmation");
