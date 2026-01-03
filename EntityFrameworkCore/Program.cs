@@ -47,6 +47,9 @@ builder.Services.Configure<IdentityOptions>(options =>
     //Configure User
     options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     options.User.RequireUniqueEmail = true;
+
+    //Configure SignIn
+    options.SignIn.RequireConfirmedEmail = true;
 });
 
 builder.Services.AddPaging(options =>

@@ -3,6 +3,7 @@ using EntityFrameworkCore.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System.Security.Claims;
 
 namespace EntityFrameworkCore.Areas.Identity.Data
 {
@@ -34,8 +35,10 @@ namespace EntityFrameworkCore.Areas.Identity.Data
         {
             return await Users.ToListAsync();
         }
+
         public async Task<List<UsersViewModel>> GetAllUsersWithRolesAsync()
-        {            return await Users.Select(user => new UsersViewModel
+        {
+            return await Users.Select(user => new UsersViewModel
             {
                 Id = user.Id,
                 UserName = user.UserName,
@@ -56,6 +59,7 @@ namespace EntityFrameworkCore.Areas.Identity.Data
                 LockoutEnd = user.LockoutEnd
             }).ToListAsync();
         }
+
         public async Task<UsersViewModel> FindUsersWithRolesByIdAsync(string userId)
         {
             return await Users.Where(user => user.Id == userId).Select(user => new UsersViewModel
@@ -67,7 +71,7 @@ namespace EntityFrameworkCore.Areas.Identity.Data
                 Name = user.FirstName,
                 Family = user.LastName,
                 Image = user.Image,
-                BirthDate=user.BirthDate,
+                BirthDate = user.BirthDate,
                 RegisterDate = user.RegisterDate,
                 LastVisitDateTime = user.LastVisitDateTime,
                 IsActive = user.IsActive,
@@ -79,6 +83,12 @@ namespace EntityFrameworkCore.Areas.Identity.Data
                 AccessFailedCount = user.AccessFailedCount,
                 LockoutEnd = user.LockoutEnd,
             }).FirstOrDefaultAsync();
+        }
+
+        public async Task<string> GetFullName(ClaimsPrincipal user)
+        {
+            var UserInfo = await GetUserAsync(user);
+            return UserInfo.FirstName + " " + UserInfo.LastName;
         }
 
         public string NormalizeKey(string key)

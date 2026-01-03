@@ -103,7 +103,10 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                             User.LastName = viewModel.Family;
                             User.Email = viewModel.Email;
                             User.PhoneNumber = viewModel.PhoneNumber;
-                            User.BirthDate = convertDate.ConvertShamsiToMiladi(viewModel.PersianBirthDate!);
+                            if(viewModel.PersianBirthDate!=null)
+                            {
+                                User.BirthDate = convertDate.ConvertShamsiToMiladi(viewModel.PersianBirthDate);
+                            }
                             Resault = await userManager.UpdateAsync(User);
                             if (Resault.Succeeded)
                             {

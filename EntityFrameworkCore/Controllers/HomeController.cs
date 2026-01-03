@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Security.Claims;
 using EntityFrameworkCore.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +16,11 @@ namespace EntityFrameworkCore.Controllers
 
         public IActionResult Index(string id)
         {
-            if(id!=null)
+            //var UserInfo = User;
+            //string UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //string UserRole== User.FindFirstValue(ClaimTypes.Role);
+
+            if (id!=null)
             {
                 ViewBag.ConfirmEmailAlert = "لینک فعالسازی حساب کاربری به ایمیل شما ارسال شد لطفا با کلیک روی این لینک حساب  خود را فعال کنید.";
             }

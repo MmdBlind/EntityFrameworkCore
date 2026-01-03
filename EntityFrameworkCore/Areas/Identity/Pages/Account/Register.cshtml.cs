@@ -127,7 +127,7 @@ namespace EntityFrameworkCore.Areas.Identity.Pages.Account
             {
                 ConvertDate Convert = new ConvertDate();
 
-               var user = new ApplicationUser { UserName = Input.UserName, Email = Input.Email, FirstName = Input.Name, LastName = Input.Family, PhoneNumber = Input.PhoneNumber, BirthDate = Convert.ConvertShamsiToMiladi(Input.BirthDate),IsActive=true, RegisterDate = DateTime.Now };
+               var user = new ApplicationUser { UserName = Input.UserName, Email = Input.Email, FirstName = Input.Name, LastName = Input.Family, PhoneNumber = Input.PhoneNumber, BirthDate = Convert.ConvertShamsiToMiladi(Input.BirthDate),IsActive=true, RegisterDate = DateTime.Now,EmailConfirmed=true};
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)

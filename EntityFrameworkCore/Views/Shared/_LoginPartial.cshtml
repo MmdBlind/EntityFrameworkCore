@@ -13,6 +13,17 @@
             <li>
                 <button type="submit" class="btn btn-link navbar-btn navbar-link nav-link text-white">خروج</button>
             </li>
+            <ul>
+                @if(User.IsInRole("کاربر")||User.IsInRole("مشتری"))
+                {
+                    <a  class="nav-link text-white">ورود به پنل کاربری</a>
+                }
+                else
+                {
+                    <a href="/Admin/Dashboard/Index" class="nav-link text-white">ورود به پنل مدیریت</a>
+                }
+                
+            </ul>
         </ul>
     </form>
 }

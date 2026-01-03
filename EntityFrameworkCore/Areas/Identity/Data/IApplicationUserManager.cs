@@ -117,6 +117,8 @@ namespace EntityFrameworkCore.Areas.Identity.Data
         Task<List<UsersViewModel>> GetAllUsersWithRolesAsync();
 
         Task<UsersViewModel> FindUsersWithRolesByIdAsync(string userId);
+
+        Task<string> GetFullName(ClaimsPrincipal user);
         #endregion
     }
 }
