@@ -1,4 +1,5 @@
 ﻿using EntityFrameworkCore.Areas.Identity.Data;
+using EntityFrameworkCore.Classes;
 using EntityFrameworkCore.Models;
 using EntityFrameworkCore.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -9,7 +10,7 @@ using System.Text.Encodings.Web;
 
 namespace EntityFrameworkCore.Controllers
 {
-    public class AccountController(IApplicationRoleManager roleManager, IApplicationUserManager userManager, IEmailSender emailSender, BookShopContext context,SignInManager<ApplicationUser> signInManager) : Controller
+    public class AccountController(IApplicationRoleManager roleManager, IApplicationUserManager userManager, IEmailSender emailSender, BookShopContext context, SignInManager<ApplicationUser> signInManager) : Controller
     {
         [HttpGet]
         public IActionResult Register()
@@ -39,7 +40,7 @@ namespace EntityFrameworkCore.Controllers
                     var Role = await roleManager.FindByNameAsync("کاربر");
                     if (Role == null)
                     {
-                        await roleManager.CreateAsync(new ApplicationRole("کاربر","مشتری سایت"));
+                        await roleManager.CreateAsync(new ApplicationRole("کاربر", "مشتری سایت"));
                     }
                     Resault = await userManager.AddToRoleAsync(User, "کاربر");
                     Transaction.Commit();
@@ -91,17 +92,26 @@ namespace EntityFrameworkCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SignIn(SignInViewModel viewModel)
         {
-            if(ModelState.IsValid)
+            if (Captcha.ValidateCaptchaCode(viewModel.CaptchaCode, HttpContext))
             {
-                var Resault = await signInManager.PasswordSignInAsync(viewModel.UserName,viewModel.Password,viewModel.RememberMe,false);
-                if(Resault.Succeeded)
+
+
+                if (ModelState.IsValid)
                 {
-                    return RedirectToAction("Index", "Home");
+                    var Resault = await signInManager.PasswordSignInAsync(viewModel.UserName, viewModel.Password, viewModel.RememberMe, false);
+                    if (Resault.Succeeded)
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "نام کاربری یا کلمه عبور شما صحیح نمی‌باشد.");
+                    }
                 }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "نام کاربری یا کلمه عبور شما صحیح نمی‌باشد.");
-                }
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "کد امنیتی صحیح نمی‌باشد.");
             }
             return View();
         }
@@ -112,6 +122,18 @@ namespace EntityFrameworkCore.Controllers
         {
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        [Route("get-captcha-image")]
+        public IActionResult GetCaptchaImage()
+        {
+            int width = 100;
+            int height = 36;
+            var captchaCode = Captcha.GenerateCaptchaCode();
+            var resault = Captcha.GenerateCaptchaImage(width, height, captchaCode);
+            HttpContext.Session.SetString("CaptchaCode", resault.CaptchaCode);
+            Stream s = new MemoryStream(resault.CaptchaByteData);
+            return new FileStreamResult(s, "image/png");
         }
     }
 }

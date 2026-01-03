@@ -203,6 +203,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.22" />
     <PackageReference Include="ReflectionIT.MVC.Paging" Version="8.0.0" />
+    <PackageReference Include="system.drawing.common" Version="10.0.1" />
   </ItemGroup>
 
   <ItemGroup>
