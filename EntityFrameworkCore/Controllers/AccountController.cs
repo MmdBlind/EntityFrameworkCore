@@ -98,15 +98,18 @@ namespace EntityFrameworkCore.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    var Resault = await signInManager.PasswordSignInAsync(viewModel.UserName, viewModel.Password, viewModel.RememberMe, false);
+                    var Resault = await signInManager.PasswordSignInAsync(viewModel.UserName, viewModel.Password, viewModel.RememberMe, true);
                     if (Resault.Succeeded)
                     {
                         return RedirectToAction("Index", "Home");
                     }
-                    else
+                    if (Resault.IsLockedOut)
                     {
-                        ModelState.AddModelError(string.Empty, "نام کاربری یا کلمه عبور شما صحیح نمی‌باشد.");
+                        ModelState.AddModelError(string.Empty, "حساب کاربری شما به مدت 20 دقیقه به دلیل تلاش های ناموفق قفل شد.");
+                        return View();
                     }
+                    ModelState.AddModelError(string.Empty, "نام کاربری یا کلمه عبور شما صحیح نمی‌باشد.");
+
                 }
             }
             else

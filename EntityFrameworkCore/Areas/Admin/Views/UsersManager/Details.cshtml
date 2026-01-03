@@ -1,6 +1,5 @@
 ﻿@model EntityFrameworkCore.Models.ViewModels.UsersViewModel
 @inject EntityFrameworkCore.Classes.ConvertDate converDate
-
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/_Admin.cshtml";
@@ -18,7 +17,7 @@
                 <div class="col-md-12 col-md-12-sm-12 col-xs-12 user-image text-center">
                     @if (Model.Image != null)
                     {
-                        <img src="/images/UserPic.png" height="140" />
+
                     }
 
                     else
@@ -202,7 +201,13 @@
                                                         </label>
                                                     </td>
                                                     <td>
-                                                        <button class="btn btn-success btn-sm">فعال شود</button>
+                                                        <form asp-action="ChangeLockOutEnable" method="post">
+                                                            <input type="hidden" value="@Model.Id" name="UserId" />
+                                                            <input type="hidden" value="@(Model.LockoutEnabled == true ? "false" : "true")" name="Status" />
+                                                            <button type="submit" class="btn btn-sm @(Model.LockoutEnabled == true ? "btn-danger" : "btn-success")">
+                                                                @(Model.LockoutEnabled == true ? "غیرفعال شود" : "فعال شود")
+                                                            </button>
+                                                        </form>
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -219,9 +224,71 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
+                                                    @{
+                                                        DateTime? LockoutEnd = null;
+                                                        @if (Model.LockoutEnd.HasValue)
+                                                        {
+                                                            LockoutEnd = Model.LockoutEnd.Value.DateTime.ToLocalTime();
+                                                        }
+                                                    }
+                                                    <td>وضعیت قفل حساب کاربری</td>
+                                                    <td>
+                                                        @if (Model.LockoutEnd.HasValue)
+                                                        {
+                                                            <label class="badge @(LockoutEnd> DateTime.Now ? "badge-danger" : "badge-success")">
+                                                                <i class="fa @(LockoutEnd > DateTime.Now ? "fa-lock" : "fa-lock-open")"></i>
+                                                                @(LockoutEnd > DateTime.Now ? "قفل شده" : "قفل نشده")
+                                                            </label>
+                                                        }
+                                                        else
+                                                        {
+                                                            <label class="badge badge-success"><i class="fa fa-lock-open"></i>  قفل نشده </label>
+                                                        }
+
+                                                    </td>
+                                                    <td>
+                                                        @if(Model.LockoutEnabled)
+                                                        {
+                                                            @if (Model.LockoutEnd.HasValue)
+                                                            {
+                                                                <form asp-action="@(LockoutEnd>DateTime.Now?"UnLockUserAccount":"LockUserAccount")" method="post">
+                                                                    <input type="hidden" value="@Model.Id" name="userId" />
+                                                                    <button type="submit" class="btn btn-sm @(LockoutEnd > DateTime.Now ? "btn-success" : "btn-danger")">
+                                                                        @(LockoutEnd > DateTime.Now ? "خروج از حالت قفل" : "قفل شود")
+                                                                    </button>
+                                                                </form>
+                                                            }
+
+                                                            else
+                                                            {
+                                                                <form asp-action="LockUserAccount" method="post">
+                                                                    <input type="hidden" value="@Model.Id" name="userId" />
+                                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                                        قفل شود
+                                                                    </button>
+                                                                </form>
+                                                            }
+                                                        }
+
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        تعداد تلاش های ناموفق
+                                                    </td>
+                                                    <td>
+                                                        @Model.AccessFailedCount
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
                                                     <td>زمان خروج از حالت قفل</td>
                                                     <td>
-                                                        @Model.LockoutEnd
+                                                        @if (Model.LockoutEnd.HasValue)
+                                                        {
+                                                            @converDate.ConvertMiladiToShamsi(Model.LockoutEnd.Value.DateTime.ToLocalTime(), "dddd d MMMM yyyy ساعت HH:mm:ss")
+                                                        }
+
                                                     </td>
                                                     <td>
                                                     </td>
@@ -241,3 +308,5 @@
         </div>
     </div>
 </div>
+
+

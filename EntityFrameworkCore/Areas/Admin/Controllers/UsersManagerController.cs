@@ -184,6 +184,57 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             }
             return RedirectToAction("Index", new { Msg = "SendEmailSuccess" });
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeLockOutEnable(string userId,bool status)
+        {
+            var User=await userManager.FindByIdAsync(userId);
+
+            if (User==null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                await userManager.SetLockoutEnabledAsync(User, status);
+                return RedirectToAction("Details", new { id = User.Id });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult>  LockUserAccount(string userId)
+        {
+            var User=await userManager.FindByIdAsync(userId);
+            if (User == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                await userManager.SetLockoutEndDateAsync(User,DateTimeOffset.UtcNow.AddMinutes(20));
+                return RedirectToAction("Details", new { id = User.Id });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UnLockUserAccount(string userId)
+        {
+            var User = await userManager.FindByIdAsync(userId);
+            if (User == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                await userManager.SetLockoutEndDateAsync(User,null);
+                return RedirectToAction("Details", new { id = User.Id });
+            }
+        }
+
+
     }
 
 }

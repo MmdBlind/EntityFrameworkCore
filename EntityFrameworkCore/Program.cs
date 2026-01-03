@@ -19,7 +19,7 @@ builder.Services.AddDbContext<BookShopContext>(options =>
     options.UseLazyLoadingProxies()
            .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddSession(options => 
+builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(20);
     options.Cookie.HttpOnly = true;
@@ -39,8 +39,8 @@ builder.Services.AddTransient<IConvertDate, ConvertDate>();
 builder.Services.AddTransient<IBooksRepository, BooksRepository>();
 builder.Services.AddScoped<IApplicationRoleManager, ApplicationRoleManager>();
 builder.Services.AddScoped<ApplicationIdentityErrorDescriber>();
-builder.Services.AddScoped<IApplicationUserManager,ApplicationUserManager>();
-builder.Services.AddScoped<IEmailSender,EmailSender>();
+builder.Services.AddScoped<IApplicationUserManager, ApplicationUserManager>();
+builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.Configure<IdentityOptions>(options =>
 {
     //Configure Password
@@ -57,6 +57,10 @@ builder.Services.Configure<IdentityOptions>(options =>
 
     //Configure SignIn
     options.SignIn.RequireConfirmedEmail = true;
+
+    //Contigure LockoutAccount
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(20);
+    options.Lockout.MaxFailedAccessAttempts = 3;
 });
 
 builder.Services.AddPaging(options =>
