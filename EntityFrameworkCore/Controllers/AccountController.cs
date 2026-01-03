@@ -9,7 +9,7 @@ using System.Text.Encodings.Web;
 
 namespace EntityFrameworkCore.Controllers
 {
-    public class AccountController(IApplicationRoleManager roleManager, IApplicationUserManager userManager, IEmailSender emailSender, BookShopContext context) : Controller
+    public class AccountController(IApplicationRoleManager roleManager, IApplicationUserManager userManager, IEmailSender emailSender, BookShopContext context,SignInManager<ApplicationUser> signInManager) : Controller
     {
         [HttpGet]
         public IActionResult Register()
@@ -79,6 +79,39 @@ namespace EntityFrameworkCore.Controllers
                 throw new InvalidOperationException($"Error Confirming Email For UserWithId:'{userId}'");
             }
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult SignIn()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SignIn(SignInViewModel viewModel)
+        {
+            if(ModelState.IsValid)
+            {
+                var Resault = await signInManager.PasswordSignInAsync(viewModel.UserName,viewModel.Password,viewModel.RememberMe,false);
+                if(Resault.Succeeded)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "نام کاربری یا کلمه عبور شما صحیح نمی‌باشد.");
+                }
+            }
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SignOut()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
     }
 }
