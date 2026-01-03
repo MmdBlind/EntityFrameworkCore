@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using EntityFrameworkCore.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,20 +13,14 @@ namespace EntityFrameworkCore.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string id)
         {
+            if(id!=null)
+            {
+                ViewBag.ConfirmEmailAlert = "لینک فعالسازی حساب کاربری به ایمیل شما ارسال شد لطفا با کلیک روی این لینک حساب  خود را فعال کنید.";
+            }
             return View();
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
     }
 }

@@ -2,15 +2,17 @@
 using EntityFrameworkCore.Classes;
 using EntityFrameworkCore.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.VisualBasic;
 using ReflectionIT.Mvc.Paging;
 using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class UsersManagerController(IApplicationUserManager userManager, IApplicationRoleManager roleManager, IConvertDate convertDate) : Controller
+    public class UsersManagerController(IApplicationUserManager userManager, IApplicationRoleManager roleManager, IConvertDate convertDate, IEmailSender emailSender) : Controller
     {
 
         public async Task<IActionResult> Index(string Msg, int page = 1, int row = 10)
@@ -18,6 +20,10 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             if (Msg == "Success")
             {
                 ViewBag.Alert = "عضویت با موفقیت انجام شد.";
+            }
+            if (Msg == "SendEmailSuccess")
+            {
+                ViewBag.Alert = "ارسال ایمیل با موفقیت انجام شد.";
             }
             var PagingModel = PagingList.Create(await userManager.GetAllUsersWithRolesAsync(), row, page);
             return View(PagingModel);
@@ -58,7 +64,10 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             }
             else
             {
-                User.PersianBirthDate = convertDate.ConvertMiladiToShamsi(User.BirthDate, "yyyy/MM/dd");
+                if(User.BirthDate!=null)
+                {
+                    User.PersianBirthDate = convertDate.ConvertMiladiToShamsi((DateTime)User.BirthDate, "yyyy/MM/dd");
+                }
                 ViewBag.AllRoles = roleManager.GetAllRoles();
                 return View(User);
             }
@@ -160,5 +169,18 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 return View(User);
             }
         }
+
+        public async Task<IActionResult> SendEmail(string[] emails, string subject, string message)
+        {
+            if (emails != null)
+            {
+                for (int i = 0; i < emails.Length; i++)
+                {
+                    await emailSender.SendEmailAsync(emails[i], subject, message);
+                }
+            }
+            return RedirectToAction("Index", new { Msg = "SendEmailSuccess" });
+        }
     }
+
 }

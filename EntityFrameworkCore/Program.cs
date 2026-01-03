@@ -7,6 +7,8 @@ using ReflectionIT.Mvc.Paging;
 using Microsoft.AspNetCore.Identity;
 using EntityFrameworkCore.Areas.Identity.Data;
 using EntityFrameworkCore.Areas.Admin.Controllers;
+using EntityFrameworkCore.Areas.Identity.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
@@ -31,6 +33,7 @@ builder.Services.AddTransient<IBooksRepository, BooksRepository>();
 builder.Services.AddScoped<IApplicationRoleManager, ApplicationRoleManager>();
 builder.Services.AddScoped<ApplicationIdentityErrorDescriber>();
 builder.Services.AddScoped<IApplicationUserManager,ApplicationUserManager>();
+builder.Services.AddScoped<IEmailSender,EmailSender>();
 builder.Services.Configure<IdentityOptions>(options =>
 {
     //Configure Password

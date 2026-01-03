@@ -99,7 +99,12 @@
                                             <label>تاریخ تولد</label>
                                         </div>
                                         <div class="col-md-6">
-                                            <p>@converDate.ConvertMiladiToShamsi(Model.BirthDate, "yyyy/MM/dd")</p>
+                                            <p>
+                                                @if (Model.BirthDate != null)
+                                                {
+                                                    @converDate.ConvertMiladiToShamsi((DateTime)Model.BirthDate, "yyyy/MM/dd")
+                                                }
+                                            </p>
                                         </div>
                                     </div>
                                     <div class="row">
