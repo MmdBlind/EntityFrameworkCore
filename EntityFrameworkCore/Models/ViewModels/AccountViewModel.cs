@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace EntityFrameworkCore.Models.ViewModels
 {
@@ -76,5 +77,29 @@ namespace EntityFrameworkCore.Models.ViewModels
         public string ConfirmNewPassword { get; set; }
 
         public string Code { get; set; }
+    }
+
+    public class SendCodeViewModel
+    {
+        public string SelectedProvider { get; set; }
+
+        public ICollection<SelectListItem> Providers { get; set; }
+
+        public bool RememberMe { get; set; }
+    }
+    public class  VerifyCodeViewModel
+    {
+        [Required]
+        public string Provider { get; set; }
+
+        [Required(ErrorMessage ="وارد کردن {0} الزامی است.")]
+        [Display(Name ="کد اعتبار سنجی")]
+        public string code { get; set; }
+
+        [Display(Name ="مرا به خاطر بسپار؟")]
+        public bool RememberBrowser { get; set; }
+
+        [Display(Name ="RememberMe?")]
+        public bool RememberMe { get; set; }
     }
 }
