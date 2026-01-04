@@ -252,6 +252,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(string userId)
         {
             var User = await userManager.FindByIdAsync(userId);
@@ -271,6 +272,8 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             }
         }
 
+        [HttpGet]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(UsersResetPasswordViewModel viewModel)
         {
             if (ModelState.IsValid)
@@ -287,14 +290,14 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                     if (resault.Succeeded)
                     {
                         resault = await userManager.AddPasswordAsync(User, viewModel.NewPassword);
-                        if(resault.Succeeded)
+                        if (resault.Succeeded)
                         {
                             ViewBag.AlertSuccess = "بازنشانی کلمه عبور با موفقیت انجام شد.";
                             viewModel.UserName = User.UserName;
                             viewModel.Email = User.Email;
                         }
                     }
-                    foreach(var error in resault.Errors)
+                    foreach (var error in resault.Errors)
                     {
                         ModelState.AddModelError(string.Empty, error.Description);
                     }
@@ -302,6 +305,91 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             }
             return View(viewModel);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeTwoFactorEnabled(string userId)
+        {
+            var User = await userManager.FindByIdAsync(userId);
+            if (User == null)
+            {
+                return NotFound();
+            }
+            if (User.TwoFactorEnabled == true)
+            {
+                User.TwoFactorEnabled = false;
+            }
+            else
+            {
+                User.TwoFactorEnabled = true;
+            }
+            var resault = await userManager.UpdateAsync(User);
+            if (!resault.Succeeded)
+            {
+                foreach (var error in resault.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+            return RedirectToAction("Details", new { id = User.Id });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeEmailConfirmed(string userId)
+        {
+            var User = await userManager.FindByIdAsync(userId);
+            if (User == null)
+            {
+                return NotFound();
+            }
+            if (User.EmailConfirmed == true)
+            {
+                User.EmailConfirmed = false;
+            }
+            else
+            {
+                User.EmailConfirmed = true;
+            }
+            var resault = await userManager.UpdateAsync(User);
+            if (!resault.Succeeded)
+            {
+                foreach (var error in resault.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+            return RedirectToAction("Details", new { id = User.Id });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePhoneNumberConfimed(string userId)
+        {
+            var User = await userManager.FindByIdAsync(userId);
+            if (User == null)
+            {
+                return NotFound();
+            }
+            if (User.PhoneNumberConfirmed)
+            {
+                User.PhoneNumberConfirmed = false;
+            }
+            else
+            {
+                User.PhoneNumberConfirmed = true;
+            }
+            var resault = await userManager.UpdateAsync(User);
+            if (resault.Succeeded)
+            {
+                foreach (var error in resault.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+            return RedirectToAction("Details", new { id = User.Id });
+        }
+
     }
 
 }

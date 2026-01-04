@@ -184,7 +184,15 @@
                                                             @(Model.EmailConfirmed == true ? "تایید شده" : "تایید نشده")
                                                         </label>
                                                     </td>
-                                                    <td></td>
+                                                    <td>
+                                                        <form asp-action="ChangeEmailConfirmed" method="post">
+                                                            <input type="hidden" value="@Model.Id" name="UserId" />
+                                                            <input type="hidden" value="@(Model.EmailConfirmed == true ? "false" : "true")" name="Status" />
+                                                            <button type="submit" class="btn btn-sm @(Model.EmailConfirmed == true ? "btn-danger" : "btn-success")">
+                                                                @(Model.EmailConfirmed == true ? "غیرفعال شود" : "فعال شود")
+                                                            </button>
+                                                        </form>
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <td>
@@ -195,7 +203,15 @@
                                                             @(Model.PhoneNumberConfirmed == true ? "تایید شده" : "تایید نشده")
                                                         </label>
                                                     </td>
-                                                    <td></td>
+                                                    <td>
+                                                        <form asp-action="ChangePhoneNumberConfimed" method="post">
+                                                            <input type="hidden" value="@Model.Id" name="UserId" />
+                                                            <input type="hidden" value="@(Model.PhoneNumberConfirmed == true ? "false" : "true")" name="Status" />
+                                                            <button type="submit" class="btn btn-sm @(Model.PhoneNumberConfirmed == true ? "btn-danger" : "btn-success")">
+                                                                @(Model.PhoneNumberConfirmed == true ? "غیرفعال شود" : "فعال شود")
+                                                            </button>
+                                                        </form>
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <td>
@@ -226,7 +242,13 @@
                                                         </label>
                                                     </td>
                                                     <td>
-                                                        <button class="btn btn-success btn-sm">فعال شود</button>
+                                                        <form asp-action="ChangeTwoFactorEnabled" method="post">
+                                                            <input type="hidden" value="@Model.Id" name="UserId" />
+                                                            <input type="hidden" value="@(Model.TwoFactorEnabled == true ? "false" : "true")" name="Status" />
+                                                            <button type="submit" class="btn btn-sm @(Model.TwoFactorEnabled == true ? "btn-danger" : "btn-success")">
+                                                                @(Model.TwoFactorEnabled == true ? "غیرفعال شود" : "فعال شود")
+                                                            </button>
+                                                        </form>
                                                     </td>
                                                 </tr>
                                                 <tr>

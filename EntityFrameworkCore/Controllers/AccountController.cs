@@ -1,4 +1,5 @@
 ﻿using EntityFrameworkCore.Areas.Identity.Data;
+using EntityFrameworkCore.Areas.Identity.Services;
 using EntityFrameworkCore.Classes;
 using EntityFrameworkCore.Models;
 using EntityFrameworkCore.Models.ViewModels;
@@ -10,7 +11,7 @@ using System.Text.Encodings.Web;
 
 namespace EntityFrameworkCore.Controllers
 {
-    public class AccountController(IApplicationRoleManager roleManager, IApplicationUserManager userManager, IEmailSender emailSender, BookShopContext context, SignInManager<ApplicationUser> signInManager) : Controller
+    public class AccountController(IApplicationRoleManager roleManager, IApplicationUserManager userManager, IEmailSender emailSender, BookShopContext context, SignInManager<ApplicationUser> signInManager, ISmsSender smsSender) : Controller
     {
         [HttpGet]
         public IActionResult Register()
@@ -234,6 +235,43 @@ namespace EntityFrameworkCore.Controllers
         [HttpGet]
         public IActionResult ResetPasswordConfirmation()
         {
+            return View();
+        }
+
+        public async Task<IActionResult> SendSms()
+        {
+            string status = await smsSender.SendAuthSmsAsync("5678", "09164145926");
+            if (status == "Success")
+            {
+                ViewBag.Alert = "پیامک با موفقیت ارسال شد.";
+            }
+            else
+            {
+                ViewBag.Alert = "خطا در ارسال پیامک.";
+            }
+            return View();
+        }
+
+        public async Task<IActionResult> SendSmsWithPackage()
+        {
+            List<string> phoneNumbers = new List<string>
+            {
+                "09164145926"
+            };
+            string message = "این یک پیامک تستی با استفاده از بسته پیامکی کاوه نگار می‌باشد.";
+            string status = await smsSender.SendAuthSmsPackageAsync(phoneNumbers, message);
+            if (status == "Success")
+            {
+                ViewBag.Alert = "پیامک با موفقیت ارسال شد.";
+            }
+            else if (status == "Failed")
+            {
+                ViewBag.Alert = "خطا در ارسال پیامک.";
+            }
+            else if (status == "FailedToConnect")
+            {
+                ViewBag.Alert = "خطا در برقراری ارتباط با سرور پیامک.";
+            }
             return View();
         }
     }

@@ -41,6 +41,7 @@ builder.Services.AddScoped<IApplicationRoleManager, ApplicationRoleManager>();
 builder.Services.AddScoped<ApplicationIdentityErrorDescriber>();
 builder.Services.AddScoped<IApplicationUserManager, ApplicationUserManager>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddScoped<ISmsSender, SmsSender>();
 builder.Services.Configure<IdentityOptions>(options =>
 {
     //Configure Password
