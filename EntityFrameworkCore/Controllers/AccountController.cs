@@ -139,8 +139,8 @@ namespace EntityFrameworkCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SignOut()
         {
-            var user=await userManager.GetUserAsync(User);
-            if(user==null)
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
             {
                 return NotFound();
             }
@@ -293,6 +293,7 @@ namespace EntityFrameworkCore.Controllers
         [HttpGet]
         public async Task<IActionResult> SendCode(bool rememberMe)
         {
+            var factorOptions = new List<SelectListItem>();
             var user = await signInManager.GetTwoFactorAuthenticationUserAsync();
             if (user == null)
             {
@@ -301,11 +302,20 @@ namespace EntityFrameworkCore.Controllers
             else
             {
                 var userFactors = await userManager.GetValidTwoFactorProvidersAsync(user);
-                userFactors.Remove("Authenticator");
-                var factorOptions = userFactors.Select(p => new SelectListItem { Text = (p == "Email" ? "ارسال ایمیل" : "ارسال پیامک"), Value = p }).ToList();
+                foreach (var item in userFactors)
+                {
+                    if (item == "Authenticator")
+                    {
+                        factorOptions.Add(new SelectListItem { Text = "اپلیکیشن احراز هویت", Value = item });
+                    }
+                    else
+                    {
+                        factorOptions.Add(new SelectListItem { Text = (item == "Email" ? "ارسال ایمیل" : "ارسال پیامک"), Value = item });
+                    }
+                }
                 SendCodeViewModel viewModel = new SendCodeViewModel
                 {
-                    Providers = factorOptions.ToList(),
+                    Providers = factorOptions,
                     RememberMe = rememberMe
                 };
                 return View(viewModel);
@@ -327,26 +337,87 @@ namespace EntityFrameworkCore.Controllers
                 {
                     return NotFound();
                 }
-                var code = await userManager.GenerateTwoFactorTokenAsync(user, viewModel.SelectedProvider);
-                if (string.IsNullOrWhiteSpace(code))
+                if (viewModel.SelectedProvider != "Authenticator")
                 {
-                    return View("Error");
-                }
-                var message = "<p style='direction:rtl;font-size:14px;font-family:tahoma'>کد اعتبار اسنجی شما :" + code + "</p>";
-                if (viewModel.SelectedProvider == "Email")
-                {
-                    await emailSender.SendEmailAsync(user.Email, "کد احراز هویت دو مرحله ای", message);
-                }
-                else if (viewModel.SelectedProvider == "Phone")
-                {
-                    string responseSms = await smsSender.SendAuthSmsAsync(code, user.PhoneNumber);
-                    if (responseSms == "Failed")
+                    var code = await userManager.GenerateTwoFactorTokenAsync(user, viewModel.SelectedProvider);
+                    if (string.IsNullOrWhiteSpace(code))
                     {
-                        ModelState.AddModelError(string.Empty, "در ارسال پیامک خطایی رخ داده است.");
-                        return View(viewModel);
+                        return View("Error");
                     }
+                    var message = "<p style='direction:rtl;font-size:14px;font-family:tahoma'>کد اعتبار اسنجی شما :" + code + "</p>";
+                    if (viewModel.SelectedProvider == "Email")
+                    {
+                        await emailSender.SendEmailAsync(user.Email, "کد احراز هویت دو مرحله ای", message);
+                    }
+                    else if (viewModel.SelectedProvider == "Phone")
+                    {
+                        string responseSms = await smsSender.SendAuthSmsAsync(code, user.PhoneNumber);
+                        if (responseSms == "Failed")
+                        {
+                            ModelState.AddModelError(string.Empty, "در ارسال پیامک خطایی رخ داده است.");
+                            return View(viewModel);
+                        }
+                    }
+                    return RedirectToAction("VerifyCode", new { provider = viewModel.SelectedProvider, rememberMe = viewModel.RememberMe });
                 }
-                return RedirectToAction("VerifyCode", new { provider = viewModel.SelectedProvider, rememberMe = viewModel.RememberMe });
+                else
+                {
+                    return RedirectToAction("LoginWith2FA", new { rememberMe = viewModel.RememberMe });
+                }
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> LoginWith2FA(bool rememberMe)
+        {
+            var user = await signInManager.GetTwoFactorAuthenticationUserAsync();
+            if(user==null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                LoginWith2FAViewModel viewModel = new LoginWith2FAViewModel
+                {
+                    RememberMe = rememberMe
+                };
+                return View(viewModel);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LoginWith2FA(LoginWith2FAViewModel viewModel)
+        {
+            if(!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+            else
+            {
+                var user=await signInManager.GetTwoFactorAuthenticationUserAsync();
+                if( user==null )
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    var authenticationCode = viewModel.TwoFactorCode.Replace(" ", string.Empty).Replace("-", string.Empty);
+                    var resault = await signInManager.TwoFactorAuthenticatorSignInAsync(authenticationCode, viewModel.RememberMe, viewModel.RememberMachine);
+                    if(resault.Succeeded)
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else if(resault.IsLockedOut)
+                    {
+                        ModelState.AddModelError(string.Empty, "حساب کاربری شما به مدت 20 دقیقه مسدود می‌باشد.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "کد اعتبار سنجی شما نامعتبر است.");
+                    }
+                    return View(viewModel);
+                }
             }
         }
 
@@ -390,6 +461,7 @@ namespace EntityFrameworkCore.Controllers
             return View(viewModel);
         }
 
+        [HttpGet]
         public async Task<IActionResult> ChangePassword()
         {
             var user = await userManager.GetUserAsync(User);
@@ -421,14 +493,14 @@ namespace EntityFrameworkCore.Controllers
             var user = await userManager.GetUserAsync(User);
             if (ModelState.IsValid)
             {
-                if(user==null)
+                if (user == null)
                 {
                     return NotFound();
                 }
                 else
                 {
-                    var changePasswordResault=await userManager.ChangePasswordAsync(user,viewModel.OldPassword,viewModel.NewPassword);
-                    if(changePasswordResault.Succeeded)
+                    var changePasswordResault = await userManager.ChangePasswordAsync(user, viewModel.OldPassword, viewModel.NewPassword);
+                    if (changePasswordResault.Succeeded)
                     {
                         ViewBag.Alert = "کلمه عبور با موفقیت تغییر یافت.";
                     }
@@ -451,10 +523,12 @@ namespace EntityFrameworkCore.Controllers
                 }
             }
             else
-            { 
+            {
                 return View(viewModel);
             }
         }
+
+        
 
     }
 }
