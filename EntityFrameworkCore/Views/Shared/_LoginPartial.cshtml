@@ -16,7 +16,7 @@
             <ul>
                 @if(User.IsInRole("کاربر")||User.IsInRole("مشتری"))
                 {
-                    <a  class="nav-link text-white">ورود به پنل کاربری</a>
+                    <a asp-action="ChangePassword" asp-controller="Account" class="nav-link text-white">ورود به پنل کاربری</a>
                 }
                 else
                 {

@@ -108,6 +108,7 @@ namespace EntityFrameworkCore.Areas.Identity.Data
         Task<IdentityResult> RedeemTwoFactorRecoveryCodeAsync(ApplicationUser user, string code);
         Task<int> CountRecoveryCodesAsync(ApplicationUser user);
         Task<byte[]> CreateSecurityTokenAsync(ApplicationUser user);
+        Task<ApplicationUser> GetUserAsync(ClaimsPrincipal user);
 
         #endregion
 

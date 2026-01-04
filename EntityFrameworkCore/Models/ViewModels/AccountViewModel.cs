@@ -102,4 +102,40 @@ namespace EntityFrameworkCore.Models.ViewModels
         [Display(Name ="RememberMe?")]
         public bool RememberMe { get; set; }
     }
+
+    public class ChangePasswordViewModel
+    {
+        [Display(Name ="کلمه عبور فعلی")]
+        [DataType(DataType.Password)]
+        [Required(ErrorMessage = "وارد نمودن {0} الزامی است.")]
+        public string OldPassword { get; set; }
+
+
+        [Display(Name = "کلمه عبور جدید")]
+        [DataType(DataType.Password)]
+        [Required(ErrorMessage = "وارد نمودن {0} الزامی است.")]
+        [StringLength(100, ErrorMessage = "{0} باید دارای حداقل {2} کاراکتر و حداکثر دارای {1} کاراکتر باشد.", MinimumLength = 6)]
+        public string NewPassword { get; set; }
+
+
+        [Display(Name = "تکرار کلمه عبور جدید")]
+        [DataType(DataType.Password)]
+        [Required(ErrorMessage = "وارد نمودن {0} الزامی است.")]
+        [Compare("NewPassword", ErrorMessage = "کلمه عبور وارد شده با تکرار کلمه عبور مطابقت ندارد.")]
+        [StringLength(100, ErrorMessage = "{0} باید دارای حداقل {2} کاراکتر و حداکثر دارای {1} کاراکتر باشد.", MinimumLength = 6)]
+        public string ConfirmPassword { get; set; }
+
+        public UserSidebarViewModel? UserSidebar { get; set; }
+    }
+
+    public class UserSidebarViewModel
+    {
+        public string FullName { get; set; }
+        
+        public DateTime? RegisterDate { get; set; }
+        
+        public DateTime? LastVisit { get; set; }
+       
+        public string? Image { get; set; }
+    }
 }

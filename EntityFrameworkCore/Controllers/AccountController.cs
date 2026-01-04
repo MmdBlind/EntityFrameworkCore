@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Build.Framework;
 using Microsoft.IdentityModel.Tokens;
+using System.Net.WebSockets;
 using System.Text.Encodings.Web;
 
 namespace EntityFrameworkCore.Controllers
@@ -138,6 +139,13 @@ namespace EntityFrameworkCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SignOut()
         {
+            var user=await userManager.GetUserAsync(User);
+            if(user==null)
+            {
+                return NotFound();
+            }
+            user.LastVisitDateTime = DateTime.Now;
+            await userManager.UpdateAsync(user);
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
@@ -366,8 +374,8 @@ namespace EntityFrameworkCore.Controllers
             {
                 return View(viewModel);
             }
-            var resault = await signInManager.TwoFactorSignInAsync(viewModel.Provider,viewModel.code, viewModel.RememberMe, viewModel.RememberBrowser);
-            if(resault.Succeeded)
+            var resault = await signInManager.TwoFactorSignInAsync(viewModel.Provider, viewModel.code, viewModel.RememberMe, viewModel.RememberBrowser);
+            if (resault.Succeeded)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -381,5 +389,72 @@ namespace EntityFrameworkCore.Controllers
             }
             return View(viewModel);
         }
+
+        public async Task<IActionResult> ChangePassword()
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                UserSidebarViewModel sidebarVM = new UserSidebarViewModel
+                {
+                    FullName = user.FirstName + " " + user.LastName,
+                    RegisterDate = user.RegisterDate,
+                    LastVisit = user.LastVisitDateTime,
+                    Image = user.Image
+                };
+                ChangePasswordViewModel changePasswordVM = new ChangePasswordViewModel
+                {
+                    UserSidebar = sidebarVM
+                };
+                return View(changePasswordVM);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel viewModel)
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (ModelState.IsValid)
+            {
+                if(user==null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    var changePasswordResault=await userManager.ChangePasswordAsync(user,viewModel.OldPassword,viewModel.NewPassword);
+                    if(changePasswordResault.Succeeded)
+                    {
+                        ViewBag.Alert = "کلمه عبور با موفقیت تغییر یافت.";
+                    }
+                    else
+                    {
+                        foreach (var error in changePasswordResault.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                    }
+                    UserSidebarViewModel sidebarVM = new UserSidebarViewModel
+                    {
+                        FullName = user.FirstName + " " + user.LastName,
+                        RegisterDate = user.RegisterDate,
+                        LastVisit = user.LastVisitDateTime,
+                        Image = user.Image
+                    };
+                    viewModel.UserSidebar = sidebarVM;
+                    return View(viewModel);
+                }
+            }
+            else
+            { 
+                return View(viewModel);
+            }
+        }
+
     }
 }

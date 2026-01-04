@@ -5,6 +5,7 @@
     "anonymousAuthentication": true,
     "iisExpress": {
       "applicationUrl": "http://localhost:21732",
+      "launchUrl": "Account/SignIn",
       "sslPort": 44339
     }
   },
