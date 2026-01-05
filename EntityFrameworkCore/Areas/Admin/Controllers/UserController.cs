@@ -67,11 +67,88 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> TwoFactorAuthentication(string alert)
         {
+            var user=await userManager.GetUserAsync(User);
+            if(user==null)
+            {
+                return NotFound();
+            }
             if (alert!=null)
             {
                 ViewBag.Alert = "اپلیکیشن احراز هویت تایید شد.";
             }
+            TwoFactorAuthenticationViewModel viewModel = new TwoFactorAuthenticationViewModel
+            {
+                HasAuthenticator = await userManager.GetAuthenticatorKeyAsync(user)!=null,
+                RecoveryCodesLeft=await userManager.CountRecoveryCodesAsync(user),
+                Is2faEnabled= await userManager.GetTwoFactorEnabledAsync(user)
+            };
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GenerateRecoveryCodes()
+        {
+            var user = await userManager.GetUserAsync(User);
+            if(user==null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                var isTwoFactorEnabled = await userManager.GetTwoFactorEnabledAsync(user);
+                if(!isTwoFactorEnabled)
+                {
+                    throw new InvalidOperationException("امکان ایجاد کد بازیابی وجود ندارد چون احراز هویت 2 مرحله ای فعال نیست.");
+                }
+                return View();
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("GenerateRecoveryCodes")]
+        public async Task<IActionResult> GenerateRecovery()
+        {
+            var user=await userManager.GetUserAsync(User);
+            if(user==null)
+            {
+                return NotFound();
+            }
+            var isTwoFactorEnabled = await userManager.GetTwoFactorEnabledAsync(user);
+            if(!isTwoFactorEnabled)
+            {
+                throw new InvalidOperationException("امکان ایجاد کد بازیابی وجود ندارد چون احراز هویت 2 مرحله ای فعال نیست.");
+            }
+            var recoveryCodes = await userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
+            return View("ShowRecoveryCodes",recoveryCodes);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ResetAuthenticator()
+        { 
+            var user=await userManager.GetUserAsync(User);
+            if(user==null)
+            {
+                return NotFound();
+            }
             return View();
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("ResetAuthenticator")]
+        public async Task<IActionResult> ResetAuthenticatorApp()
+        {
+            var user=await userManager.GetUserAsync(User);
+            if(user==null)
+            {
+                return NotFound();
+            }
+            await userManager.SetTwoFactorEnabledAsync(user, false);
+            await userManager.ResetAuthenticatorKeyAsync(user);
+            await signInManager.RefreshSignInAsync(user);
+            return RedirectToAction("EnableAuthenticator");
         }
 
         public async Task<EnableAuthenticatorViewModel> LoadSharedKeyAndQrCodeUriAsync(ApplicationUser user)

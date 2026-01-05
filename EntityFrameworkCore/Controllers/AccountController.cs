@@ -528,7 +528,45 @@ namespace EntityFrameworkCore.Controllers
             }
         }
 
-        
+        [HttpGet]
+        public async Task<IActionResult> LoginWithRecoveryCode()
+        {
+            var user = await signInManager.GetTwoFactorAuthenticationUserAsync();
+            if(user==null)
+            {
+                return NotFound();
+            }
+            return View();
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LoginWithRecoveryCode(LoginWithRecoveryCodeViewModel viewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+            var user = await signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var rcoveryCode = viewModel.RecoveryCode.Replace(" ", string.Empty);
+            var resault = await signInManager.TwoFactorRecoveryCodeSignInAsync(rcoveryCode);
+            if (resault.Succeeded)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            else if (resault.IsLockedOut)
+            {
+                ModelState.AddModelError(string.Empty, "حساب کاربری شما به مدت 20 دقیقه مسدود می‌باشد.");
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "کد اعتبارسنجی وارد شده صحیح نمی‌باشد.");
+            }
+            return View(viewModel);
+        }
     }
 }
