@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Build.Framework;
 using Microsoft.IdentityModel.Tokens;
 using System.Net.WebSockets;
+using System.Security.Claims;
 using System.Text.Encodings.Web;
 
 namespace EntityFrameworkCore.Controllers
@@ -371,7 +372,7 @@ namespace EntityFrameworkCore.Controllers
         public async Task<IActionResult> LoginWith2FA(bool rememberMe)
         {
             var user = await signInManager.GetTwoFactorAuthenticationUserAsync();
-            if(user==null)
+            if (user == null)
             {
                 return NotFound();
             }
@@ -389,14 +390,14 @@ namespace EntityFrameworkCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LoginWith2FA(LoginWith2FAViewModel viewModel)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return View(viewModel);
             }
             else
             {
-                var user=await signInManager.GetTwoFactorAuthenticationUserAsync();
-                if( user==null )
+                var user = await signInManager.GetTwoFactorAuthenticationUserAsync();
+                if (user == null)
                 {
                     return NotFound();
                 }
@@ -404,11 +405,11 @@ namespace EntityFrameworkCore.Controllers
                 {
                     var authenticationCode = viewModel.TwoFactorCode.Replace(" ", string.Empty).Replace("-", string.Empty);
                     var resault = await signInManager.TwoFactorAuthenticatorSignInAsync(authenticationCode, viewModel.RememberMe, viewModel.RememberMachine);
-                    if(resault.Succeeded)
+                    if (resault.Succeeded)
                     {
                         return RedirectToAction("Index", "Home");
                     }
-                    else if(resault.IsLockedOut)
+                    else if (resault.IsLockedOut)
                     {
                         ModelState.AddModelError(string.Empty, "حساب کاربری شما به مدت 20 دقیقه مسدود می‌باشد.");
                     }
@@ -532,7 +533,7 @@ namespace EntityFrameworkCore.Controllers
         public async Task<IActionResult> LoginWithRecoveryCode()
         {
             var user = await signInManager.GetTwoFactorAuthenticationUserAsync();
-            if(user==null)
+            if (user == null)
             {
                 return NotFound();
             }
@@ -567,6 +568,57 @@ namespace EntityFrameworkCore.Controllers
                 ModelState.AddModelError(string.Empty, "کد اعتبارسنجی وارد شده صحیح نمی‌باشد.");
             }
             return View(viewModel);
+        }
+
+        [HttpGet]
+        public IActionResult GetExternalLoginProvider(string provider)
+        {
+            var redirectUrl = Url.Action("GetCallBackAsync", "Account");
+            var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return Challenge(properties, provider);
+        }
+
+        [ActionName("GetCallBackAsync")]
+        public async Task<IActionResult> GetCallBackAsync()
+        {
+            var info = await signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                ModelState.AddModelError(string.Empty, $"در عملیات ورود به سایت از طریق حساب {info.ProviderDisplayName} خطایی رخ داده است.");
+            }
+            var userEmail = info.Principal.FindFirstValue(ClaimTypes.Email);
+            var user = await userManager.FindByEmailAsync(userEmail);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "شما عضو سایت نیستید برای ورود به سایت باید عضو سایت شوید.");
+            }
+            else
+            {
+                var resault = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false);
+                if (resault.Succeeded)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                else if (resault.IsLockedOut)
+                {
+                    ModelState.AddModelError(string.Empty, "حساب کاربری شما به مدت 20 دقیقه به دلیل تلاش های ناموفق قفل شد.");
+                    return View("SignIn");
+                }
+                else if (resault.RequiresTwoFactor)
+                {
+                    return RedirectToAction("SendCode");
+                }
+                else
+                {
+                    var externalResault = await userManager.AddLoginAsync(user, info);
+                    if (externalResault.Succeeded)
+                    {
+                        await signInManager.SignInAsync(user, false);
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+            }
+            return View("SignIn");
         }
     }
 }

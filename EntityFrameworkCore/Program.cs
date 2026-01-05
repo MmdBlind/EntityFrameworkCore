@@ -64,6 +64,13 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Lockout.MaxFailedAccessAttempts = 3;
 });
 
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = "978532525496-duvt6h99ktdv937a9kltfefdkimshvho.apps.googleusercontent.com";
+        options.ClientSecret = "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";
+    });
+
 builder.Services.AddPaging(options =>
 {
     options.ViewName = "Bootstrap4";
