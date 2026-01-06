@@ -3,6 +3,7 @@ using EntityFrameworkCore.Areas.Identity.Services;
 using EntityFrameworkCore.Classes;
 using EntityFrameworkCore.Models;
 using EntityFrameworkCore.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -92,7 +93,7 @@ namespace EntityFrameworkCore.Controllers
         }
 
         [HttpGet]
-        public IActionResult SignIn()
+        public IActionResult SignIn(string ReturnUrl=null)
         {
             return View();
         }
@@ -466,6 +467,7 @@ namespace EntityFrameworkCore.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ChangePassword()
         {
             var user = await userManager.GetUserAsync(User);
@@ -713,6 +715,11 @@ namespace EntityFrameworkCore.Controllers
                     }
                 }
             }
+        }
+
+        public IActionResult AccessDenied(string ReturnUrl=null)
+        {
+            return View();
         }
     }
 }

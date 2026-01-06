@@ -1,6 +1,7 @@
 ﻿using EntityFrameworkCore.Areas.Identity.Data;
 using EntityFrameworkCore.Classes;
 using EntityFrameworkCore.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 namespace EntityFrameworkCore.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Policy = "AccessToUsersManager")]
     public class UsersManagerController(IApplicationUserManager userManager, IApplicationRoleManager roleManager, IConvertDate convertDate, IEmailSender emailSender) : Controller
     {
 
@@ -272,7 +274,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(UsersResetPasswordViewModel viewModel)
         {

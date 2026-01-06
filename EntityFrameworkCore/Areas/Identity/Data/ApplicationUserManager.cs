@@ -88,6 +88,7 @@ namespace EntityFrameworkCore.Areas.Identity.Data
         public async Task<string> GetFullName(ClaimsPrincipal user)
         {
             var UserInfo = await GetUserAsync(user);
+            //string fullName = UserInfo.FirstName + " " + UserInfo.LastName;
             return UserInfo.FirstName + " " + UserInfo.LastName;
         }
 

@@ -1,10 +1,12 @@
 ﻿using System.Diagnostics;
 using System.Security.Claims;
 using EntityFrameworkCore.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EntityFrameworkCore.Controllers
 {
+    [AllowAnonymous]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

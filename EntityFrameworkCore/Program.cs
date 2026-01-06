@@ -1,4 +1,4 @@
-using EntityFrameworkCore.Classes;
+﻿using EntityFrameworkCore.Classes;
 using EntityFrameworkCore.Models;
 using EntityFrameworkCore.Models.Repository;
 using EntityFrameworkCore.Models.UnitOfWork;
@@ -29,7 +29,6 @@ builder.Services.AddSession(options =>
 //    .AddEntityFrameworkStores<BookShopContext>();
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<BookShopContext>()
-    .AddDefaultUI()
     .AddErrorDescriber<ApplicationIdentityErrorDescriber>()
     .AddDefaultTokenProviders();
 builder.Services.AddTransient<BooksRepository>();
@@ -65,6 +64,10 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Lockout.MaxFailedAccessAttempts = 3;
 });
 
+builder.Services.ConfigureApplicationCookie(options => 
+{
+    options.LoginPath = "/Account/SignIn";
+});
 builder.Services.AddAuthentication()
     .AddGoogle(options =>
     {
@@ -76,12 +79,18 @@ builder.Services.AddAuthentication()
         options.ClientSecret = "25bd931d56c805b78a912d77efda8e8e860a042c";
     });
 
+builder.Services.AddAuthorization(options => 
+{
+    options.AddPolicy("AccessToUsersManager", policy => policy.RequireRole("Admin", "فروشنده"));
+});
+
 builder.Services.AddPaging(options =>
 {
     options.ViewName = "Bootstrap4";
     options.HtmlIndicatorDown = " <span>&darr;</span>";
     options.HtmlIndicatorUp = " <span>&uarr;</span>";
 });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -96,8 +105,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseSession();
 app.UseRouting();
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 
 

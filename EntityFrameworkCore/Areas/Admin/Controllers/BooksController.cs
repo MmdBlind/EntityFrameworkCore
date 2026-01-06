@@ -2,6 +2,7 @@
 using EntityFrameworkCore.Models.Repository;
 using EntityFrameworkCore.Models.UnitOfWork;
 using EntityFrameworkCore.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ using static System.Reflection.Metadata.BlobBuilder;
 namespace EntityFrameworkCore.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize]
     public class BooksController : Controller
     {
         private readonly IUnitOfWork _UW;
