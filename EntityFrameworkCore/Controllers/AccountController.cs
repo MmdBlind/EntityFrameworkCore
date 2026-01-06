@@ -20,7 +20,7 @@ using static System.Net.WebRequestMethods;
 
 namespace EntityFrameworkCore.Controllers
 {
-    public class AccountController(IApplicationRoleManager roleManager, IApplicationUserManager userManager, IEmailSender emailSender, BookShopContext context, SignInManager<ApplicationUser> signInManager, ISmsSender smsSender, IConfiguration configuration, IHttpClientFactory httpClientFactory) : Controller
+    public class AccountController(IApplicationRoleManager roleManager, IApplicationUserManager userManager, IEmailSender emailSender, BookShopContext context, SignInManager<ApplicationUser> signInManager, ISmsSender smsSender, IConfiguration configuration, IHttpClientFactory httpClientFactory,IConvertDate convertDate) : Controller
     {
         [HttpGet]
         public IActionResult Register()
@@ -35,6 +35,7 @@ namespace EntityFrameworkCore.Controllers
         {
             if (ModelState.IsValid)
             {
+                DateTime birthDateMiladi = convertDate.ConvertShamsiToMiladi(viewModel.BirthDate);
                 var Transaction = context.Database.BeginTransaction();
                 var User = new ApplicationUser
                 {
@@ -53,6 +54,7 @@ namespace EntityFrameworkCore.Controllers
                         await roleManager.CreateAsync(new ApplicationRole("کاربر", "مشتری سایت"));
                     }
                     Resault = await userManager.AddToRoleAsync(User, "کاربر");
+                    await userManager.AddClaimAsync(User, new Claim(ClaimTypes.DateOfBirth,birthDateMiladi.ToShortDateString()));
                     Transaction.Commit();
                     if (Resault.Succeeded)
                     {
