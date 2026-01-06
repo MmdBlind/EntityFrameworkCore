@@ -1,5 +1,7 @@
 ﻿@model EntityFrameworkCore.Models.ViewModels.UserSidebarViewModel
 @inject EntityFrameworkCore.Classes.ConvertDate convertDate
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService authorizationService
 
 <div class="profile-sidebar">
     <div class="profile-userpic">
@@ -59,6 +61,16 @@
                     سفارشات
                 </a>
             </li>
+            @if((await authorizationService.AuthorizeAsync(User,"HappyBirthDay")).Succeeded)
+            {
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="/Account/HappyBirthDay">
+                        <i class="fa fa-gift"></i>
+                        تبریک!!! کلیک کنید
+                    </a>
+                </li>
+            }
+           
         </ul>
     </div>
     <!-- END MENU -->

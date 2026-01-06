@@ -43,7 +43,8 @@ namespace EntityFrameworkCore.Controllers
                     Email = viewModel.Email,
                     PhoneNumber = viewModel.PhoneNumber,
                     RegisterDate = DateTime.Now,
-                    IsActive = true
+                    IsActive = true,
+                    BirthDate = birthDateMiladi
                 };
                 IdentityResult Resault = await userManager.CreateAsync(User, viewModel.Password);
                 if (Resault.Succeeded)
@@ -54,7 +55,7 @@ namespace EntityFrameworkCore.Controllers
                         await roleManager.CreateAsync(new ApplicationRole("کاربر", "مشتری سایت"));
                     }
                     Resault = await userManager.AddToRoleAsync(User, "کاربر");
-                    await userManager.AddClaimAsync(User, new Claim(ClaimTypes.DateOfBirth,birthDateMiladi.ToShortDateString()));
+                    await userManager.AddClaimAsync(User, new Claim(ClaimTypes.DateOfBirth,birthDateMiladi.ToString("MM/dd")));
                     Transaction.Commit();
                     if (Resault.Succeeded)
                     {
@@ -720,6 +721,12 @@ namespace EntityFrameworkCore.Controllers
         }
 
         public IActionResult AccessDenied(string ReturnUrl=null)
+        {
+            return View();
+        }
+
+        [Authorize(policy:"HappyBirthDay")]
+        public IActionResult HappyBirthDay()
         {
             return View();
         }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using EntityFrameworkCore.Classes;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace EntityFrameworkCore.Models.ViewModels
@@ -31,6 +32,7 @@ namespace EntityFrameworkCore.Models.ViewModels
 
         [Display(Name ="تاریخ تولد")]
         [Required(ErrorMessage ="وارد کردن {0} الزامی است.")]
+        [PersianDate]
         public string BirthDate { get; set; }
     }
 

@@ -9,6 +9,7 @@ using EntityFrameworkCore.Areas.Identity.Data;
 using EntityFrameworkCore.Areas.Admin.Controllers;
 using EntityFrameworkCore.Areas.Identity.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
@@ -82,6 +83,7 @@ builder.Services.AddAuthentication()
 builder.Services.AddAuthorization(options => 
 {
     options.AddPolicy("AccessToUsersManager", policy => policy.RequireRole("Admin", "فروشنده"));
+    options.AddPolicy("HappyBirthDay", policy => policy.RequireClaim(ClaimTypes.DateOfBirth,DateTime.Now.ToString("MM/dd")));
 });
 
 builder.Services.AddPaging(options =>
