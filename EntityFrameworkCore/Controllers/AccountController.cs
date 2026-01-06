@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Build.Framework;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using System.Net;
 using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
@@ -18,7 +19,7 @@ using static System.Net.WebRequestMethods;
 
 namespace EntityFrameworkCore.Controllers
 {
-    public class AccountController(IApplicationRoleManager roleManager, IApplicationUserManager userManager, IEmailSender emailSender, BookShopContext context, SignInManager<ApplicationUser> signInManager, ISmsSender smsSender,IConfiguration configuration) : Controller
+    public class AccountController(IApplicationRoleManager roleManager, IApplicationUserManager userManager, IEmailSender emailSender, BookShopContext context, SignInManager<ApplicationUser> signInManager, ISmsSender smsSender, IConfiguration configuration, IHttpClientFactory httpClientFactory) : Controller
     {
         [HttpGet]
         public IActionResult Register()
@@ -575,12 +576,12 @@ namespace EntityFrameworkCore.Controllers
         [HttpGet]
         public IActionResult GetExternalLoginProvider(string provider)
         {
-            if(provider=="Yahoo")
+            if (provider == "Yahoo")
             {
                 var client_id = configuration.GetValue<string>("YahooOAuth:ClientID");
                 //for host we can use this
                 //var yahooRedirectUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/signin-yahoo";
-                return Redirect($"https://api.login.yahoo.com/oauth2/request_auth?client_id={client_id}&redirect_uri=https://messier-lecia-twopenny.ngrok-free.dev/yahoo-signin&response_type=code&language=en-us"); 
+                return Redirect($"https://api.login.yahoo.com/oauth2/request_auth?client_id={client_id}&redirect_uri=https://messier-lecia-twopenny.ngrok-free.dev/yahoo-signin&response_type=code&language=en-us");
             }
             var redirectUrl = Url.Action("GetCallBackAsync", "Account");
             var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
@@ -591,31 +592,112 @@ namespace EntityFrameworkCore.Controllers
         public async Task<IActionResult> GetCallBackAsync()
         {
             var info = await signInManager.GetExternalLoginInfoAsync();
+            var resault = await ExternalLoginAsync(info);
+            if (resault == "Success")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            else if (resault == "RequiersTwoFactor")
+            {
+                return RedirectToAction("SendCode");
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, resault);
+                return View("SignIn");
+            }
+        }
+
+        [Route("yahoo-signin")]
+        public async Task<IActionResult> GetYahooCallBackAsync(string code, string state)
+        {
+            HttpClient httpClient = new HttpClient();
+
+            //for host we use this
+            //var yahooRedirectUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/signin-yahoo";
+
+            Dictionary<string, string> param = new Dictionary<string, string>();
+            param.Add("client_id", configuration.GetValue<string>("YahooOAuth:ClientID"));
+            param.Add("client-secret", configuration.GetValue<string>("YahooOAuth:ClientSecret"));
+
+            //for host we use this
+            //param.Add("redirect_uri", yahooRedirectUrl);
+
+            param.Add("redirect_uri", "https://messier-lecia-twopenny.ngrok-free.dev/yahoo-signin");
+            param.Add("code", code);
+            param.Add("grant_type", "authorization_code");
+
+            FormUrlEncodedContent formatContent = new FormUrlEncodedContent(param);
+
+            var response = await httpClient.PostAsync("https://api.login.yahoo.com/oauth2/get_token", formatContent);
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                string jsonResponse = response.Content.ReadAsStringAsync().Result;
+                dynamic jsonData = JsonConvert.DeserializeObject(jsonResponse);
+
+                Console.WriteLine(jsonData);
+
+                string token = jsonData.access_token;
+                string guid = jsonData.xoauth_yahoo_guid;
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://social.yahooapi.com/v1/user/me/profile?format=json");
+                request.Headers.Add("Authorization", $"Bearer{token}");
+                var myClient = httpClientFactory.CreateClient();
+                response = await myClient.SendAsync(request);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    jsonResponse = response.Content.ReadAsStringAsync().Result;
+                    jsonData = JsonConvert.DeserializeObject(jsonResponse);
+
+                    string email = jsonData.profile.emails[0].handle;
+                    var claim = new List<Claim> { new Claim(ClaimTypes.Email, email) };
+                    var claimIdentity = new ClaimsIdentity(claim);
+                    var info = new ExternalLoginInfo(new ClaimsPrincipal(claimIdentity), "Yahoo", guid, "Yahoo");
+                    var resault = await ExternalLoginAsync(info);
+                    if (resault == "Success")
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else if (resault == "RequiersTwoFactor")
+                    {
+                        return RedirectToAction("SendCode");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, resault);
+                        return View("SignIn");
+                    }
+                }
+            }
+            ModelState.AddModelError(string.Empty,"در ورود به سایت از طریق اکانت یاهو خطایی رخ داده است.");
+            return View("SignIn");
+        }
+
+        public async Task<string> ExternalLoginAsync(ExternalLoginInfo info)
+        {
             if (info == null)
             {
-                ModelState.AddModelError(string.Empty, $"در عملیات ورود به سایت از طریق حساب {info.ProviderDisplayName} خطایی رخ داده است.");
+                return $"در عملیات ورود به سایت از طریق حساب {info.ProviderDisplayName} خطایی رخ داده است.";
             }
             var userEmail = info.Principal.FindFirstValue(ClaimTypes.Email);
             var user = await userManager.FindByEmailAsync(userEmail);
             if (user == null)
             {
-                ModelState.AddModelError(string.Empty, "شما عضو سایت نیستید برای ورود به سایت باید عضو سایت شوید.");
+                return "شما عضو سایت نیستید برای ورود به سایت باید عضو سایت شوید.";
             }
             else
             {
                 var resault = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false);
                 if (resault.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    return "Success";
                 }
                 else if (resault.IsLockedOut)
                 {
-                    ModelState.AddModelError(string.Empty, "حساب کاربری شما به مدت 20 دقیقه به دلیل تلاش های ناموفق قفل شد.");
-                    return View("SignIn");
+                    return "حساب کاربری شما به مدت 20 دقیقه به دلیل تلاش های ناموفق قفل شد.";
                 }
                 else if (resault.RequiresTwoFactor)
                 {
-                    return RedirectToAction("SendCode");
+                    return "RequiersTwoFactor";
                 }
                 else
                 {
@@ -623,37 +705,14 @@ namespace EntityFrameworkCore.Controllers
                     if (externalResault.Succeeded)
                     {
                         await signInManager.SignInAsync(user, false);
-                        return RedirectToAction("Index", "Home");
+                        return "Success";
+                    }
+                    else
+                    {
+                        return $"در عملیات ورود به سایت از طریق حساب {info.ProviderDisplayName} خطایی رخ داده است.";
                     }
                 }
             }
-            return View("SignIn");
-        }
-
-        [Route("yahoo-signin")]
-        public async Task<IActionResult> GetYahooCallBackAsync(string code,string state)
-        {
-            HttpClient httpClient = new HttpClient();
-
-            //for host we use this
-            //var yahooRedirectUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/signin-yahoo";
-
-            Dictionary<string,string> param=new Dictionary<string, string>();
-            param.Add("client_id", configuration.GetValue<string>("YahooOAuth:ClientID"));
-            param.Add("client-secret", configuration.GetValue<string>("YahooOAuth:ClientSecret"));
-
-            //for host we use this
-            //param.Add("redirect_uri", yahooRedirectUrl);
-
-            param.Add("redirect_uri", "https://messier-lecia-twopenny.ngrok-free.dev");
-            param.Add("code", code);
-            param.Add("grant_type","authorization_code");
-
-            FormUrlEncodedContent formatContent=new FormUrlEncodedContent(param);
-            var response = await httpClient.PostAsync("https://api.login.yahoo.com/oauth2/get_token", formatContent);
-            string jsonResponse = response.Content.ReadAsStringAsync().Result;
-            dynamic jsonData = JsonConvert.DeserializeObject(jsonResponse);
-            return Json(jsonData);
         }
     }
 }
