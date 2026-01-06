@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Build.Framework;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
@@ -579,7 +580,7 @@ namespace EntityFrameworkCore.Controllers
                 var client_id = configuration.GetValue<string>("YahooOAuth:ClientID");
                 //for host we can use this
                 //var yahooRedirectUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/signin-yahoo";
-                return Redirect($"https://api.login.yahoo.com/oauth2/request_auth?client_id={client_id}&redirect_uri=https://messier-lecia-twopenny.ngrok-free.dev/signin-yahoo&response_type=code&language=en-us"); 
+                return Redirect($"https://api.login.yahoo.com/oauth2/request_auth?client_id={client_id}&redirect_uri=https://messier-lecia-twopenny.ngrok-free.dev/yahoo-signin&response_type=code&language=en-us"); 
             }
             var redirectUrl = Url.Action("GetCallBackAsync", "Account");
             var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
@@ -629,10 +630,30 @@ namespace EntityFrameworkCore.Controllers
             return View("SignIn");
         }
 
-        [Route("signin-yahoo")]
+        [Route("yahoo-signin")]
         public async Task<IActionResult> GetYahooCallBackAsync(string code,string state)
         {
-            return View();
+            HttpClient httpClient = new HttpClient();
+
+            //for host we use this
+            //var yahooRedirectUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/signin-yahoo";
+
+            Dictionary<string,string> param=new Dictionary<string, string>();
+            param.Add("client_id", configuration.GetValue<string>("YahooOAuth:ClientID"));
+            param.Add("client-secret", configuration.GetValue<string>("YahooOAuth:ClientSecret"));
+
+            //for host we use this
+            //param.Add("redirect_uri", yahooRedirectUrl);
+
+            param.Add("redirect_uri", "https://messier-lecia-twopenny.ngrok-free.dev");
+            param.Add("code", code);
+            param.Add("grant_type","authorization_code");
+
+            FormUrlEncodedContent formatContent=new FormUrlEncodedContent(param);
+            var response = await httpClient.PostAsync("https://api.login.yahoo.com/oauth2/get_token", formatContent);
+            string jsonResponse = response.Content.ReadAsStringAsync().Result;
+            dynamic jsonData = JsonConvert.DeserializeObject(jsonResponse);
+            return Json(jsonData);
         }
     }
 }
