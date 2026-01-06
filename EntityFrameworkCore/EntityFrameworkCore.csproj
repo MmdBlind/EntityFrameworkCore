@@ -187,6 +187,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNet.Security.OAuth.Yahoo" Version="8.3.0" />
     <PackageReference Include="Kavenegar" Version="1.2.5" />
     <PackageReference Include="MD.PersianDateTime.Core" Version="2.3.5" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.22" />

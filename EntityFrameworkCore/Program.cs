@@ -69,6 +69,10 @@ builder.Services.AddAuthentication()
     {
         options.ClientId = "978532525496-duvt6h99ktdv937a9kltfefdkimshvho.apps.googleusercontent.com";
         options.ClientSecret = "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";
+    }).AddYahoo(options =>
+    {
+        options.ClientId = "dj0yJmk9Vm9NSGd6UHRBdjdIJmQ9WVdrOWVWcHlOak5wWW0wbWNHbzlNQT09JnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTEx";
+        options.ClientSecret = "25bd931d56c805b78a912d77efda8e8e860a042c";
     });
 
 builder.Services.AddPaging(options =>

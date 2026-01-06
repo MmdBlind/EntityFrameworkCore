@@ -13,10 +13,11 @@ using Microsoft.IdentityModel.Tokens;
 using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using static System.Net.WebRequestMethods;
 
 namespace EntityFrameworkCore.Controllers
 {
-    public class AccountController(IApplicationRoleManager roleManager, IApplicationUserManager userManager, IEmailSender emailSender, BookShopContext context, SignInManager<ApplicationUser> signInManager, ISmsSender smsSender) : Controller
+    public class AccountController(IApplicationRoleManager roleManager, IApplicationUserManager userManager, IEmailSender emailSender, BookShopContext context, SignInManager<ApplicationUser> signInManager, ISmsSender smsSender,IConfiguration configuration) : Controller
     {
         [HttpGet]
         public IActionResult Register()
@@ -573,6 +574,13 @@ namespace EntityFrameworkCore.Controllers
         [HttpGet]
         public IActionResult GetExternalLoginProvider(string provider)
         {
+            if(provider=="Yahoo")
+            {
+                var client_id = configuration.GetValue<string>("YahooOAuth:ClientID");
+                //for host we can use this
+                //var yahooRedirectUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/signin-yahoo";
+                return Redirect($"https://api.login.yahoo.com/oauth2/request_auth?client_id={client_id}&redirect_uri=https://messier-lecia-twopenny.ngrok-free.dev/signin-yahoo&response_type=code&language=en-us"); 
+            }
             var redirectUrl = Url.Action("GetCallBackAsync", "Account");
             var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return Challenge(properties, provider);
@@ -619,6 +627,12 @@ namespace EntityFrameworkCore.Controllers
                 }
             }
             return View("SignIn");
+        }
+
+        [Route("signin-yahoo")]
+        public async Task<IActionResult> GetYahooCallBackAsync(string code,string state)
+        {
+            return View();
         }
     }
 }
