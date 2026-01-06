@@ -55,7 +55,7 @@ namespace EntityFrameworkCore.Controllers
                         await roleManager.CreateAsync(new ApplicationRole("کاربر", "مشتری سایت"));
                     }
                     Resault = await userManager.AddToRoleAsync(User, "کاربر");
-                    await userManager.AddClaimAsync(User, new Claim(ClaimTypes.DateOfBirth,birthDateMiladi.ToString("MM/dd")));
+                    await userManager.AddClaimAsync(User, new Claim(ClaimTypes.DateOfBirth,birthDateMiladi.ToShortDateString()));
                     Transaction.Commit();
                     if (Resault.Succeeded)
                     {
