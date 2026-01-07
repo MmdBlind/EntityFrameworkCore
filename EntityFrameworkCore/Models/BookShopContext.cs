@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 namespace EntityFrameworkCore.Models
 {
-    public class BookShopContext : IdentityDbContext<ApplicationUser, ApplicationRole, string, IdentityUserClaim<string>, ApplicationUserRole, IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
+    public class BookShopContext : IdentityDbContext<ApplicationUser, ApplicationRole, string, IdentityUserClaim<string>, ApplicationUserRole, IdentityUserLogin<string>, ApplicationRoleClaim, IdentityUserToken<string>>
     {
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
@@ -36,6 +36,13 @@ namespace EntityFrameworkCore.Models
                 .HasOne(userRole => userRole.User)
                 .WithMany(User => User.Roles)
                 .HasForeignKey(r => r.UserId);
+
+            modelBuilder.Entity<ApplicationRoleClaim>().ToTable("AppRoleClaim");
+
+            modelBuilder.Entity<ApplicationRoleClaim>()
+                .HasOne(roleClaim => roleClaim.Role)
+                .WithMany(claims => claims.Claims)
+                .HasForeignKey(c => c.RoleId);
 
             modelBuilder.Entity<ApplicationRole>().ToTable("AspNetRoles").ToTable("AppRoles");
 

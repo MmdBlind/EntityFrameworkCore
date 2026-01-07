@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 namespace EntityFrameworkCore.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Policy = "AccessToUsersManager")]
     public class UsersManagerController(IApplicationUserManager userManager, IApplicationRoleManager roleManager, IConvertDate convertDate, IEmailSender emailSender) : Controller
     {
 

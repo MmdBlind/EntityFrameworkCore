@@ -1,4 +1,5 @@
-﻿using EntityFrameworkCore.Models;
+﻿using EntityFrameworkCore.Areas.Admin.Data;
+using EntityFrameworkCore.Models;
 using EntityFrameworkCore.Models.Repository;
 using EntityFrameworkCore.Models.UnitOfWork;
 using EntityFrameworkCore.Models.ViewModels;
@@ -9,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.VisualBasic;
 using ReflectionIT.Mvc.Paging;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Net.WebSockets;
 using static System.Reflection.Metadata.BlobBuilder;
 
@@ -16,6 +19,7 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize]
+    [DisplayName("مدیریت کتاب ها")]
     public class BooksController : Controller
     {
         private readonly IUnitOfWork _UW;
@@ -23,6 +27,9 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         {
             _UW = unitOfWork;
         }
+
+        [DisplayName("مشاهده کتاب ها")]
+        [Authorize(Policy= ConstantPolicies.DynamincPermission)]
         public IActionResult Index(string Msg, int pageindex = 1, int row = 5, string sortExpression = "Title", string title = "")
         {
             if (Msg == "Faild")
@@ -56,6 +63,9 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             ViewBag.Categories = _UW.BooksRepository.GetAllCategories();
             return View(PagingModel);
         }
+
+        [DisplayName("جستجوی کتاب")]
+        [Authorize(Policy = ConstantPolicies.DynamincPermission)]
         public IActionResult AdvancedSearch(BooksAdvancedSearch ViewModel)
         {
             ViewModel.Title = string.IsNullOrEmpty(ViewModel.Title) ? "" : ViewModel.Title;
@@ -68,6 +78,9 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             var Books = _UW.BooksRepository.GetAllBooks(ViewModel.Title, ViewModel.ISBN, ViewModel.Language, ViewModel.Publisher, ViewModel.Author, ViewModel.Translator, ViewModel.Category);
             return View(Books);
         }
+
+        [DisplayName("ایجاد کتاب جدید")]
+        [Authorize(Policy = ConstantPolicies.DynamincPermission)]
         public IActionResult Create()
         {
             ViewBag.LanguageID = new SelectList(_UW.BaseRepository<Language>().FindAll(), "LanguageID", "LanguageName");
@@ -136,6 +149,9 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
                 return View(viewModel);
             }
         }
+
+        [DisplayName("مشاهده کتاب ها")]
+        [Authorize(Policy = ConstantPolicies.DynamincPermission)]
         public IActionResult Details(int id)
         {
             // روش پایین روش SqlRaw است
@@ -155,6 +171,9 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
             var BookInfo = _UW._Context.ReadAllBooks.Where(b => b.BookID == id).First();
             return View(BookInfo);
         }
+
+        [DisplayName("حذف کتاب")]
+        [Authorize(Policy = ConstantPolicies.DynamincPermission)]
         public async Task<IActionResult> Delete(int id)
         {
             var book = await _UW.BaseRepository<Book>().FindById(id);
@@ -171,6 +190,8 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [DisplayName("ویرایش اطلاعات کتاب")]
+        [Authorize(Policy = ConstantPolicies.DynamincPermission)]
         public async Task<IActionResult> Edit(int id)
         {
             if (id == null)
@@ -330,6 +351,9 @@ namespace EntityFrameworkCore.Areas.Admin.Controllers
 
         }
 
+
+        [DisplayName("جستجو بر اساس شابک")]
+        [Authorize(Policy = ConstantPolicies.DynamincPermission)]
         public async Task<IActionResult> SearchByISBN(string ISBN)
         {
             if (ISBN != null)

@@ -47,6 +47,10 @@ namespace EntityFrameworkCore.Areas.Identity.Data
 
         List<RolesViewModel> GetAllRolesAndUsersCount();
 
+        Task<ApplicationRole> FindClaimsInRole(string roleId);
+
+        Task<IdentityResult> AddOrUpdateClaimsAsync(string roleId, string roleClaimType, IList<string> selectedRoleClaimValues);
+
         #endregion
     }
 }

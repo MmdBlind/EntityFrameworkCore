@@ -11,6 +11,8 @@ using EntityFrameworkCore.Areas.Identity.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using EntityFrameworkCore.Areas.Admin.Services;
+using EntityFrameworkCore.Areas.Admin.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
@@ -45,6 +47,10 @@ builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<ISmsSender, SmsSender>();
 builder.Services.AddSingleton<IAuthorizationHandler,HappyBirthDayHandler>();
 builder.Services.AddSingleton<IAuthorizationHandler, MinimumAgeHandler>();
+builder.Services.AddSingleton<IMvcActionsDiscoveryService, MvcActionsDiscoveryService>();
+builder.Services.AddSingleton<IAuthorizationHandler, DynamicPermissionsAuthorizationHandler>();
+builder.Services.AddSingleton<ISecurityTrimmingService, SecurityTrimmingService>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -89,6 +95,7 @@ builder.Services.AddAuthorization(options =>
     //options.AddPolicy("HappyBirthDay", policy => policy.RequireClaim(ClaimTypes.DateOfBirth,DateTime.Now.ToString("MM/dd")));
     options.AddPolicy("HappyBirthDay", policy => policy.Requirements.Add(new HappyBirthDayRequirement()));
     options.AddPolicy("AtLeast18", policy => policy.Requirements.Add(new MinimumAgeRequirement(18)));
+    options.AddPolicy(ConstantPolicies.DynamincPermission, policy => policy.Requirements.Add(new DynamicPermissionRequirement()));
 
 });
 
